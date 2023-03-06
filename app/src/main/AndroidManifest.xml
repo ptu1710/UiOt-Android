@@ -15,6 +15,9 @@
         android:theme="@style/Theme.MyUIT"
         tools:targetApi="31">
         <activity
+            android:name=".AddDeviceActivity"
+            android:exported="false" />
+        <activity
             android:name=".HomeActivity"
             android:exported="false" />
         <activity

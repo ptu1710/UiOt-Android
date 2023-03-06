@@ -1,5 +1,7 @@
 package com.ixxc.myuit.API;
 
+import android.util.Log;
+
 import com.ixxc.myuit.GlobalVars;
 
 import javax.net.ssl.SSLContext;
@@ -14,12 +16,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIClient {
-    private static Retrofit retrofit;
+    public String PublicToken = "";
+    public String UserToken = "";
 
-    public static String PublicToken = "";
-    public static String UserToken = "";
-
-    public static OkHttpClient getUnsafeOkHttpClient() {
+    public OkHttpClient getUnsafeOkHttpClient(boolean isPublic) {
         try {
             final TrustManager[] trustAllCerts = new TrustManager[] {
                     new X509TrustManager() {
@@ -52,7 +52,7 @@ public class APIClient {
             builder.addInterceptor(chain -> {
                 Request newRequest = chain.request()
                         .newBuilder()
-                        .addHeader("Authorization", "Bearer " + PublicToken)
+                        .addHeader("Authorization", "Bearer " + (isPublic ? PublicToken : UserToken))
                         .build();
 
                 return chain.proceed(newRequest);
@@ -67,13 +67,12 @@ public class APIClient {
         }
     }
 
-    public static Retrofit getClient() {
-        OkHttpClient client = getUnsafeOkHttpClient();
-        retrofit = new Retrofit.Builder()
+    public Retrofit getClient(boolean isPublic) {
+        OkHttpClient client = getUnsafeOkHttpClient(isPublic);
+        return new Retrofit.Builder()
                 .baseUrl(GlobalVars.baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();
-        return retrofit;
     }
 }

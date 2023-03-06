@@ -1,5 +1,6 @@
 package com.ixxc.myuit;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
@@ -37,11 +38,12 @@ public class SignInFragment extends Fragment {
             String pwd = String.valueOf(et_pwd.getText());
             getToken(false, usr, pwd);
         } else {
-            Toast.makeText(getContext(), "NEXT ACTIVITY", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(loginActivity, HomeActivity.class));
         }
 
         return false;
     });
+
     public SignInFragment() { }
 
     public SignInFragment(LoginActivity activity) {
@@ -74,6 +76,7 @@ public class SignInFragment extends Fragment {
 
     private void InitEvent() {
         btn_sign_in.setOnClickListener(view -> getToken(true, "public", "public"));
+//        btn_sign_in.setOnClickListener(view -> startActivity(new Intent(loginActivity, HomeActivity.class)));
         btn_back.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.welcome));
     }
 
