@@ -20,6 +20,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.ixxc.myuit.API.APIManager;
@@ -27,6 +28,8 @@ import com.ixxc.myuit.API.APIManager;
 public class SignInFragment extends Fragment {
     Button btn_sign_in, btn_back;
     EditText et_usr, et_pwd;
+
+    ProgressBar pb_loading;
 
     LoginActivity loginActivity;
 
@@ -39,6 +42,7 @@ public class SignInFragment extends Fragment {
             getToken(false, usr, pwd);
         } else {
             startActivity(new Intent(loginActivity, HomeActivity.class));
+            loginActivity.finish();
         }
 
         return false;
@@ -65,6 +69,8 @@ public class SignInFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         InitViews(view);
         InitEvent();
+
+        btn_sign_in.performClick();
     }
 
     private void InitViews(View v) {
@@ -72,10 +78,16 @@ public class SignInFragment extends Fragment {
         btn_back = v.findViewById(R.id.btn_back);
         et_usr = v.findViewById(R.id.et_usr);
         et_pwd = v.findViewById(R.id.et_pwd);
+        pb_loading = v.findViewById(R.id.pb_loading);
     }
 
     private void InitEvent() {
-        btn_sign_in.setOnClickListener(view -> getToken(true, "public", "public"));
+        btn_sign_in.setOnClickListener(view -> {
+            pb_loading.setVisibility(View.VISIBLE);
+            btn_sign_in.setVisibility(View.GONE);
+            getToken(true, "public", "public");
+        });
+
 //        btn_sign_in.setOnClickListener(view -> startActivity(new Intent(loginActivity, HomeActivity.class)));
         btn_back.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.welcome));
     }

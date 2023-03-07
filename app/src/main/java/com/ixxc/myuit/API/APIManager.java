@@ -2,8 +2,11 @@ package com.ixxc.myuit.API;
 
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.ixxc.myuit.GlobalVars;
 import com.ixxc.myuit.Interface.APIInterface;
+import com.ixxc.myuit.Model.CreateAssetReq;
+import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.Model;
 import com.ixxc.myuit.Model.Token;
@@ -91,5 +94,17 @@ public class APIManager {
             e.printStackTrace();
         }
         return "false";
+    }
+
+    public static void createDevice(JsonObject reqBody) {
+        Call<CreateAssetRes> call = userAI.createDevice(reqBody);
+
+        try {
+            Response<CreateAssetRes> response = call.execute();
+            if (response.isSuccessful()) {
+                CreateAssetRes res = response.body();
+                Log.d("API LOG", res.name);
+            }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }

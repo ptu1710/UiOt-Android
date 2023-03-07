@@ -16,6 +16,9 @@ public class Attribute {
     @SerializedName("format")
     public JsonObject format;
 
+    @SerializedName("meta")
+    public JsonObject meta;
+
     @SerializedName("optional")
     public boolean optional;
 }
