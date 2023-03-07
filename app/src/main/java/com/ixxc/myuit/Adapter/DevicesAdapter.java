@@ -20,6 +20,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
     private List<Device> devices;
     private final DevicesListener devicesListener;
 
+
+
     public DevicesAdapter(List<Device> devices, DevicesListener listener) {
         this.devices = devices;
         this.devicesListener = listener;
@@ -53,11 +55,11 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
         holder.tv_Id.setText("ID: " + device.id);
 //        holder.iv_Icon.setImageResource(com.mapbox.mapboxsdk.R.drawable.mapbox_compass_icon);
 //        holder.cardView.startAnimation(AnimationUtils.loadAnimation(holder.cardView.getContext(), R.anim.devices_rv_anim));
-//        holder.cardView.setOnClickListener(view -> devicesListener.onItemClicked(device));
-//        holder.cardView.setOnLongClickListener(v -> {
-//            devicesListener.onItemLongClicked(v, device);
-//            return false;
-//        });
+        holder.cardView.setOnClickListener(view -> devicesListener.onItemClicked(device));
+        holder.cardView.setOnLongClickListener(v -> {
+            devicesListener.onItemLongClicked(v, device);
+            return false;
+        });
     }
 
     @Override

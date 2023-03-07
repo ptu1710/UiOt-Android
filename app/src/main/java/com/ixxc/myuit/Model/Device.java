@@ -15,6 +15,8 @@ public class Device {
     public String name;
     @SerializedName("type")
     public String type;
+
+    public static String id_chose;
 //    @SerializedName("attributes")
 //    public AssetAttributes attributes;
 //
