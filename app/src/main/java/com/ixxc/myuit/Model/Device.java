@@ -2,24 +2,36 @@ package com.ixxc.myuit.Model;
 
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.ixxc.myuit.R;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import retrofit2.http.Body;
 
 public class Device {
     @SerializedName("id")
     public String id;
     @SerializedName("version")
     public String version;
+    @SerializedName("createdOn")
+    public long createdOn;
     @SerializedName("name")
     public String name;
+    @SerializedName("accessPublicRead")
+    public Boolean accessPublicRead;
+    @SerializedName("realm")
+    public String realm;
     @SerializedName("type")
     public String type;
+    @SerializedName("path")
+    public ArrayList<String> path;
 
-//    @SerializedName("attributes")
-//    public AssetAttributes attributes;
+    @SerializedName("attributes")
+    public JsonObject attributes;
 //
     private static List<Device> deviceList;
 

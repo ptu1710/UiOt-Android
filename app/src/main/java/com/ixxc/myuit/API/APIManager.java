@@ -94,6 +94,33 @@ public class APIManager {
         return false;
     }
 
+    public static boolean updateDeviceInfo(String deviceId, JsonObject requestBody){
+        Call<String> call = userAI.updateDeviceInfo(deviceId,requestBody);
+        try {
+            Response<String> response = call.execute();
+            return response.isSuccessful();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static Device getDevice(String deviceId){
+        Call<Device> call = userAI.getDevice(deviceId);
+        Device device = new Device();
+        try {
+            Response<Device> response = call.execute();
+            if (response.isSuccessful()) {
+                device = response.body();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return device;
+    }
+
     public static void createDevice(JsonObject reqBody) {
         Call<CreateAssetRes> call = userAI.createDevice(reqBody);
 
