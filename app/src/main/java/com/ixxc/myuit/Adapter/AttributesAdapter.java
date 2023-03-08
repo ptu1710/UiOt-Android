@@ -1,6 +1,7 @@
 package com.ixxc.myuit.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     private final List<JsonObject> attributes;
     Context ctx;
     String id;
+
+    public int selectedIndex = -1;
 
     public boolean isEditMode = false;
 
@@ -61,7 +64,9 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         try {
             value = attr.get("value").getAsString();
-        } catch (UnsupportedOperationException exception) {
+        } catch (UnsupportedOperationException unsupportedOperationException) {
+            value = "null";
+        } catch (NullPointerException nullPointerException) {
             value = "null";
         }
 
@@ -70,9 +75,20 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         if (!value.equals("null") && isEditMode) {
             holder.et_attribute_value.setEnabled(true);
         }
+
+        holder.et_attribute_value.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) {
+                    selectedIndex = holder.getAdapterPosition();
+                    Log.d("API LOG", String.valueOf(selectedIndex));
+                }
+            }
+        });
+
         holder.cv_attribute.setOnClickListener(view -> {
             String toast = holder.tv_attribute_name.getText() + " is " + holder.et_attribute_value.getText();
-            Toast.makeText(ctx, "toast", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, toast, Toast.LENGTH_SHORT).show();
         });
     }
 

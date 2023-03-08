@@ -26,7 +26,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
     private List<Device> devices;
     private final DevicesListener devicesListener;
 
-     public static int checkedPos = -1;
+     public int checkedPos = -1;
 
     public DevicesAdapter(List<Device> devices, DevicesListener listener) {
         this.devices = devices;

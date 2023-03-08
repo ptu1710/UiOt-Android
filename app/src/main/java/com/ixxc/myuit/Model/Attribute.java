@@ -1,5 +1,7 @@
 package com.ixxc.myuit.Model;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
@@ -22,6 +24,7 @@ public class Attribute {
     @SerializedName("optional")
     public boolean optional;
 
+    @Nullable
     @SerializedName("value")
     public String value;
 

@@ -30,8 +30,6 @@ public class HomeFragment extends Fragment {
         tv_username.setVisibility(View.VISIBLE);
         pb_username.setVisibility(View.GONE);
 
-
-
         return false;
     });
 
