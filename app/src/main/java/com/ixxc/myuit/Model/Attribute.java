@@ -21,4 +21,10 @@ public class Attribute {
 
     @SerializedName("optional")
     public boolean optional;
+
+    @SerializedName("value")
+    public String value;
+
+    @SerializedName("timestamp")
+    public long timestamp;
 }

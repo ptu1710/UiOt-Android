@@ -9,7 +9,7 @@
     android:elevation="5dp">
 
     <ImageView
-        android:id="@+id/btn_back_1"
+        android:id="@+id/btn_actionbar_back"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
@@ -23,7 +23,7 @@
         tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
     <TextView
-        android:id="@+id/tvName"
+        android:id="@+id/tv_actionbar_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"

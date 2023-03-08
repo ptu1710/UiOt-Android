@@ -1,5 +1,6 @@
 package com.ixxc.myuit;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -197,7 +198,7 @@ public class DevicesFragment extends Fragment {
         devicesAdapter = new DevicesAdapter(deviceList, new DevicesListener() {
             @Override
             public void onItemClicked(View v, Device device) {
-
+                ViewDeviceInfo(device.id);
             }
 
             @Override
@@ -218,5 +219,11 @@ public class DevicesFragment extends Fragment {
 
         rv_devices.setVisibility(View.VISIBLE);
         pb_loading_1.setVisibility(View.GONE);
+    }
+
+    public void ViewDeviceInfo(String id) {
+        Intent toDetails = new Intent(getContext(), DeviceInfoActivity.class);
+        toDetails.putExtra("DEVICE_ID", id);
+        getContext().startActivity(toDetails);
     }
 }

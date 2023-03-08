@@ -2,11 +2,19 @@ package com.ixxc.myuit.Model;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.ixxc.myuit.R;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Device {
     @SerializedName("id")
@@ -17,10 +25,9 @@ public class Device {
     public String name;
     @SerializedName("type")
     public String type;
+    @SerializedName("attributes")
+    public JsonObject attributes;
 
-//    @SerializedName("attributes")
-//    public AssetAttributes attributes;
-//
     private static List<Device> deviceList;
 
     public static List<Device> getAllDevices() {
@@ -65,14 +72,26 @@ public class Device {
 //        return attrs;
 //    }
 
-//    public static Asset getAsset(String assetId) {
-//        for (Asset asset : assets) {
-//            if (Objects.equals(asset.id, assetId)) {
-//                return asset;
-//            }
-//        }
-//        return null;
-//    }
+    public static Device getDeviceById(String id) {
+        for (Device device : deviceList) {
+            if (Objects.equals(device.id, id)) {
+                return device;
+            }
+        }
+        return null;
+    }
+
+    public List<JsonObject> getDeviceAttribute() {
+        List<JsonObject> attributeList = new ArrayList<>();
+
+        for (String key : attributes.keySet()) {
+            JsonObject attribute = attributes.get(key).getAsJsonObject();
+            Log.d("API LOG", attribute.get("name").getAsString());
+            attributeList.add(attribute);
+        }
+
+        return attributeList;
+    }
 
 //    public JsonObject getWeatherData() {
 //        return attributes.weatherData.get("value").getAsJsonObject();

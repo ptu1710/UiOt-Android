@@ -3,12 +3,9 @@ package com.ixxc.myuit;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -128,7 +125,7 @@ public class AddDeviceActivity extends AppCompatActivity {
         add_optional_layout = findViewById(R.id.add_optional_layout);
 
         btn_add = findViewById(R.id.btn_add);
-        iv_back_1 = findViewById(R.id.btn_back_1);
+        iv_back_1 = findViewById(R.id.btn_actionbar_back);
     }
 
     private void InitEvents() {
@@ -198,6 +195,7 @@ public class AddDeviceActivity extends AppCompatActivity {
                 }
 
                 attributes.add(name, attribute);
+
             }
 
             new Thread(() -> {
