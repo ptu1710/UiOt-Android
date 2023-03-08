@@ -2,32 +2,35 @@ package com.ixxc.myuit.Model;
 
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.ixxc.myuit.R;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Device {
     @SerializedName("id")
     public String id;
     @SerializedName("version")
     public String version;
+    @SerializedName("createdOn")
+    public long createdOn;
     @SerializedName("name")
     public String name;
+    @SerializedName("accessPublicRead")
+    public Boolean accessPublicRead;
+    @SerializedName("realm")
+    public String realm;
     @SerializedName("type")
     public String type;
     @SerializedName("attributes")
     public JsonObject attributes;
+    @SerializedName("path")
+    public ArrayList<String> path;
 
+//    @SerializedName("attributes")
+//    public AssetAttributes attributes;
+//
     private static List<Device> deviceList;
 
     public static List<Device> getAllDevices() {

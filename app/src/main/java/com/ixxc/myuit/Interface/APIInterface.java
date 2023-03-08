@@ -18,6 +18,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -42,4 +43,10 @@ public interface APIInterface {
 
     @DELETE("api/master/asset")
     Call<String> delDevice(@Query("assetId") String deviceId);
+
+    @GET("api/master/asset/{assetId}")
+    Call<Device> getDevice(@Path("assetId") String deviceId);
+
+    @PUT("api/master/asset/{assetId}")
+    Call<String> updateDeviceInfo(@Path("assetId") String deviceId, @Body JsonObject requestBody);
 }

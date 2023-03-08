@@ -1,6 +1,5 @@
 package com.ixxc.myuit;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -199,6 +198,30 @@ public class DevicesFragment extends Fragment {
             @Override
             public void onItemClicked(View v, Device device) {
                 ViewDeviceInfo(device.id);
+
+                new Thread(() ->{
+                    Device device1 = APIManager.getDevice(device.id);
+
+                    JsonObject body = new JsonObject();
+                    body.addProperty("id", device1.id);
+                    body.addProperty("version",  device1.version);
+                    body.addProperty("createdOn", device1.createdOn);
+                    body.addProperty("name", device1.name + " 11");
+                    body.addProperty("accessPublicRead", device1.accessPublicRead);
+                    body.addProperty("realm", device1.realm);
+                    body.addProperty("type", device1.type);
+
+                    JsonArray arrayPath = new JsonArray();
+                    arrayPath.add(device1.path.get(0));
+                    body.add("path",arrayPath);
+                    body.add("attributes", device1.attributes);
+
+                    Log.d("API", body.toString());
+                    Boolean state_update = APIManager.updateDeviceInfo(device.id, body);
+                    Log.d("API LOG", state_update.toString());
+                }).start();
+
+
             }
 
             @Override
