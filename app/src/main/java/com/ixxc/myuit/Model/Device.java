@@ -1,5 +1,7 @@
 package com.ixxc.myuit.Model;
 
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 import com.ixxc.myuit.R;
 
@@ -16,11 +18,10 @@ public class Device {
     @SerializedName("type")
     public String type;
 
-    public static String id_chose;
 //    @SerializedName("attributes")
 //    public AssetAttributes attributes;
 //
-    private static List<Device> deviceList = new ArrayList<>();
+    private static List<Device> deviceList;
 
     public static List<Device> getAllDevices() {
         return deviceList;
@@ -29,7 +30,12 @@ public class Device {
     public static void setDevicesList(List<Device> list) {
         if (list == null) return;
 
-        deviceList.clear();
+        if (deviceList != null) {
+            deviceList.clear();
+        } else {
+            deviceList = new ArrayList<>();
+        }
+
         for (Device device : list) {
             if (!device.type.contains("ConsoleAsset")) {
                 deviceList.add(device);

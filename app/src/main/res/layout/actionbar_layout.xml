@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/bg1"
+    android:elevation="5dp">
+
+    <ImageView
+        android:id="@+id/btn_back_1"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="4dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:paddingLeft="10dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="12dp"
+        android:src="@drawable/ic_back"
+        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:text="Weather Asset"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_vertical"/>
+
+</LinearLayout>

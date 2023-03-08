@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ic_cancel"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DevicesFragment">
@@ -12,7 +13,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bg_primary"
         android:gravity="center_vertical"
-        android:paddingBottom="16dp"
+        android:paddingBottom="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -34,9 +35,10 @@
             android:id="@+id/searchView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/search_round_24"
             android:iconifiedByDefault="false"
             android:queryHint="Search by name or type"
             android:searchIcon="@drawable/ic_search"
@@ -47,48 +49,87 @@
         </SearchView>
 
         <ImageView
-            android:id="@+id/imageView5"
-            android:visibility="gone"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:id="@+id/iv_delete"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_marginEnd="24dp"
-            android:layout_weight="1"
+            android:clickable="true"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:src="@drawable/ic_delete"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/textView9"
-            app:layout_constraintEnd_toStartOf="@+id/imageView4"
-            app:layout_constraintTop_toTopOf="@+id/textView9"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintEnd_toStartOf="@+id/iv_cancel"
+            app:layout_constraintTop_toTopOf="@+id/textView9" />
 
         <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:id="@+id/iv_cancel"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_marginEnd="24dp"
-            android:layout_weight="1"
+            android:clickable="true"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_cancel"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/textView9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView9" />
+
+        <ImageView
+            android:id="@+id/iv_community"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginEnd="24dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:clickable="true"
             android:src="@drawable/ic_community"
             app:layout_constraintBottom_toBottomOf="@+id/textView9"
             app:layout_constraintEnd_toStartOf="@+id/iv_add"
-            app:layout_constraintTop_toTopOf="@+id/textView9"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toTopOf="@+id/textView9" />
 
         <ImageView
             android:id="@+id/iv_add"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_marginEnd="24dp"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:src="@drawable/ic_add"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_community"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/imageView4" />
+            app:layout_constraintTop_toTopOf="@+id/iv_community" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_devices"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srl_devices"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:layout_marginEnd="11dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topLayout">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_devices"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/topLayout" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <ProgressBar
+        android:id="@+id/pb_loading_1"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
+        android:visibility="visible"
+        android:indeterminateTint="@color/bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topLayout" />
 

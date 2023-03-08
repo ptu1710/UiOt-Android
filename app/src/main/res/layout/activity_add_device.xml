@@ -6,17 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".AddDeviceActivity">
 
+    <include
+        android:id="@+id/include"
+        layout="@layout/actionbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_type"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/include">
 
         <AutoCompleteTextView
             android:id="@+id/act_type"
@@ -47,8 +54,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:inputType="none"
-            android:textStyle="bold"
-            android:text="Device Type" />
+            android:text="Device Type"
+            android:textStyle="bold" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -58,8 +65,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_device">
@@ -70,8 +77,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:inputType="none"
-            android:textStyle="bold"
-            android:text="Parent" />
+            android:text="Parent"
+            android:textStyle="bold" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -91,20 +98,10 @@
             android:id="@+id/ti_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
+            android:hint="Device Name"
             android:singleLine="true"
-            android:hint="Device Name" />
+            android:textStyle="bold" />
     </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/btn_optional"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="OPTIONAL ATTRIBUTES"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_name" />
 
     <Button
         android:id="@+id/btn_add"
@@ -114,7 +111,38 @@
         android:text="Add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_optional" />
+        app:layout_constraintTop_toBottomOf="@+id/add_optional_layout" />
+
+    <LinearLayout
+        android:id="@+id/add_optional_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_button_2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_name">
+
+        <ImageView
+            android:id="@+id/iv_add_optional"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ic_add_blue" />
+
+        <TextView
+            android:id="@+id/tv_add_optional"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="2dp"
+            android:layout_weight="1"
+            android:text="Add optional attributes"
+            android:textColor="@color/bg"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

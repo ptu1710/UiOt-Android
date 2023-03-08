@@ -11,7 +11,6 @@
         android:layout_width="140dp"
         android:layout_height="48dp"
         android:layout_marginTop="32dp"
-        android:background="@drawable/bg_button_2"
         android:text="Back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,15 +1,21 @@
 package com.ixxc.myuit.Adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.ixxc.myuit.DevicesFragment;
 import com.ixxc.myuit.Interface.DevicesListener;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.R;
@@ -20,7 +26,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
     private List<Device> devices;
     private final DevicesListener devicesListener;
 
-
+     public static int checkedPos = -1;
 
     public DevicesAdapter(List<Device> devices, DevicesListener listener) {
         this.devices = devices;
@@ -46,20 +52,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
 
     @Override
     public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
-        Device device = devices.get(position);
-        if (device == null) {
-            return;
-        }
-
-        holder.tv_Name.setText(device.name);
-        holder.tv_Id.setText("ID: " + device.id);
-//        holder.iv_Icon.setImageResource(com.mapbox.mapboxsdk.R.drawable.mapbox_compass_icon);
-//        holder.cardView.startAnimation(AnimationUtils.loadAnimation(holder.cardView.getContext(), R.anim.devices_rv_anim));
-        holder.cardView.setOnClickListener(view -> devicesListener.onItemClicked(device));
-        holder.cardView.setOnLongClickListener(v -> {
-            devicesListener.onItemLongClicked(v, device);
-            return false;
-        });
+        holder.bind(devices.get(position));
     }
 
     @Override
@@ -68,15 +61,50 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
     }
 
     class DeviceViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_Name, tv_Id;
-        private ImageView iv_Icon;
-        private CardView cardView;
+        private TextView tv_name, tv_id;
+        private ImageView iv_icon;
+        private CardView cv_device;
+
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
-            tv_Name = itemView.findViewById(R.id.tv_Name);
-            tv_Id = itemView.findViewById(R.id.tv_ID);
-            iv_Icon =  itemView.findViewById(R.id.iv_Icon);
-            cardView = itemView.findViewById(R.id.cardView);
+            tv_name = itemView.findViewById(R.id.tv_name);
+            tv_id = itemView.findViewById(R.id.tv_id);
+            iv_icon =  itemView.findViewById(R.id.iv_icon);
+            cv_device = itemView.findViewById(R.id.cv_device);
+        }
+
+        void bind(Device device) {
+            if (device == null) {
+                return;
+            }
+
+            if (checkedPos == -1) {
+                cv_device.setCardBackgroundColor(cv_device.getResources().getColor(R.color.bg));
+            } else {
+                if (checkedPos == getAdapterPosition()) {
+                    cv_device.setCardBackgroundColor(cv_device.getResources().getColor(R.color.red));
+                } else {
+                    cv_device.setCardBackgroundColor(cv_device.getResources().getColor(R.color.bg));
+                }
+            }
+
+            tv_name.setText(device.name);
+            tv_id.setText("ID: " + device.id);
+            iv_icon.setImageResource(R.drawable.ic_vn);
+
+            cv_device.startAnimation(AnimationUtils.loadAnimation(cv_device.getContext(), R.anim.devices_rv_anim));
+
+            cv_device.setOnClickListener(view -> devicesListener.onItemClicked(view, device));
+            cv_device.setOnLongClickListener(view -> {
+                devicesListener.onItemLongClicked(view, device);
+                cv_device.setCardBackgroundColor(cv_device.getResources().getColor(R.color.red));
+                if (checkedPos != getAdapterPosition()) {
+                    notifyItemChanged(checkedPos);
+                    checkedPos = getAdapterPosition();
+                }
+
+                return true;
+            });
         }
     }
 }

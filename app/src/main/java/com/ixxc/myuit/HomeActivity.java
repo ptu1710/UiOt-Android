@@ -18,8 +18,10 @@ public class HomeActivity extends AppCompatActivity {
     ImageView iv_home, iv_devices, iv_maps, iv_user;
     TextView tv_home, tv_devices, tv_maps, tv_user;
 
-    Fragment homeFrag, devicesFrag, mapsFrag, userFrag;
-
+    public  static HomeFragment homeFrag;
+    public  static DevicesFragment devicesFrag;
+    public  static MapsFragment mapsFrag;
+    public  static UserFragment userFrag;
     public static HomeActivity homeActivity;
 
     int selectedIndex;

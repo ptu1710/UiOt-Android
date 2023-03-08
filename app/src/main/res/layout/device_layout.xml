@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/cardView"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv_device"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="14dp"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
+    android:layout_height="76dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
     android:clickable="true"
-    android:foreground="?attr/selectableItemBackgroundBorderless"
-    android:focusable="true"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="4dp">
+    app:cardBackgroundColor="@color/bg"
+    app:cardCornerRadius="12dp"
+    android:foreground="?attr/selectableItemBackgroundBorderless" >
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
 
         <ImageView
-            android:id="@+id/iv_Icon"
+            android:id="@+id/iv_icon"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_devices" />
+            app:srcCompat="@drawable/ic_vn" />
 
         <TextView
-            android:id="@+id/tv_Name"
+            android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="-8dp"
+            android:text="123123123123123"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/iv_icon"
+            app:layout_constraintTop_toTopOf="@+id/iv_icon" />
+
+        <TextView
+            android:id="@+id/tv_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="6dp"
             android:text="123123123123123"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@+id/iv_Icon"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_ID"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="8dp"
-            android:text="123123123123123"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/iv_Icon"
-            app:layout_constraintTop_toBottomOf="@+id/tv_Name" />
+            android:textColor="@color/white"
+            app:layout_constraintStart_toEndOf="@+id/iv_icon"
+            app:layout_constraintTop_toBottomOf="@+id/tv_name" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

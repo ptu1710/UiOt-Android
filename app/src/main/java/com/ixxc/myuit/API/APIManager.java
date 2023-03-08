@@ -82,18 +82,16 @@ public class APIManager {
         return models;
     }
 
-    public static String delDevice(String deviceId){
+    public static boolean delDevice(String deviceId){
         Call<String> call = userAI.delDevice(deviceId);
         try {
             Response<String> response = call.execute();
-            if ((response.isSuccessful())){
-                return "success";
-
-            }
+            return response.isSuccessful();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "false";
+
+        return false;
     }
 
     public static void createDevice(JsonObject reqBody) {
