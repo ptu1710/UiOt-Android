@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@color/bg1"
+    android:background="@color/bg"
     android:elevation="5dp">
 
     <ImageView
         android:id="@+id/btn_actionbar_back"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:layout_gravity="center_vertical"
         android:layout_margin="4dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
@@ -26,9 +26,9 @@
         android:id="@+id/tv_actionbar_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:text="Weather Asset"
-        android:textSize="20sp"
+        android:textSize="19sp"
         android:textStyle="bold"
         android:layout_gravity="center_vertical"/>
 

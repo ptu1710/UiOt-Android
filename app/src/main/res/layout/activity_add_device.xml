@@ -83,7 +83,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_name"
+        android:id="@+id/et_name"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
         android:orientation="horizontal"
         android:background="@drawable/bg_button_2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_name">
+        app:layout_constraintTop_toBottomOf="@+id/et_name">
 
         <ImageView
             android:id="@+id/iv_add_optional"

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -25,6 +26,7 @@ import com.ixxc.myuit.Model.Model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AddDeviceActivity extends AppCompatActivity {
     AutoCompleteTextView act_type, act_device, act_parent;
@@ -39,15 +41,19 @@ public class AddDeviceActivity extends AppCompatActivity {
 
     LinearLayout add_optional_layout;
 
-    List<String> modelsType, modelsName, parentList;
+    List<String> modelsType, modelsName, parentNames;
 
     List<Model> models;
 
-    List<Device> deviceList;
+    List<Device> parentDevices;
+
+    List<Attribute> selectedOptional;
 
     ArrayAdapter typeAdapter, devicesAdapter, parentAdapter;
 
     Handler handler;
+
+    String parentId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,16 +66,10 @@ public class AddDeviceActivity extends AppCompatActivity {
 
         new Thread(() -> {
             models = APIManager.getDeviceModels();
-            deviceList = Device.getAllDevices();
 
             for (Model model : models) {
                 String name = model.assetDescriptor.get("name").getAsString();
                 modelsName.add(name);
-            }
-
-            parentList.add("None");
-            for (Device d : deviceList) {
-                parentList.add(d.name);
             }
 
             Message msg = handler.obtainMessage();
@@ -81,9 +81,17 @@ public class AddDeviceActivity extends AppCompatActivity {
     }
 
     private void InitVars() {
+        selectedOptional = new ArrayList<>();
         modelsType = new ArrayList<>();
         modelsName = new ArrayList<>();
-        parentList = new ArrayList<>();
+        parentNames = new ArrayList<>();
+
+        parentDevices = Device.getAllDevices();
+
+        for (Device d :
+                parentDevices) {
+            parentNames.add(d.name);
+        }
 
         modelsType.add("Agent");
         modelsType.add("Asset");
@@ -101,7 +109,7 @@ public class AddDeviceActivity extends AppCompatActivity {
                 devicesAdapter = new ArrayAdapter(this, R.layout.dropdown_item, modelsName);
                 act_device.setAdapter(devicesAdapter);
 
-                parentAdapter = new ArrayAdapter(this, R.layout.dropdown_item, parentList);
+                parentAdapter = new ArrayAdapter(this, R.layout.dropdown_item, parentNames);
                 act_parent.setAdapter(parentAdapter);
             } else if (createDevice) {
                 HomeActivity.devicesFrag.refreshDevices();
@@ -136,6 +144,10 @@ public class AddDeviceActivity extends AppCompatActivity {
             act_device.setAdapter(devicesAdapter);
         });
 
+        act_device.setOnItemClickListener((adapterView, view, i, l) -> selectedOptional.clear());
+
+        act_parent.setOnItemClickListener((adapterView, view, i, l) -> parentId = parentDevices.get(i).id);
+
         add_optional_layout.setOnClickListener(view -> {
             List<Model> result = models.stream()
                     .filter(item -> item.assetDescriptor.get("name").getAsString().equals(act_device.getText().toString()))
@@ -146,22 +158,22 @@ public class AddDeviceActivity extends AppCompatActivity {
                 return;
             }
 
-            List<Attribute> optional = result.get(0).attributeDescriptors.stream()
+            List<Attribute> optionalAttributes = result.get(0).attributeDescriptors.stream()
                     .filter(item -> item.optional)
                     .collect(Collectors.toList());
 
-            CharSequence[] optionalName = new CharSequence[optional.size()];
+            CharSequence[] optionalName = new CharSequence[optionalAttributes.size()];
 
-            for (Attribute a :
-                    optional) {
-                optionalName[optional.indexOf(a)] = a.name;
+            for (Attribute a : optionalAttributes) {
+                optionalName[optionalAttributes.indexOf(a)] = a.name;
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(AddDeviceActivity.this);
             builder.setTitle("Select optional attribute");
             builder.setMultiChoiceItems(optionalName, null, (dialog, i, isChecked) -> {
                 if (isChecked) {
-                    Toast.makeText(AddDeviceActivity.this, optional.get(i).name, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddDeviceActivity.this, optionalAttributes.get(i).name, Toast.LENGTH_SHORT).show();
+                    selectedOptional.add(optionalAttributes.get(i));
                 }
             });
 
@@ -176,13 +188,16 @@ public class AddDeviceActivity extends AppCompatActivity {
                     .filter(item -> item.assetDescriptor.get("name").getAsString().equals(act_device.getText().toString()))
                     .collect(Collectors.toList()).get(0);
 
-            List<Attribute> require = result.attributeDescriptors.stream()
+            List<Attribute> requireAttributes = result.attributeDescriptors.stream()
                     .filter(item -> !item.optional)
+                    .collect(Collectors.toList());
+
+            List<Attribute> finalAttributes = Stream.concat(requireAttributes.stream(), selectedOptional.stream())
                     .collect(Collectors.toList());
 
             JsonObject attributes = new JsonObject();
 
-            for (Attribute a : require) {
+            for (Attribute a : finalAttributes) {
                 String name = a.name;
                 String type = a.type;
                 JsonObject meta = a.meta;
@@ -190,16 +205,23 @@ public class AddDeviceActivity extends AppCompatActivity {
                 JsonObject attribute = new JsonObject();
                 attribute.addProperty("name", name);
                 attribute.addProperty("type", type);
+
                 if (meta != null) {
                     attribute.add("meta", meta);
                 }
 
                 attributes.add(name, attribute);
-
             }
 
             new Thread(() -> {
-                CreateAssetReq req = new CreateAssetReq(ti_name.getText().toString(), act_device.getText().toString(), "master", attributes);
+                CreateAssetReq req = new CreateAssetReq();
+                req.setName(ti_name.getText().toString());
+                req.setType(act_device.getText().toString());
+                req.setParentId(parentId);
+                req.setAttributes(attributes);
+
+                Log.d(GlobalVars.LOG_TAG, req.getJsonObj().toString());
+
                 APIManager.createDevice(req.getJsonObj());
 
                 Message msg = handler.obtainMessage();

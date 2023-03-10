@@ -1,18 +1,18 @@
 package com.ixxc.myuit.Adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
 import com.ixxc.myuit.R;
 
@@ -21,20 +21,25 @@ import java.util.List;
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.AttrsViewHolder> {
     private final List<JsonObject> attributes;
     Context ctx;
+    FragmentManager fm;
     String id;
 
     public int selectedIndex = -1;
 
     public boolean isEditMode = false;
 
-    public AttributesAdapter(String id, List<JsonObject> attrsObj) {
+    public AttributesAdapter(FragmentManager fm, String id, List<JsonObject> attrsObj) {
+
+
+
         this.attributes = attrsObj;
         this.id = id;
+        this.fm = fm;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return R.layout.attribute_layout;
+        return (position == attributes.size()) ? R.layout.end_device_details : R.layout.attribute_layout;
     }
 
     @NonNull
@@ -42,7 +47,13 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     public AttrsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         ctx = parent.getContext();
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.attribute_layout, parent, false);
+
+        if(viewType == R.layout.attribute_layout){
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.attribute_layout, parent, false);
+
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.end_device_details, parent, false);
+        }
 
         return new AttrsViewHolder(view);
     }
@@ -55,39 +66,27 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         JsonObject attr = attributes.get(position);
 
-        if (attr == null) {
-            return;
-        }
-
         String name = attr.get("name").getAsString();
-        String value;
+        String value = "";
 
         try {
             value = attr.get("value").getAsString();
-        } catch (UnsupportedOperationException unsupportedOperationException) {
-            value = "null";
-        } catch (NullPointerException nullPointerException) {
-            value = "null";
-        }
+        } catch (UnsupportedOperationException | NullPointerException ignored) { }
 
-        holder.tv_attribute_name.setText(name);
+        holder.til_attribute_name.setHint(name);
         holder.et_attribute_value.setText(value);
-        if (!value.equals("null") && isEditMode) {
-            holder.et_attribute_value.setEnabled(true);
-        }
 
         holder.et_attribute_value.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
                 if (b) {
                     selectedIndex = holder.getAdapterPosition();
-                    Log.d("API LOG", String.valueOf(selectedIndex));
                 }
             }
         });
 
         holder.cv_attribute.setOnClickListener(view -> {
-            String toast = holder.tv_attribute_name.getText() + " is " + holder.et_attribute_value.getText();
+            String toast = holder.til_attribute_name.getHint() + " is " + holder.et_attribute_value.getText();
             Toast.makeText(ctx, toast, Toast.LENGTH_SHORT).show();
         });
     }
@@ -98,14 +97,14 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     }
 
     static class AttrsViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tv_attribute_name;
+        private final TextInputLayout til_attribute_name;
         private final EditText et_attribute_value;
         private final CardView cv_attribute;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
-            tv_attribute_name = itemView.findViewById(R.id.tv_attribute_name);
-            et_attribute_value = itemView.findViewById(R.id.et_attribute_value);
+            til_attribute_name = itemView.findViewById(R.id.til_name);
+            et_attribute_value = itemView.findViewById(R.id.et_name);
             cv_attribute = itemView.findViewById(R.id.cv_attribute);
         }
     }
