@@ -1,6 +1,7 @@
 package com.ixxc.myuit.Adapter;
 
 import android.content.Context;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
+import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.R;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     Context ctx;
     FragmentManager fm;
     String id;
+    Attribute attribute;
 
     public int selectedIndex = -1;
 
@@ -67,6 +70,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         JsonObject attr = attributes.get(position);
 
         String name = attr.get("name").getAsString();
+        String type = attr.get("type").getAsString();
         String value = "";
 
         try {
@@ -75,7 +79,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         holder.til_attribute_name.setHint(name);
         holder.et_attribute_value.setText(value);
-
+        holder.et_attribute_value.setInputType(attribute.GetType(type));
         holder.et_attribute_value.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -108,4 +112,6 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             cv_attribute = itemView.findViewById(R.id.cv_attribute);
         }
     }
+
+
 }
