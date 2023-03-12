@@ -51,7 +51,10 @@ public class HomeFragment extends Fragment {
         pb_username = view.findViewById(R.id.pb_username);
 
         new Thread(() -> {
-            if (User.getUser() == null) APIManager.getUserInfo();
+            if (User.getUser() == null) {
+                APIManager.getUserInfo();
+                APIManager.getUserRoles();
+            }
             if (Device.getAllDevices() == null || Device.getAllDevices().size() == 0) APIManager.getDevices();
 
             Message msg = handler.obtainMessage();

@@ -9,6 +9,7 @@ import com.ixxc.myuit.Model.CreateAssetReq;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.Model;
+import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.Model.Token;
 import com.ixxc.myuit.Model.User;
 
@@ -50,6 +51,19 @@ public class APIManager {
             Response<User> response = call.execute();
             isSuccess = response.isSuccessful();
             User.setUser(response.body());
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return isSuccess;
+    }
+
+    public static boolean getUserRoles() {
+        Call<List<Role>> call = userAI.getUserRoles();
+
+        boolean isSuccess = false;
+        try {
+            Response<List<Role>> response = call.execute();
+            isSuccess = response.isSuccessful();
+            User.getUser().setUserRoles(response.body());
         } catch (IOException e) { e.printStackTrace(); }
 
         return isSuccess;

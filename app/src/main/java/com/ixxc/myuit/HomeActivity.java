@@ -44,7 +44,7 @@ public class HomeActivity extends AppCompatActivity {
         homeFrag = new HomeFragment();
         devicesFrag = new DevicesFragment();
         mapsFrag = new MapsFragment();
-        userFrag = new UserFragment();
+        userFrag = new UserFragment(this);
     }
 
     private void InitViews() {
