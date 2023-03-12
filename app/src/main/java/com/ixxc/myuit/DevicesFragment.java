@@ -42,7 +42,27 @@ public class DevicesFragment extends Fragment {
 
     public static String selected_device_id = "";
 
-    Handler handler;
+    Handler handler = new Handler(message -> {
+        Bundle bundle = message.getData();
+        boolean delete_device = bundle.getBoolean("DELETE_DEVICE");
+        boolean showDevices = bundle.getBoolean("SHOW_DEVICES");
+        boolean refresh = bundle.getBoolean("REFRESH");
+
+        if (showDevices || refresh) {
+            showDevices();
+            iv_cancel.performClick();
+            srl_devices.setRefreshing(false);
+        } else {
+            if (delete_device) {
+                refreshDevices();
+                Toast.makeText(HomeActivity.homeActivity,"Device was deleted successfully", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(HomeActivity.homeActivity,"An error occurred while deleting the device", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        return false;
+    });;
 
     DevicesAdapter devicesAdapter;
 
@@ -87,27 +107,7 @@ public class DevicesFragment extends Fragment {
     }
 
     private void InitVars() {
-        handler = new Handler(message -> {
-            Bundle bundle = message.getData();
-            boolean delete_device = bundle.getBoolean("DELETE_DEVICE");
-            boolean showDevices = bundle.getBoolean("SHOW_DEVICES");
-            boolean refresh = bundle.getBoolean("REFRESH");
 
-            if (showDevices || refresh) {
-                showDevices();
-                iv_cancel.performClick();
-                srl_devices.setRefreshing(false);
-            } else {
-                if (delete_device) {
-                    refreshDevices();
-                    Toast.makeText(HomeActivity.homeActivity,"Device was deleted successfully", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(HomeActivity.homeActivity,"An error occurred while deleting the device", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            return false;
-        });
     }
 
     private void InitViews(View v) {

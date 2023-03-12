@@ -1,6 +1,9 @@
 package com.ixxc.myuit.Adapter;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,28 +19,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
 import com.ixxc.myuit.Model.Attribute;
+import com.ixxc.myuit.DeviceInfoActivity;
+import com.ixxc.myuit.GlobalVars;
+import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.R;
 
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.AttrsViewHolder> {
-    private final List<JsonObject> attributes;
     Context ctx;
-    FragmentManager fm;
-    String id;
-    Attribute attribute;
-
-    public int selectedIndex = -1;
+    private final List<JsonObject> attributes;
+    public static Dictionary<String, JsonObject> changedAttributes;
 
     public boolean isEditMode = false;
 
-    public AttributesAdapter(FragmentManager fm, String id, List<JsonObject> attrsObj) {
-
-
-
+    public AttributesAdapter(List<JsonObject> attrsObj) {
         this.attributes = attrsObj;
-        this.id = id;
-        this.fm = fm;
+        changedAttributes = new Hashtable<>();
     }
 
     @Override
@@ -53,7 +56,6 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         if(viewType == R.layout.attribute_layout){
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.attribute_layout, parent, false);
-
         } else {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.end_device_details, parent, false);
         }
@@ -71,27 +73,43 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         String name = attr.get("name").getAsString();
         String type = attr.get("type").getAsString();
+
         String value = "";
 
-        try {
+        try { value = String.valueOf(attr.get("value").getAsInt()); }
+        catch (UnsupportedOperationException exception) {
+            if (exception.getMessage().equals("JsonObject")) {
+                value = String.valueOf(attr.get("value").getAsJsonObject());
+            }
+        } catch (NumberFormatException exception) {
             value = attr.get("value").getAsString();
-        } catch (UnsupportedOperationException | NullPointerException ignored) { }
+        } catch (NullPointerException ignored) { }
 
         holder.til_attribute_name.setHint(name);
         holder.et_attribute_value.setText(value);
-        holder.et_attribute_value.setInputType(attribute.GetType(type));
-        holder.et_attribute_value.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b) {
-                    selectedIndex = holder.getAdapterPosition();
-                }
-            }
-        });
+        holder.et_attribute_value.setInputType(Attribute.GetType(type));
 
-        holder.cv_attribute.setOnClickListener(view -> {
-            String toast = holder.til_attribute_name.getHint() + " is " + holder.et_attribute_value.getText();
-            Toast.makeText(ctx, toast, Toast.LENGTH_SHORT).show();
+        holder.et_attribute_value.setEnabled(isEditMode);
+
+        holder.et_attribute_value.setOnFocusChangeListener((view, b) -> {
+            if (!b) {
+                if (String.valueOf(holder.et_attribute_value.getText()).equals("")) {
+                    attr.add("value", null);
+                } else {
+                    if (holder.et_attribute_value.getInputType() == InputType.TYPE_CLASS_NUMBER) {
+                        attr.addProperty("value", Integer.parseInt(holder.et_attribute_value.getText().toString()));
+                    } else {
+                        attr.addProperty("value", holder.et_attribute_value.getText().toString());
+                    }
+                }
+
+                attr.addProperty("timestamp", System.currentTimeMillis());
+
+                changedAttributes.remove(attr);
+                changedAttributes.put(name, attr);
+
+                Log.d(GlobalVars.LOG_TAG, "onFocusChange: " + holder.getAdapterPosition() + " : " + attr);
+            }
         });
     }
 
@@ -103,13 +121,11 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     static class AttrsViewHolder extends RecyclerView.ViewHolder {
         private final TextInputLayout til_attribute_name;
         private final EditText et_attribute_value;
-        private final CardView cv_attribute;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
-            til_attribute_name = itemView.findViewById(R.id.til_name);
-            et_attribute_value = itemView.findViewById(R.id.et_name);
-            cv_attribute = itemView.findViewById(R.id.cv_attribute);
+            til_attribute_name = itemView.findViewById(R.id.til_attribute_name);
+            et_attribute_value = itemView.findViewById(R.id.et_attribute_value);
         }
     }
 

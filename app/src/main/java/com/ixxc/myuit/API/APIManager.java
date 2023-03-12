@@ -95,7 +95,7 @@ public class APIManager {
     }
 
     public static boolean updateDeviceInfo(String deviceId, JsonObject requestBody){
-        Call<String> call = userAI.updateDeviceInfo(deviceId,requestBody);
+        Call<String> call = userAI.updateDeviceInfo(deviceId, requestBody);
         try {
             Response<String> response = call.execute();
             return response.isSuccessful();

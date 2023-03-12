@@ -1,35 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/toolbar"
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:layout_height="?attr/actionBarSize"
     android:background="@color/bg"
-    android:elevation="5dp">
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <ImageView
-        android:id="@+id/btn_actionbar_back"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="4dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:paddingLeft="10dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="12dp"
-        android:src="@drawable/ic_back"
-        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
-
-    <TextView
-        android:id="@+id/tv_actionbar_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:text="Weather Asset"
-        android:textSize="19sp"
-        android:textStyle="bold"
-        android:layout_gravity="center_vertical"/>
-
-</LinearLayout>
+</androidx.appcompat.widget.Toolbar>

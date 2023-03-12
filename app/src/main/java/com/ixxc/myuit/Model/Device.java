@@ -72,4 +72,17 @@ public class Device {
 
         return attributeList;
     }
+
+    public String getParentId() {
+        String parentId = "";
+
+        for (String path : path) {
+            if (!path.equals(id)) {
+                parentId = path;
+                break;
+            }
+        }
+
+        return parentId;
+    }
 }

@@ -1,16 +1,21 @@
 package com.ixxc.myuit;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -29,6 +34,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AddDeviceActivity extends AppCompatActivity {
+    Toolbar toolbar;
+
+    ActionBar actionBar;
     AutoCompleteTextView act_type, act_device, act_parent;
 
     TextInputLayout til_type;
@@ -37,7 +45,7 @@ public class AddDeviceActivity extends AppCompatActivity {
 
     Button btn_add;
 
-    ImageView iv_back_1;
+//    ImageView iv_back_1;
 
     LinearLayout add_optional_layout;
 
@@ -51,7 +59,29 @@ public class AddDeviceActivity extends AppCompatActivity {
 
     ArrayAdapter typeAdapter, devicesAdapter, parentAdapter;
 
-    Handler handler;
+    Handler handler = new Handler(message -> {
+        Bundle bundle = message.getData();
+
+        boolean getDevice = bundle.getBoolean("GET_DEV");
+        boolean createDevice = bundle.getBoolean("CREATE_DEV");
+
+        if (getDevice) {
+            typeAdapter = new ArrayAdapter(this, R.layout.dropdown_item, modelsType);
+            act_type.setAdapter(typeAdapter);
+
+            devicesAdapter = new ArrayAdapter(this, R.layout.dropdown_item, modelsName);
+            act_device.setAdapter(devicesAdapter);
+
+            parentAdapter = new ArrayAdapter(this, R.layout.dropdown_item, parentNames);
+            act_parent.setAdapter(parentAdapter);
+        } else if (createDevice) {
+            HomeActivity.devicesFrag.refreshDevices();
+            finish();
+            Toast.makeText(this, "CREATED!", Toast.LENGTH_SHORT).show();
+        }
+
+        return false;
+    });;
 
     String parentId = "";
 
@@ -63,6 +93,11 @@ public class AddDeviceActivity extends AppCompatActivity {
         InitVars();
         InitViews();
         InitEvents();
+
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("Add Device");
 
         new Thread(() -> {
             models = APIManager.getDeviceModels();
@@ -88,37 +123,12 @@ public class AddDeviceActivity extends AppCompatActivity {
 
         parentDevices = Device.getAllDevices();
 
-        for (Device d :
-                parentDevices) {
+        for (Device d : parentDevices) {
             parentNames.add(d.name);
         }
 
         modelsType.add("Agent");
         modelsType.add("Asset");
-
-        handler = new Handler(message -> {
-            Bundle bundle = message.getData();
-
-            boolean getDevice = bundle.getBoolean("GET_DEV");
-            boolean createDevice = bundle.getBoolean("CREATE_DEV");
-
-            if (getDevice) {
-                typeAdapter = new ArrayAdapter(this, R.layout.dropdown_item, modelsType);
-                act_type.setAdapter(typeAdapter);
-
-                devicesAdapter = new ArrayAdapter(this, R.layout.dropdown_item, modelsName);
-                act_device.setAdapter(devicesAdapter);
-
-                parentAdapter = new ArrayAdapter(this, R.layout.dropdown_item, parentNames);
-                act_parent.setAdapter(parentAdapter);
-            } else if (createDevice) {
-                HomeActivity.devicesFrag.refreshDevices();
-                finish();
-                Toast.makeText(this, "CREATED!", Toast.LENGTH_SHORT).show();
-            }
-
-            return false;
-        });
     }
 
     private void InitViews() {
@@ -133,7 +143,8 @@ public class AddDeviceActivity extends AppCompatActivity {
         add_optional_layout = findViewById(R.id.add_optional_layout);
 
         btn_add = findViewById(R.id.btn_add);
-        iv_back_1 = findViewById(R.id.btn_actionbar_back);
+
+        toolbar = findViewById(R.id.action_bar);
     }
 
     private void InitEvents() {
@@ -231,7 +242,15 @@ public class AddDeviceActivity extends AppCompatActivity {
                 handler.sendMessage(msg);
             }).start();
         });
+    }
 
-        iv_back_1.setOnClickListener(view -> finish());
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -7,7 +7,7 @@
     tools:context=".AddDeviceActivity">
 
     <include
-        android:id="@+id/include"
+        android:id="@+id/action_bar"
         layout="@layout/actionbar_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,11 +19,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include">
+        app:layout_constraintTop_toBottomOf="@+id/action_bar">
 
         <AutoCompleteTextView
             android:id="@+id/act_type"
@@ -83,7 +83,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/et_name"
+        android:id="@+id/et_attribute_value"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
         android:orientation="horizontal"
         android:background="@drawable/bg_button_2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_name">
+        app:layout_constraintTop_toBottomOf="@+id/et_attribute_value">
 
         <ImageView
             android:id="@+id/iv_add_optional"

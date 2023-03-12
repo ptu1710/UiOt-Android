@@ -33,7 +33,7 @@ public class Attribute {
     @SerializedName("timestamp")
     public long timestamp;
 
-    public Integer GetType(String type){
+    public static int GetType(String type){
         switch (type.trim()){
             case "JSONObject":
             case "JSONArray":
@@ -61,7 +61,7 @@ public class Attribute {
             case "negativeNumber":
             case "integerByte":
             case "byte":
-                return InputType.TYPE_NUMBER_FLAG_DECIMAL;
+                return InputType.TYPE_CLASS_NUMBER;
             case "attributeLink":
             case "agentLink":
             case "HTTP_URL":
@@ -70,7 +70,7 @@ public class Attribute {
             case "email":
                 return InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
             default:
-                return InputType.TYPE_TEXT_VARIATION_NORMAL;
+                return InputType.TYPE_CLASS_TEXT;
         }
     }
 }
