@@ -46,6 +46,8 @@ public class Device {
             deviceList = new ArrayList<>();
         }
 
+        if (list.get(0).type.equals("GroupAsset") && list.get(0).name.equals("Consoles")) list.remove(0);
+
         for (Device device : list) {
             if (!device.type.contains("ConsoleAsset")) {
                 deviceList.add(device);

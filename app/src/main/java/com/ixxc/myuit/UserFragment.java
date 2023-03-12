@@ -1,6 +1,7 @@
 package com.ixxc.myuit;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -78,7 +79,9 @@ public class UserFragment extends Fragment {
         adapter.setClickListener(new UserItemAdapter.ItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Toast.makeText(ctx, items.get(position), Toast.LENGTH_SHORT).show();
+                if (position == 1) {
+                    ctx.startActivity(new Intent(ctx, UsersActivity.class));
+                }
             }
         });
 

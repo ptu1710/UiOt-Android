@@ -15,12 +15,15 @@
         android:theme="@style/Theme.MyUIT"
         tools:targetApi="31">
         <activity
+            android:name=".UsersActivity"
+            android:exported="false" />
+        <activity
             android:name=".DeviceInfoActivity"
             android:exported="false" />
         <activity
             android:name=".AddDeviceActivity"
-            android:parentActivityName=".HomeActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".HomeActivity" />
         <activity
             android:name=".HomeActivity"
             android:exported="false" />

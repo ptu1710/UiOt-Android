@@ -38,7 +38,8 @@ public interface APIInterface {
     Call<List<Role>> getUserRoles();
 
     // Get all devices
-    @GET("api/master/asset/user/current")
+    @Headers("Content-Type: application/json")
+    @POST("api/master/asset/query")
     Call<List<Device>> getUserDevices();
 
     // Get all models
