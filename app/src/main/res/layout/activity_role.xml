@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RoleActivity">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Description"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="80dp"
+        app:layout_constraintStart_toEndOf="@id/tv_name"
+        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/layout_rv_role"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_role"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/layout_permissions"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/layout_rv_role">
+        <ScrollView
+            android:id="@+id/src"
+            android:layout_width="match_parent"
+            android:layout_height="350dp">
+            <LinearLayout
+                android:paddingTop="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Read permissions"
+                    android:textSize="22dp"
+                    android:layout_marginLeft="5dp"
+                    android:textStyle="bold"/>
+                <CheckBox
+                    android:id="@+id/cb_r_admin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="admin: Read system settings, realms, and users" />
+                <CheckBox
+                    android:id="@+id/cb_r_asset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="assets: Read asset data" />
+                <CheckBox
+                    android:id="@+id/cb_r_logs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="logs: Read logs and log settings" />
+                <CheckBox
+                    android:id="@+id/cb_r_map"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="map: View map" />
+                <CheckBox
+                    android:id="@+id/cb_r_rules"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="rules: Read rulesets" />
+                <CheckBox
+                    android:id="@+id/cb_r_users"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="users: Read limited set of user details for use in rules etc." />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Write permissions"
+                    android:textSize="22dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="10dp"
+                    android:textStyle="bold"/>
+                <CheckBox
+                    android:id="@+id/cb_w_admin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="admin: Write system settings, realms, and users" />
+                <CheckBox
+                    android:id="@+id/cb_w_asset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="assets: Write asset data" />
+                <CheckBox
+                    android:id="@+id/cb_w_attributes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="attributes: Write attribute data" />
+                <CheckBox
+                    android:id="@+id/cb_w_logs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="logs: Write log settings" />
+                <CheckBox
+                    android:id="@+id/cb_w_rules"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="rules: Write rulesets (NOTE: effectively super-user access!)" />
+                <CheckBox
+                    android:id="@+id/cb_w_users"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="user: Write data of the authenticated user" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/tv_del_role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DELETE"
+            android:textColor="#76FF7A"
+            android:textSize="25dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_below="@+id/src"/>
+
+        <TextView
+            android:id="@+id/tv_save_role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SAVE"
+            android:textColor="#76FF7A"
+            android:textSize="25dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/src"/>
+
+    </RelativeLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,7 @@ import com.ixxc.myuit.Model.CreateAssetReq;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.Model;
+import com.ixxc.myuit.Model.Realm;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.Model.Token;
 import com.ixxc.myuit.Model.User;
@@ -61,6 +62,15 @@ public interface APIInterface {
     // Update  a device
     @PUT("api/master/asset/{assetId}")
     Call<String> updateDeviceInfo(@Path("assetId") String deviceId, @Body JsonObject requestBody);
+
+    @GET("api/master/user/master/roles")
+    Call<List<Role>> getRoles();
+
+    @GET("api/master/realm")
+    Call<List<Realm>> getRealm();
+
+    @PUT("api/master/user/master/roles")
+    Call<String> updateRole(@Body JsonObject requestBody);
 
 
 }

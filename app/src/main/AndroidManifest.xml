@@ -15,6 +15,12 @@
         android:theme="@style/Theme.MyUIT"
         tools:targetApi="31">
         <activity
+            android:name=".RealmActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RoleActivity"
+            android:exported="false" />
+        <activity
             android:name=".UsersActivity"
             android:exported="false" />
         <activity

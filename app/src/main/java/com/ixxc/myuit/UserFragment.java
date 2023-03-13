@@ -82,7 +82,14 @@ public class UserFragment extends Fragment {
                 if (position == 1) {
                     ctx.startActivity(new Intent(ctx, UsersActivity.class));
                 }
+                else if (position == 2) {
+                    ctx.startActivity(new Intent(ctx, RealmActivity.class));
+                }
+                else if (position == 3) {
+                    ctx.startActivity(new Intent(ctx, RoleActivity.class));
+                }
             }
+
         });
 
         rv_user_item.setLayoutManager(new LinearLayoutManager(ctx));

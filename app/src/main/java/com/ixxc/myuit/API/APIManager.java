@@ -9,11 +9,13 @@ import com.ixxc.myuit.Model.CreateAssetReq;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.Model;
+import com.ixxc.myuit.Model.Realm;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.Model.Token;
 import com.ixxc.myuit.Model.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -145,5 +147,67 @@ public class APIManager {
                 Log.d("API LOG", res.name);
             }
         } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static List<Realm> getRealm(){
+        Call<List<Realm>> call = userAI.getRealm();
+        List<Realm> realms = null;
+        try {
+            Response<List<Realm>> response = call.execute();
+            if(response.isSuccessful()){
+                realms = response.body();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return realms;
+    }
+
+    public static List<Role> getRole(){
+        Call<List<Role>> call = userAI.getRoles();
+        List<Role> roles = new ArrayList<>();
+        try {
+            Response<List<Role>> response = call.execute();
+            if(response.isSuccessful()){
+                for (Role role:response.body()) {
+                    if(!role.composite) {
+                        roles.add(role);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return roles;
+    }
+
+    public static List<Role> getRoleComposite(){
+        Call<List<Role>> call = userAI.getRoles();
+        List<Role> roles = new ArrayList<>();
+        try {
+            Response<List<Role>> response = call.execute();
+            if(response.isSuccessful()){
+                for (Role role:response.body()) {
+                    if(role.composite) {
+                        roles.add(role);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return roles;
+    }
+
+    public static boolean updateRole(JsonObject requestBody){
+        Call<String> call = userAI.updateRole(requestBody);
+        try {
+            Response<String> response = call.execute();
+            return response.isSuccessful();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
