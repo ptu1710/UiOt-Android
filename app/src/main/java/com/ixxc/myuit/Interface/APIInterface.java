@@ -1,7 +1,6 @@
 package com.ixxc.myuit.Interface;
 
 import com.google.gson.JsonObject;
-import com.ixxc.myuit.Model.CreateAssetReq;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.Model;
@@ -40,7 +39,7 @@ public interface APIInterface {
     // Get all devices
     @Headers("Content-Type: application/json")
     @POST("api/master/asset/query")
-    Call<List<Device>> getUserDevices();
+    Call<List<Device>> queryDevices();
 
     // Get all models
     @GET("api/master/model/assetInfos")
@@ -62,5 +61,12 @@ public interface APIInterface {
     @PUT("api/master/asset/{assetId}")
     Call<String> updateDeviceInfo(@Path("assetId") String deviceId, @Body JsonObject requestBody);
 
+    // Query all users
+    @Headers("Content-Type: application/json")
+    @POST("api/master/user/query")
+    Call<List<User>> queryUsers(@Body JsonObject body);
 
+    // Get a user by id
+    @GET("api/master/user/master/{userId}")
+    Call<User> getUser(@Path("userId") String userId);
 }

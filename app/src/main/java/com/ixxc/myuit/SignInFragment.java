@@ -21,7 +21,6 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.ixxc.myuit.API.APIManager;
 
@@ -77,7 +76,7 @@ public class SignInFragment extends Fragment {
         btn_sign_in = v.findViewById(R.id.btn_sign_in_2);
         btn_back = v.findViewById(R.id.btn_back);
         et_usr = v.findViewById(R.id.et_usr);
-        et_pwd = v.findViewById(R.id.et_pwd);
+        et_pwd = v.findViewById(R.id.et_realm_role);
         pb_loading = v.findViewById(R.id.pb_loading);
     }
 

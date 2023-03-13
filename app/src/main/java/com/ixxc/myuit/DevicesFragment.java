@@ -1,22 +1,18 @@
 package com.ixxc.myuit;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +20,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.DevicesAdapter;
 import com.ixxc.myuit.Interface.DevicesListener;
@@ -178,7 +172,7 @@ public class DevicesFragment extends Fragment {
         final Bundle bundle = new Bundle();
 
         new Thread(() -> {
-            APIManager.getDevices();
+            APIManager.queryDevices();
 
             bundle.putBoolean("REFRESH", true);
             msg.setData(bundle);

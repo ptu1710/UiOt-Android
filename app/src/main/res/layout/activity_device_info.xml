@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_attribute_name"
+        android:id="@+id/til_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -30,7 +30,7 @@
         app:layout_constraintTop_toBottomOf="@+id/action_bar">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_attribute_value"
+            android:id="@+id/et_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
@@ -49,7 +49,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/iv_clear_parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_attribute_name">
+        app:layout_constraintTop_toBottomOf="@+id/til_username">
 
         <AutoCompleteTextView
             android:id="@+id/act_parent"
