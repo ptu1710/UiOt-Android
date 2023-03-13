@@ -5,7 +5,6 @@ import com.ixxc.myuit.Model.CreateAssetReq;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.Model;
-import com.ixxc.myuit.Model.Realm;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.Model.Token;
 import com.ixxc.myuit.Model.User;
@@ -41,7 +40,7 @@ public interface APIInterface {
     // Get all devices
     @Headers("Content-Type: application/json")
     @POST("api/master/asset/query")
-    Call<List<Device>> getUserDevices();
+    Call<List<Device>> queryDevices();
 
     // Get all models
     @GET("api/master/model/assetInfos")
@@ -63,6 +62,10 @@ public interface APIInterface {
     @PUT("api/master/asset/{assetId}")
     Call<String> updateDeviceInfo(@Path("assetId") String deviceId, @Body JsonObject requestBody);
 
+    // Query all users
+    @Headers("Content-Type: application/json")
+    @POST("api/master/user/query")
+    Call<List<User>> queryUsers(@Body JsonObject body);
     @GET("api/master/user/master/roles")
     Call<List<Role>> getRoles();
 
@@ -73,4 +76,7 @@ public interface APIInterface {
     Call<String> updateRole(@Body JsonObject requestBody);
 
 
+    // Get a user by id
+    @GET("api/master/user/master/{userId}")
+    Call<User> getUser(@Path("userId") String userId);
 }

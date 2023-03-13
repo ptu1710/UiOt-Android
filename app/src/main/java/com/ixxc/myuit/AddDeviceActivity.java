@@ -45,8 +45,6 @@ public class AddDeviceActivity extends AppCompatActivity {
 
     Button btn_add;
 
-//    ImageView iv_back_1;
-
     LinearLayout add_optional_layout;
 
     List<String> modelsType, modelsName, parentNames;

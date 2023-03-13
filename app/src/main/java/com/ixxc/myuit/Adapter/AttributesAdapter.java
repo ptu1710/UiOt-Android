@@ -1,35 +1,25 @@
 package com.ixxc.myuit.Adapter;
 
 import android.content.Context;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
 import com.ixxc.myuit.Model.Attribute;
-import com.ixxc.myuit.DeviceInfoActivity;
 import com.ixxc.myuit.GlobalVars;
-import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.R;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.AttrsViewHolder> {
     Context ctx;
@@ -124,8 +114,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
-            til_attribute_name = itemView.findViewById(R.id.til_attribute_name);
-            et_attribute_value = itemView.findViewById(R.id.et_attribute_value);
+            til_attribute_name = itemView.findViewById(R.id.til_username);
+            et_attribute_value = itemView.findViewById(R.id.et_username);
         }
     }
 

@@ -9,13 +9,11 @@ import com.ixxc.myuit.Model.CreateAssetReq;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.Model;
-import com.ixxc.myuit.Model.Realm;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.Model.Token;
 import com.ixxc.myuit.Model.User;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -71,13 +69,13 @@ public class APIManager {
         return isSuccess;
     }
 
-    public static void getDevices() {
-        Call<List<Device>> call = userAI.getUserDevices();
+    public static void queryDevices() {
+        Call<List<Device>> call = userAI.queryDevices();
         try {
             Response<List<Device>> response = call.execute();
             if (response.isSuccessful() && response.code() == 200) {
-                List<Device> assets = response.body();
-                Device.setDevicesList(assets);
+                List<Device> deviceList = response.body();
+                Device.setDevicesList(deviceList);
             } else {
                 Device.setDevicesList(null);
             }
@@ -147,6 +145,39 @@ public class APIManager {
                 Log.d("API LOG", res.name);
             }
         } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static int queryUsers(JsonObject query) {
+        Call<List<User>> call = userAI.queryUsers(query);
+
+        int returnCode = 200;
+        try {
+            Response<List<User>> response = call.execute();
+            if (response.isSuccessful() && response.code() == 200) {
+                List<User> users = response.body();
+                User.setUsersList(users);
+            } else {
+                returnCode = response.code();
+                Log.d(GlobalVars.LOG_TAG, "queryUsers: code "+ returnCode);
+                User.setUsersList(null);
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return returnCode;
+    }
+
+    public static User getUser(String userId){
+        Call<User> call = userAI.getUser(userId);
+        User user = new User();
+        try {
+            Response<User> response = call.execute();
+            if (response.isSuccessful()) {
+                user = response.body();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 
     public static List<Realm> getRealm(){

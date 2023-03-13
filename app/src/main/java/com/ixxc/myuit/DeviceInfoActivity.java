@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -135,9 +134,9 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     private void InitViews() {
         rv_attribute = findViewById(R.id.rv_attribute);
-        et_name = findViewById(R.id.et_attribute_value);
+        et_name = findViewById(R.id.et_username);
         act_parent = findViewById(R.id.act_parent);
-        til_name = findViewById(R.id.til_attribute_name);
+        til_name = findViewById(R.id.til_username);
         til_parent = findViewById(R.id.til_parent);
         iv_clear_parent = findViewById(R.id.iv_clear_parent);
         toolbar = findViewById(R.id.action_bar);
@@ -158,10 +157,9 @@ public class DeviceInfoActivity extends AppCompatActivity {
     }
 
     private void showAttributes() {
-        LinearLayoutManager layoutManager =  new LinearLayoutManager(this);
         attributesAdapter = new AttributesAdapter(current_device.getDeviceAttribute());
 
-        rv_attribute.setLayoutManager(layoutManager);
+        rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);
 
         rv_attribute.setVisibility(View.VISIBLE);

@@ -8,13 +8,11 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Model.Device;
@@ -55,7 +53,7 @@ public class HomeFragment extends Fragment {
                 APIManager.getUserInfo();
                 APIManager.getUserRoles();
             }
-            if (Device.getAllDevices() == null || Device.getAllDevices().size() == 0) APIManager.getDevices();
+            if (Device.getAllDevices() == null || Device.getAllDevices().size() == 0) APIManager.queryDevices();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();

@@ -11,19 +11,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ixxc.myuit.API.APIManager;
-import com.ixxc.myuit.Adapter.AttributesAdapter;
 import com.ixxc.myuit.Adapter.UserItemAdapter;
-import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.User;
 
 import java.util.ArrayList;
@@ -63,7 +57,7 @@ public class UserFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         iv_user = view.findViewById(R.id.iv_user);
         tv_username = view.findViewById(R.id.tv_username_1);
-        rv_user_item = view.findViewById(R.id.rv_user_item);
+        rv_user_item = view.findViewById(R.id.rv_user_info);
 
         user = User.getUser();
 

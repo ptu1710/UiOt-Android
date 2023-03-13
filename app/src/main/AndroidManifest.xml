@@ -15,6 +15,8 @@
         android:theme="@style/Theme.MyUIT"
         tools:targetApi="31">
         <activity
+            android:name=".UserInfoActivity"
+            android:parentActivityName=".UsersActivity"
             android:name=".RealmActivity"
             android:exported="false" />
         <activity
@@ -23,6 +25,10 @@
         <activity
             android:name=".UsersActivity"
             android:exported="false" />
+        <activity
+            android:name=".UsersActivity"
+            android:exported="false"
+            android:parentActivityName=".HomeActivity" />
         <activity
             android:name=".DeviceInfoActivity"
             android:exported="false" />
