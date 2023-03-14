@@ -24,8 +24,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Model.LinkedDevice;
 import com.ixxc.myuit.Model.Role;
@@ -38,12 +40,14 @@ import java.util.stream.Collectors;
 public class UserInfoActivity extends AppCompatActivity {
     Toolbar toolbar;
     ActionBar actionBar;
-    LinearLayout pwd_layout_1, pwd_layout_2, roles_layout_1, roles_layout_2;
+    LinearLayout pwd_layout, pwd_layout_1, pwd_layout_2, roles_layout, roles_layout_1, roles_layout_2;
     ImageView iv_pwd_expand, iv_roles_expand;
     CheckBox cb_active;
-    EditText et_email, et_firstname, et_lastname;
+    TextInputLayout til_email, til_firstname, til_lastname;
+    EditText et_email, et_firstname, et_lastname, et_pwd, et_repwd;
     AutoCompleteTextView act_realm_roles, act_roles;
-    Button btn_custom_role_set, btn_linked_devices;
+    Button btn_custom_role_set, btn_linked_devices, btn_regenerate;
+    ProgressBar pb_user_info;
 
     User current_user;
     AlertDialog customRoleDialog;
@@ -183,14 +187,35 @@ public class UserInfoActivity extends AppCompatActivity {
         act_roles = findViewById(R.id.act_roles);
         btn_custom_role_set = findViewById(R.id.btn_custom_role_set);
         btn_linked_devices = findViewById(R.id.btn_linked_devices);
+        btn_regenerate = findViewById(R.id.btn_regenerate);
+        et_pwd = findViewById(R.id.et_pwd);
+        et_repwd = findViewById(R.id.et_repwd);
+        pwd_layout = findViewById(R.id.pwd_layout);
+        roles_layout = findViewById(R.id.roles_layout);
+        til_email = findViewById(R.id.til_email);
+        til_firstname = findViewById(R.id.til_firstname);
+        til_lastname = findViewById(R.id.til_lastname);
+        pb_user_info = findViewById(R.id.pb_user_info);
     }
 
     private void showUserInfo() {
         actionBar.setTitle(current_user.username);
         cb_active.setChecked(current_user.enabled);
-        et_firstname.setText(current_user.firstName);
-        et_lastname.setText(current_user.lastName);
-        et_email.setText(current_user.email);
+
+        if (current_user.serviceAccount) {
+            et_firstname.setText(current_user.username);
+            et_pwd.setText(current_user.secret);
+
+            btn_regenerate.setVisibility(View.VISIBLE);
+
+            et_lastname.setVisibility(View.GONE);
+            et_email.setVisibility(View.GONE);
+            et_repwd.setVisibility(View.GONE);
+        } else {
+            et_firstname.setText(current_user.firstName);
+            et_lastname.setText(current_user.lastName);
+            et_email.setText(current_user.email);
+        }
 
         linkedDeviceList = LinkedDevice.getLinkedDeviceList();
 
@@ -227,6 +252,14 @@ public class UserInfoActivity extends AppCompatActivity {
         linkedDevicesDialog.create();
 
         btn_linked_devices.setText(linkedDeviceList.size() + " device(s)");
+
+        pb_user_info.setVisibility(View.GONE);
+
+        til_email.setVisibility(View.VISIBLE);
+        til_firstname.setVisibility(View.VISIBLE);
+        til_lastname.setVisibility(View.VISIBLE);
+        pwd_layout.setVisibility(View.VISIBLE);
+        roles_layout.setVisibility(View.VISIBLE);
     }
 
     private AlertDialog customRoleDialog() {

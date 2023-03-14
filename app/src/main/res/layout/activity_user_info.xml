@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sv_user_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UserInfoActivity">
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:layout_weight="1"
             android:text="Active"
             android:textSize="16sp"
@@ -39,6 +39,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:hint="Email"
+            android:visibility="gone"
             app:boxBackgroundColor="#FFFFFF"
             app:boxBackgroundMode="outline"
             app:layout_constraintEnd_toEndOf="parent"
@@ -60,6 +61,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
             android:hint="First name"
+            android:visibility="gone"
             app:boxBackgroundColor="#FFFFFF"
             app:boxBackgroundMode="outline"
             app:layout_constraintEnd_toEndOf="parent"
@@ -81,6 +83,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
             android:hint="Last name"
+            android:visibility="gone"
             app:boxBackgroundColor="#FFFFFF"
             app:boxBackgroundMode="outline"
             app:layout_constraintEnd_toEndOf="parent"
@@ -103,6 +106,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
             android:orientation="vertical"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/til_lastname">
@@ -150,8 +154,8 @@
                     android:id="@+id/til_pwd"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:hint="New Password"
                     app:boxBackgroundColor="#FFFFFF"
                     app:boxBackgroundMode="outline"
@@ -167,13 +171,24 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <Button
+                    android:id="@+id/btn_regenerate"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Regenerate secret"
+                    android:textAllCaps="false"
+                    android:textColor="@color/bg"
+                    android:visibility="gone" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_repwd"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="32dp"
+                    android:layout_marginEnd="16dp"
                     android:hint="Repeat New Password"
                     app:boxBackgroundColor="#FFFFFF"
                     app:boxBackgroundMode="outline"
@@ -198,6 +213,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:orientation="vertical"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/pwd_layout">
@@ -237,7 +253,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_realm_roles"
@@ -261,8 +277,8 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
                     android:hint="Manager Roles">
 
@@ -310,5 +326,17 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/pb_user_info"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cb_active" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
