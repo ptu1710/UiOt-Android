@@ -5,11 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.RoleItemAdapter;
@@ -39,11 +37,11 @@ public class RoleActivity extends AppCompatActivity {
 
     private void InitEvent() {
         new Thread(()->{
-            roles = APIManager.getRoleComposite();
-            roles1 = APIManager.getRole();
+            roles = Role.getCompositeRoleList();
+            roles1 = Role.getRoleList();
 
             rv_Role.setLayoutManager(new LinearLayoutManager(this));
-            RoleItemAdapter adapter = new RoleItemAdapter(getApplicationContext(),roles);
+            RoleItemAdapter adapter = new RoleItemAdapter(getApplicationContext(), roles);
             adapter.setClickListener(new UserItemAdapter.ItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {

@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import com.ixxc.myuit.Model.CreateAssetReq;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
+import com.ixxc.myuit.Model.LinkedDevice;
 import com.ixxc.myuit.Model.Model;
+import com.ixxc.myuit.Model.Realm;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.Model.Token;
 import com.ixxc.myuit.Model.User;
@@ -66,6 +68,7 @@ public interface APIInterface {
     @Headers("Content-Type: application/json")
     @POST("api/master/user/query")
     Call<List<User>> queryUsers(@Body JsonObject body);
+
     @GET("api/master/user/master/roles")
     Call<List<Role>> getRoles();
 
@@ -75,8 +78,13 @@ public interface APIInterface {
     @PUT("api/master/user/master/roles")
     Call<String> updateRole(@Body JsonObject requestBody);
 
+    @GET("api/master/user/userRealmRoles")
+    Call<List<Role>> getRealmRoles();
 
     // Get a user by id
     @GET("api/master/user/master/{userId}")
     Call<User> getUser(@Path("userId") String userId);
+
+    @GET("api/master/asset/user/link")
+    Call<List<LinkedDevice>> getLinkedDevices(@Query("realm") String realm, @Query("userId") String userId);
 }

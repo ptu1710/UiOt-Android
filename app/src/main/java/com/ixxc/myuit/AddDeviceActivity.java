@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 
 public class AddDeviceActivity extends AppCompatActivity {
     Toolbar toolbar;
-
     ActionBar actionBar;
     AutoCompleteTextView act_type, act_device, act_parent;
 

@@ -17,7 +17,7 @@
         <activity
             android:name=".UserInfoActivity"
             android:parentActivityName=".UsersActivity"
-            android:name=".RealmActivity"
+
             android:exported="false" />
         <activity
             android:name=".RoleActivity"
@@ -26,9 +26,9 @@
             android:name=".UsersActivity"
             android:exported="false" />
         <activity
-            android:name=".UsersActivity"
+            android:name=".RealmActivity"
             android:exported="false"
-            android:parentActivityName=".HomeActivity" />
+             />
         <activity
             android:name=".DeviceInfoActivity"
             android:exported="false" />

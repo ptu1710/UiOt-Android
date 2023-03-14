@@ -1,69 +1,53 @@
 package com.ixxc.myuit.Model;
 
+import android.util.Log;
+
+import com.ixxc.myuit.GlobalVars;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Role {
     public String id;
     public String name;
     public String description;
     public boolean composite;
     public boolean assigned;
-    private static List<Role> roleList;
+    private static List<Role> roleList = new ArrayList<>();
+    private static List<Role> compositeRoleList = new ArrayList<>();
+    private static List<Role> realmRoleList = new ArrayList<>();
+    public ArrayList<String> compositeRoleIds;
+
+    public static List<Role> getRealmRoleList() {
+        return realmRoleList;
+    }
 
     public static List<Role> getRoleList() {
         return roleList;
     }
 
-    public static void setRoleList(List<Role> roles) {
-        roleList = roles;
-    }
-    public ArrayList<String> compositeRoleIds;
-
-    public Role(String id, String name, String description, boolean composite, boolean assigned, ArrayList compositeRolelds) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.composite = composite;
-        this.assigned = assigned;
-        this.compositeRoleIds = compositeRolelds;
-    }
-
-    public String getId() {
-        return id;
+    public static void setRoleList(List<Role> roles, boolean isRealm) {
+        if (isRealm) {
+            realmRoleList = roles;
+        } else {
+            for (Role role : roles) {
+                if (role.composite) {
+                    compositeRoleList.add(role);
+                } else {
+                    roleList.add(role);
+                }
+            }
+        }
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public static Role getCompositeRoleByName(String roleName) {
+        return compositeRoleList.stream()
+                .filter(r -> r.name.equals(roleName)).collect(Collectors.toList()).get(0);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isComposite() {
-        return composite;
-    }
-
-    public void setComposite(boolean composite) {
-        this.composite = composite;
-    }
-
-    public boolean isAssigned() {
-        return assigned;
-    }
-
-    public void setAssigned(boolean assigned) {
-        this.assigned = assigned;
+    public static List<Role> getCompositeRoleList() {
+        return compositeRoleList;
     }
 
     public ArrayList getCompositeRolelds() {

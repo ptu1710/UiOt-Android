@@ -274,6 +274,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
+                    android:id="@+id/btn_custom_role_set"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -299,11 +300,12 @@
                         android:textStyle="bold" />
 
                     <Button
+                        android:id="@+id/btn_linked_devices"
                         style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
-                        android:text="2 devices"
+                        android:text="..."
                         android:textColor="@color/bg" />
                 </LinearLayout>
             </LinearLayout>

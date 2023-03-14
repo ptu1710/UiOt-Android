@@ -5,15 +5,17 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 import com.ixxc.myuit.GlobalVars;
 import com.ixxc.myuit.Interface.APIInterface;
-import com.ixxc.myuit.Model.CreateAssetReq;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
+import com.ixxc.myuit.Model.LinkedDevice;
 import com.ixxc.myuit.Model.Model;
+import com.ixxc.myuit.Model.Realm;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.Model.Token;
 import com.ixxc.myuit.Model.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -194,40 +196,30 @@ public class APIManager {
         return realms;
     }
 
-    public static List<Role> getRole(){
+    public static void getRoles(){
         Call<List<Role>> call = userAI.getRoles();
-        List<Role> roles = new ArrayList<>();
+
         try {
             Response<List<Role>> response = call.execute();
             if(response.isSuccessful()){
-                for (Role role:response.body()) {
-                    if(!role.composite) {
-                        roles.add(role);
-                    }
-                }
+                Role.setRoleList(response.body(), false);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return roles;
     }
 
-    public static List<Role> getRoleComposite(){
-        Call<List<Role>> call = userAI.getRoles();
-        List<Role> roles = new ArrayList<>();
+    public static void getRealmRoles(){
+        Call<List<Role>> call = userAI.getRealmRoles();
+
         try {
             Response<List<Role>> response = call.execute();
             if(response.isSuccessful()){
-                for (Role role:response.body()) {
-                    if(role.composite) {
-                        roles.add(role);
-                    }
-                }
+                Role.setRoleList(response.body(), true);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return roles;
     }
 
     public static boolean updateRole(JsonObject requestBody){
@@ -240,5 +232,17 @@ public class APIManager {
         }
 
         return false;
+    }
+
+    public static void getLinkedDevices(String userId){
+        Call<List<LinkedDevice>> call = userAI.getLinkedDevices("master", userId);
+        try {
+            Response<List<LinkedDevice>> response = call.execute();
+            if (response.isSuccessful()) {
+                LinkedDevice.setLinkedDeviceList(response.body());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

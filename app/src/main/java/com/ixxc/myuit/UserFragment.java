@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.UserItemAdapter;
 import com.ixxc.myuit.Model.User;
 
@@ -89,15 +91,13 @@ public class UserFragment extends Fragment {
         rv_user_item.setLayoutManager(new LinearLayoutManager(ctx));
         rv_user_item.setAdapter(adapter);
 
-//        new Thread(() -> {
-//
-//
+        new Thread(() -> {
 //            Message msg = handler.obtainMessage();
 //            Bundle bundle = new Bundle();
 //            bundle.putString("USER", User.getUser().username);
 //            msg.setData(bundle);
 //            handler.sendMessage(msg);
-//        }).start();
+        }).start();
 
         super.onViewCreated(view, savedInstanceState);
     }
