@@ -29,8 +29,11 @@ public class Role {
 
     public static void setRoleList(List<Role> roles, boolean isRealm) {
         if (isRealm) {
+            realmRoleList.clear();
             realmRoleList = roles;
         } else {
+            compositeRoleList.clear();
+            roleList.clear();
             for (Role role : roles) {
                 if (role.composite) {
                     compositeRoleList.add(role);
@@ -62,6 +65,16 @@ public class Role {
         for (Role role:roles) {
             if(role.id.equals(id) ){
                 return role.name;
+            }
+
+        }
+        return null;
+    }
+
+    public static String getIdByDescription(String description){
+        for (Role role:Role.getRoleList()) {
+            if(role.description.equals(description) ){
+                return role.id;
             }
 
         }

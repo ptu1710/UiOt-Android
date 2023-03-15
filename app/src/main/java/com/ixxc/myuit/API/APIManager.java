@@ -2,6 +2,7 @@ package com.ixxc.myuit.API;
 
 import android.util.Log;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.ixxc.myuit.GlobalVars;
 import com.ixxc.myuit.Interface.APIInterface;
@@ -222,7 +223,7 @@ public class APIManager {
         }
     }
 
-    public static boolean updateRole(JsonObject requestBody){
+    public static boolean updateRole(JsonArray requestBody){
         Call<String> call = userAI.updateRole(requestBody);
         try {
             Response<String> response = call.execute();
