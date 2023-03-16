@@ -1,10 +1,7 @@
 package com.ixxc.myuit.Model;
 
-import android.util.Log;
-
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import com.ixxc.myuit.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,32 +28,27 @@ public class Device {
     @SerializedName("path")
     public ArrayList<String> path;
 
-    private static List<Device> deviceList;
+    private static final List<Device> deviceListFiltered = new ArrayList<>();
 
     public static List<Device> getAllDevices() {
-        return deviceList;
+        return deviceListFiltered;
     }
 
     public static void setDevicesList(List<Device> list) {
         if (list == null) return;
 
-        if (deviceList != null) {
-            deviceList.clear();
-        } else {
-            deviceList = new ArrayList<>();
-        }
-
+        deviceListFiltered.clear();
         if (list.get(0).type.equals("GroupAsset") && list.get(0).name.equals("Consoles")) list.remove(0);
 
         for (Device device : list) {
             if (!device.type.contains("ConsoleAsset")) {
-                deviceList.add(device);
+                deviceListFiltered.add(device);
             }
         }
     }
 
     public static Device getDeviceById(String id) {
-        for (Device device : deviceList) {
+        for (Device device : deviceListFiltered) {
             if (Objects.equals(device.id, id)) {
                 return device;
             }

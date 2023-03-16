@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.DevicesAdapter;
 import com.ixxc.myuit.Interface.DevicesListener;
@@ -172,7 +174,10 @@ public class DevicesFragment extends Fragment {
         final Bundle bundle = new Bundle();
 
         new Thread(() -> {
-            APIManager.queryDevices();
+            String queryString = "{ \"realm\": { \"name\": \"master\" }}";
+            JsonParser jsonParser = new JsonParser();
+            JsonObject query = (JsonObject)jsonParser.parse(queryString);
+            APIManager.queryDevices(query);
 
             bundle.putBoolean("REFRESH", true);
             msg.setData(bundle);

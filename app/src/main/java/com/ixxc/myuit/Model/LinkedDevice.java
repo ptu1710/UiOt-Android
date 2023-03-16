@@ -9,16 +9,22 @@ public class LinkedDevice {
     public JsonObject id;
     public long createdOn;
     public String assetName;
-    public String parentAssetName;
+    public String parentAssetName = "";
     public String userFullName;
 
-    private static List<LinkedDevice> linkedDeviceList;
+    public static LinkedDevice LinkDevice(User user, Device device) {
+        LinkedDevice returnDevice = new LinkedDevice();
 
-    public static List<LinkedDevice> getLinkedDeviceList() {
-        return linkedDeviceList;
-    }
+        JsonObject id = new JsonObject();
+        id.addProperty("realm", device.realm);
+        id.addProperty("userId", user.id);
+        id.addProperty("assetId", device.id);
 
-    public static void setLinkedDeviceList(List<LinkedDevice> linkedDevices) {
-        linkedDeviceList = linkedDevices;
+        returnDevice.id = id;
+        returnDevice.createdOn = device.createdOn;
+        returnDevice.assetName = device.name;
+        returnDevice.userFullName = user.username + " (" + user.firstName + " " + user.lastName + ")";
+
+        return returnDevice;
     }
 }

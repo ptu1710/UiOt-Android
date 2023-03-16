@@ -76,8 +76,6 @@ public class UsersActivity extends AppCompatActivity {
             JsonParser jsonParser = new JsonParser();
             JsonObject query = (JsonObject)jsonParser.parse(queryString);
 
-            Log.d(GlobalVars.LOG_TAG, query.toString());
-
             int code = APIManager.queryUsers(query);
 
             Message message = handler.obtainMessage();

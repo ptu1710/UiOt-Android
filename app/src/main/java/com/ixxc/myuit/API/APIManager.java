@@ -52,7 +52,7 @@ public class APIManager {
         try {
             Response<User> response = call.execute();
             isSuccess = response.isSuccessful();
-            User.setUser(response.body());
+            User.setMe(response.body());
         } catch (IOException e) { e.printStackTrace(); }
 
         return isSuccess;
@@ -65,14 +65,14 @@ public class APIManager {
         try {
             Response<List<Role>> response = call.execute();
             isSuccess = response.isSuccessful();
-            User.getUser().setUserRoles(response.body());
+            User.getMe().setUserRoles(response.body());
         } catch (IOException e) { e.printStackTrace(); }
 
         return isSuccess;
     }
 
-    public static void queryDevices() {
-        Call<List<Device>> call = userAI.queryDevices();
+    public static void queryDevices(JsonObject body) {
+        Call<List<Device>> call = userAI.queryDevices(body);
         try {
             Response<List<Device>> response = call.execute();
             if (response.isSuccessful() && response.code() == 200) {
@@ -209,6 +209,22 @@ public class APIManager {
         }
     }
 
+    public static List<Role> getRoles(String userId){
+        Call<List<Role>> call = userAI.getRoles(userId);
+
+        List<Role> roles = new ArrayList<>();
+        try {
+            Response<List<Role>> response = call.execute();
+            if(response.isSuccessful()){
+                roles = response.body();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return roles;
+    }
+
     public static void getRealmRoles(){
         Call<List<Role>> call = userAI.getRealmRoles();
 
@@ -220,6 +236,22 @@ public class APIManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<Role> getRealmRoles(String userId){
+        Call<List<Role>> call = userAI.getRealmRoles(userId);
+
+        List<Role> roles = new ArrayList<>();
+        try {
+            Response<List<Role>> response = call.execute();
+            if(response.isSuccessful()){
+                roles = response.body();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return roles;
     }
 
     public static boolean updateRole(JsonObject requestBody){
@@ -234,15 +266,19 @@ public class APIManager {
         return false;
     }
 
-    public static void getLinkedDevices(String userId){
+    public static List<LinkedDevice> getLinkedDevices(String userId){
         Call<List<LinkedDevice>> call = userAI.getLinkedDevices("master", userId);
+
+        List<LinkedDevice> devices = new ArrayList<>();
         try {
             Response<List<LinkedDevice>> response = call.execute();
             if (response.isSuccessful()) {
-                LinkedDevice.setLinkedDeviceList(response.body());
+                devices = response.body();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return devices;
     }
 }

@@ -19,18 +19,18 @@ public class Role {
     private static List<Role> realmRoleList = new ArrayList<>();
     public ArrayList<String> compositeRoleIds;
 
-    public static List<Role> getRealmRoleList() {
-        return realmRoleList;
-    }
-
     public static List<Role> getRoleList() {
         return roleList;
     }
 
     public static void setRoleList(List<Role> roles, boolean isRealm) {
         if (isRealm) {
+            realmRoleList.clear();
             realmRoleList = roles;
         } else {
+            roleList.clear();
+            compositeRoleList.clear();
+
             for (Role role : roles) {
                 if (role.composite) {
                     compositeRoleList.add(role);

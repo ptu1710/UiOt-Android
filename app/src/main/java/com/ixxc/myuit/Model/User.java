@@ -1,11 +1,10 @@
 package com.ixxc.myuit.Model;
 
-import android.util.Log;
-
 import com.google.gson.JsonObject;
-import com.ixxc.myuit.GlobalVars;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class User {
     public String realm;
@@ -24,33 +23,70 @@ public class User {
 
     public String secret;
 
-    private List<Role> userRoles;
-
+    // List users by query
+    private static List<User> users;
     public static List<User> getUsersList() {
         return users;
     }
-
     public static void setUsersList(List<User> users) {
         User.users = users;
     }
 
-    private static List<User> users;
-    private static User user;
-
-    public static void setUser(User u) {
-        user = u;
+    // Current logged in user
+    private static User me;
+    public static void setMe(User u) {
+        me = u;
+    }
+    public static User getMe() {
+        return me;
     }
 
-    public static User getUser() {
-        return user;
+    // List realm roles of a user's instance
+    private List<Role> realmRoles;
+    public void setRealmRoles(List<Role> realmRoles) {
+        this.realmRoles = realmRoles;
+    }
+    public List<Role> getRealmRoles() {
+        return realmRoles;
     }
 
-    public List<Role> getUserRoles() {
-        return userRoles;
+    // Set roles and composite roles of a user's instance
+    private List<Role> roleList = new ArrayList<>();
+    private List<Role> compositeRoleList = new ArrayList<>();
+    public void setUserRoles(List<Role> roles) {
+        roleList.clear();
+        compositeRoleList.clear();
+
+        for (Role role : roles) {
+            if (role.composite) {
+                compositeRoleList.add(role);
+            } else {
+                roleList.add(role);
+            }
+        }
     }
 
-    public void setUserRoles(List<Role> userRoles) {
-        this.userRoles = userRoles;
+    // Get roles and composite roles of a user's instance
+    public List<Role> getRoleList() {
+        return roleList;
+    }
+
+    public List<Role> getCompositeRoleList() {
+        return compositeRoleList;
+    }
+
+    // Linked Devices of a user's instance
+    private List<LinkedDevice> linkedDevices = new ArrayList<>();
+    public void setLinkedDevices(List<LinkedDevice> devices) {
+        linkedDevices = devices;
+    }
+
+    public List<LinkedDevice> getLinkedDevices() {
+        return linkedDevices;
+    }
+
+    public int getNumofConsoles() {
+        return (int) linkedDevices.stream().filter(linkedDevice -> linkedDevice.parentAssetName.equals("Consoles")).count();
     }
 
     public String getDisplayName() {

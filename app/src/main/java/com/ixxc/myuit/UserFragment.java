@@ -11,14 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.UserItemAdapter;
 import com.ixxc.myuit.Model.User;
 
@@ -61,7 +59,7 @@ public class UserFragment extends Fragment {
         tv_username = view.findViewById(R.id.tv_username_1);
         rv_user_item = view.findViewById(R.id.rv_user_info);
 
-        user = User.getUser();
+        user = User.getMe();
 
         tv_username.setText(user.getDisplayName());
 

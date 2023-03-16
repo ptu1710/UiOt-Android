@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.User;
@@ -49,15 +51,20 @@ public class HomeFragment extends Fragment {
         pb_username = view.findViewById(R.id.pb_username);
 
         new Thread(() -> {
-            if (User.getUser() == null) {
+            if (User.getMe() == null) {
                 APIManager.getUserInfo();
                 APIManager.getUserRoles();
             }
-            if (Device.getAllDevices() == null || Device.getAllDevices().size() == 0) APIManager.queryDevices();
+            if (Device.getAllDevices() == null || Device.getAllDevices().size() == 0) {
+                String queryString = "{ \"realm\": { \"name\": \"master\" }}";
+                JsonParser jsonParser = new JsonParser();
+                JsonObject query = (JsonObject)jsonParser.parse(queryString);
+                APIManager.queryDevices(query);
+            }
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
-            bundle.putString("USER", User.getUser().username);
+            bundle.putString("USER", User.getMe().username);
             msg.setData(bundle);
             handler.sendMessage(msg);
         }).start();

@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -23,12 +25,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.ixxc.myuit.API.APIManager;
+import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.LinkedDevice;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.Model.User;
@@ -36,6 +38,7 @@ import com.ixxc.myuit.Model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class UserInfoActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -44,18 +47,19 @@ public class UserInfoActivity extends AppCompatActivity {
     ImageView iv_pwd_expand, iv_roles_expand;
     CheckBox cb_active;
     TextInputLayout til_email, til_firstname, til_lastname;
-    EditText et_email, et_firstname, et_lastname, et_pwd, et_repwd;
+    EditText et_email, et_firstname, et_lastname, et_pwd, et_rePwd;
     AutoCompleteTextView act_realm_roles, act_roles;
     Button btn_custom_role_set, btn_linked_devices, btn_regenerate;
     ProgressBar pb_user_info;
 
-    User current_user;
     AlertDialog customRoleDialog;
     AlertDialog linkedDevicesDialog;
     ArrayAdapter realmRolesAdapter, roleSetAdapter;
-
-    List<Role> roleModels;
-    List<LinkedDevice> linkedDeviceList;
+    User user;
+    List<Role> realmRoleList, newRealmRoleList;
+    List<Role> roleList, newRoleList = new ArrayList<>();
+    List<Role> roleSetList;
+    List<LinkedDevice> linkedDeviceList, newLinkedDeviceList;
 
     boolean isGetDataDone = false;
 
@@ -65,6 +69,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
         if (isOK) {
             isGetDataDone = true;
+            InitVars();
             showUserInfo();
         }
 
@@ -78,14 +83,15 @@ public class UserInfoActivity extends AppCompatActivity {
 
         String user_id = getIntent().getStringExtra("USER_ID");
         new Thread(() -> {
-            current_user = APIManager.getUser(user_id);
             APIManager.getRoles();
-            APIManager.getRealmRoles();
-            APIManager.getLinkedDevices(user_id);
+            user = APIManager.getUser(user_id);
+            user.setUserRoles(APIManager.getRoles(user_id));
+            user.setRealmRoles(APIManager.getRealmRoles(user_id));
+            user.setLinkedDevices(APIManager.getLinkedDevices(user_id));
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();
-            bundle.putBoolean("USER", current_user != null);
+            bundle.putBoolean("USER", user != null);
             message.setData(bundle);
             handler.sendMessage(message);
         }).start();
@@ -96,6 +102,33 @@ public class UserInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void InitViews() {
+        toolbar = findViewById(R.id.action_bar);
+        pwd_layout_1 = findViewById(R.id.pwd_layout_1);
+        pwd_layout_2 = findViewById(R.id.pwd_layout_2);
+        iv_pwd_expand = findViewById(R.id.iv_expand_1);
+        iv_roles_expand = findViewById(R.id.iv_expand_2);
+        roles_layout_1 = findViewById(R.id.roles_layout_1);
+        roles_layout_2 = findViewById(R.id.roles_layout_2);
+        cb_active = findViewById(R.id.cb_active);
+        et_email = findViewById(R.id.et_email);
+        et_firstname = findViewById(R.id.et_firstname);
+        et_lastname = findViewById(R.id.et_lastname);
+        act_realm_roles = findViewById(R.id.act_realm_roles);
+        act_roles = findViewById(R.id.act_roles);
+        btn_custom_role_set = findViewById(R.id.btn_custom_role_set);
+        btn_linked_devices = findViewById(R.id.btn_linked_devices);
+        btn_regenerate = findViewById(R.id.btn_regenerate);
+        et_pwd = findViewById(R.id.et_pwd);
+        et_rePwd = findViewById(R.id.et_repwd);
+        pwd_layout = findViewById(R.id.pwd_layout);
+        roles_layout = findViewById(R.id.roles_layout);
+        til_email = findViewById(R.id.til_email);
+        til_firstname = findViewById(R.id.til_firstname);
+        til_lastname = findViewById(R.id.til_lastname);
+        pb_user_info = findViewById(R.id.pb_user_info);
     }
 
     private void InitEvents() {
@@ -133,91 +166,97 @@ public class UserInfoActivity extends AppCompatActivity {
             iv_roles_expand.startAnimation(a);
         });
 
-        act_roles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-                Role selectedRole = Role.getCompositeRoleByName(roleSetAdapter.getItem(pos).toString());
+        act_roles.setOnItemClickListener((adapterView, view, pos, l) -> {
+            Role selectedRole = Role.getCompositeRoleByName(roleSetAdapter.getItem(pos).toString());
 
-                List<String> rolesIdList = roleModels.stream()
-                        .map(r -> r.id)
-                        .collect(Collectors.toList());
+            List<String> rolesIdList = roleList.stream()
+                    .map(r -> r.id)
+                    .collect(Collectors.toList());
 
-                customRoleDialog = customRoleDialog();
-                customRoleDialog.create();
-                for (String roleId : selectedRole.compositeRoleIds) {
+            customRoleDialog = customRoleDialog();
+            customRoleDialog.create();
+            for (String roleId : selectedRole.compositeRoleIds) {
+                int index = rolesIdList.indexOf(roleId);
+                Log.d(GlobalVars.LOG_TAG, "Index: " + index);
+                customRoleDialog.getListView().setItemChecked(index, true);
+            }
+        });
+
+        btn_custom_role_set.setOnClickListener(view -> {
+            checkRoles();
+            customRoleDialog.show();
+        });
+
+        btn_linked_devices.setOnClickListener(view -> {
+            if (isGetDataDone) {
+                for (LinkedDevice device : linkedDeviceList) {
+
+                    int index = IntStream.range(0, Device.getAllDevices().size())
+                            .filter(i -> Device.getAllDevices().get(i).id.equals(device.id.get("assetId").getAsString()))
+                            .findFirst()
+                            .orElse(-1);
+
+                    if (index != -1) {
+                        linkedDevicesDialog.getListView().setItemChecked(index, true);
+                    }
+                }
+                linkedDevicesDialog.show();
+            } else {
+                Toast.makeText(UserInfoActivity.this, "Data is loading, please wait!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void InitVars() {
+        realmRoleList = user.getRealmRoles();
+        roleList = user.getRoleList();
+        roleSetList = user.getCompositeRoleList();
+    }
+
+    private void checkRoles() {
+        List<String> rolesIdList = roleList.stream()
+                .map(r -> r.id)
+                .collect(Collectors.toList());
+
+        for (Role role : roleSetList) {
+            if (role.assigned) {
+                Role role1 = Role.getCompositeRoleByName(role.name);
+                for (String roleId : role1.compositeRoleIds) {
                     int index = rolesIdList.indexOf(roleId);
                     Log.d(GlobalVars.LOG_TAG, "Index: " + index);
                     customRoleDialog.getListView().setItemChecked(index, true);
                 }
             }
-        });
+        }
 
-        btn_custom_role_set.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                customRoleDialog.show();
+        for (Role role : roleList) {
+            if (role.assigned) {
+                customRoleDialog.getListView().setItemChecked(roleList.indexOf(role), true);
+                if (!newRoleList.contains(role)) { newRoleList.add(role); }
             }
-        });
-
-        btn_linked_devices.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isGetDataDone) {
-                    linkedDevicesDialog.show();
-                } else {
-                    Toast.makeText(UserInfoActivity.this, "Data is loading, please wait!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    private void InitViews() {
-        toolbar = findViewById(R.id.action_bar);
-        pwd_layout_1 = findViewById(R.id.pwd_layout_1);
-        pwd_layout_2 = findViewById(R.id.pwd_layout_2);
-        iv_pwd_expand = findViewById(R.id.iv_expand_1);
-        iv_roles_expand = findViewById(R.id.iv_expand_2);
-        roles_layout_1 = findViewById(R.id.roles_layout_1);
-        roles_layout_2 = findViewById(R.id.roles_layout_2);
-        cb_active = findViewById(R.id.cb_active);
-        et_email = findViewById(R.id.et_email);
-        et_firstname = findViewById(R.id.et_firstname);
-        et_lastname = findViewById(R.id.et_lastname);
-        act_realm_roles = findViewById(R.id.act_realm_roles);
-        act_roles = findViewById(R.id.act_roles);
-        btn_custom_role_set = findViewById(R.id.btn_custom_role_set);
-        btn_linked_devices = findViewById(R.id.btn_linked_devices);
-        btn_regenerate = findViewById(R.id.btn_regenerate);
-        et_pwd = findViewById(R.id.et_pwd);
-        et_repwd = findViewById(R.id.et_repwd);
-        pwd_layout = findViewById(R.id.pwd_layout);
-        roles_layout = findViewById(R.id.roles_layout);
-        til_email = findViewById(R.id.til_email);
-        til_firstname = findViewById(R.id.til_firstname);
-        til_lastname = findViewById(R.id.til_lastname);
-        pb_user_info = findViewById(R.id.pb_user_info);
+        }
     }
 
     private void showUserInfo() {
-        actionBar.setTitle(current_user.username);
-        cb_active.setChecked(current_user.enabled);
+        actionBar.setTitle(user.username);
+        cb_active.setChecked(user.enabled);
 
-        if (current_user.serviceAccount) {
-            et_firstname.setText(current_user.username);
-            et_pwd.setText(current_user.secret);
+        if (user.serviceAccount) {
+            et_firstname.setText(user.username);
+            et_pwd.setText(user.secret);
 
             btn_regenerate.setVisibility(View.VISIBLE);
 
             et_lastname.setVisibility(View.GONE);
             et_email.setVisibility(View.GONE);
-            et_repwd.setVisibility(View.GONE);
+            et_rePwd.setVisibility(View.GONE);
         } else {
-            et_firstname.setText(current_user.firstName);
-            et_lastname.setText(current_user.lastName);
-            et_email.setText(current_user.email);
+            et_firstname.setText(user.firstName);
+            et_lastname.setText(user.lastName);
+            et_email.setText(user.email);
         }
 
-        linkedDeviceList = LinkedDevice.getLinkedDeviceList();
+        newLinkedDeviceList = linkedDeviceList = user.getLinkedDevices();
 
         List<String> hiddenRealmRole = new ArrayList<>();
         hiddenRealmRole.add("uma_authorization");
@@ -226,23 +265,39 @@ public class UserInfoActivity extends AppCompatActivity {
         hiddenRealmRole.add("offline_access");
 
         // Get Realm Role List (String)
-        List<String> realmRoleList = new ArrayList<>();
-        for (Role role : Role.getRealmRoleList()) {
+        List<String> realmRoles = new ArrayList<>();
+        for (Role role : realmRoleList) {
             if (!hiddenRealmRole.contains(role.name)) {
-                realmRoleList.add(role.name);
+                realmRoles.add(role.name);
+                if (role.assigned) {
+                    String text = String.valueOf(act_realm_roles.getText());
+                    if (text.equals("")) { text += role.name; }
+                    else { text = String.join(", ", text, role.name); }
+
+                    act_realm_roles.setText(text);
+                }
             }
         }
 
         // Get Role Set List (String)
-        List<String> roleSetList = new ArrayList<>();
-        for (Role role : Role.getCompositeRoleList()) {
-            roleSetList.add(role.name);
+        List<String> roleSets = new ArrayList<>();
+        for (Role role : roleSetList) {
+            if (role.composite) {
+                roleSets.add(role.name);
+                if (role.assigned) {
+                    String text = String.valueOf(act_roles.getText());
+                    if (text.equals("")) { text += role.name; }
+                    else { text = String.join(", ", text, role.name); }
+
+                    act_roles.setText(text);
+                }
+            }
         }
 
-        realmRolesAdapter = new ArrayAdapter(this, R.layout.dropdown_item, realmRoleList);
+        realmRolesAdapter = new ArrayAdapter(this, R.layout.dropdown_item, realmRoles);
         act_realm_roles.setAdapter(realmRolesAdapter);
 
-        roleSetAdapter = new ArrayAdapter(this, R.layout.dropdown_item, roleSetList);
+        roleSetAdapter = new ArrayAdapter(this, R.layout.dropdown_item, roleSets);
         act_roles.setAdapter(roleSetAdapter);
 
         customRoleDialog = customRoleDialog();
@@ -251,7 +306,7 @@ public class UserInfoActivity extends AppCompatActivity {
         linkedDevicesDialog = linkedDevicesDialog();
         linkedDevicesDialog.create();
 
-        btn_linked_devices.setText(linkedDeviceList.size() + " device(s)");
+        btn_linked_devices.setText(linkedDeviceList.size() - user.getNumofConsoles() + " device(s)");
 
         pb_user_info.setVisibility(View.GONE);
 
@@ -263,31 +318,44 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private AlertDialog customRoleDialog() {
-        roleModels = Role.getRoleList();
-        CharSequence[] rolesName = new CharSequence[roleModels.size()];
+        CharSequence[] rolesName = new CharSequence[roleList.size()];
 
-        for (Role role : roleModels) {
-            rolesName[roleModels.indexOf(role)] = role.name;
+        for (Role role : roleList) {
+            rolesName[roleList.indexOf(role)] = role.name;
         }
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Select role(s)")
-                .setMultiChoiceItems(rolesName, null, (dialog13, indexSelected, isChecked) -> { })
-                .setPositiveButton("OK", (dialog12, id) -> Toast.makeText(UserInfoActivity.this, "OK", Toast.LENGTH_SHORT).show())
-                .setNegativeButton("Cancel", (dialog1, id) -> Toast.makeText(UserInfoActivity.this, "Cancel", Toast.LENGTH_SHORT).show()).create();
+                .setMultiChoiceItems(rolesName, null, (dialog13, indexSelected, isChecked) -> {
+                    Role role = roleList.get(indexSelected);
+                    if (isChecked) {
+                        newRoleList.add(role);
+                    } else {
+                        newRoleList.remove(role);
+                    }
+                })
+                .setPositiveButton("OK", (dialog12, id) -> {}).create();
         return dialog;
     }
 
     private AlertDialog linkedDevicesDialog() {
-        CharSequence[] linkedDevicesName = new CharSequence[linkedDeviceList.size()];
+        List<Device> devices = Device.getAllDevices();
+        CharSequence[] devicesName = new CharSequence[devices.size()];
 
-        for (LinkedDevice device : linkedDeviceList) {
-            linkedDevicesName[linkedDeviceList.indexOf(device)] = device.assetName;
+        for (Device device : devices) {
+            devicesName[devices.indexOf(device)] = device.name;
         }
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Select device(s) to link")
-                .setMultiChoiceItems(linkedDevicesName, null, (dialog13, indexSelected, isChecked) -> { })
+                .setMultiChoiceItems(devicesName, null, (dialog13, indexSelected, isChecked) -> {
+                    Device device = devices.get(indexSelected);
+                    if (isChecked) {
+                        newLinkedDeviceList.add(LinkedDevice.LinkDevice(user, device));
+                    } else {
+                        newLinkedDeviceList.removeIf(linkedDevice -> linkedDevice.id.get("assetId").getAsString().equals(device.id));
+                    }
+                })
                 .setPositiveButton("OK", (dialog12, id) -> Toast.makeText(UserInfoActivity.this, "OK", Toast.LENGTH_SHORT).show())
                 .setNegativeButton("Cancel", (dialog1, id) -> Toast.makeText(UserInfoActivity.this, "Cancel", Toast.LENGTH_SHORT).show()).create();
         return dialog;
@@ -346,12 +414,49 @@ public class UserInfoActivity extends AppCompatActivity {
         v.startAnimation(a);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_save, menu);
+        Menu actionbarMenu = menu;
+
+        return true;
+    }
+
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
             finish();
+            return true;
+        } else if (id == R.id.save) {
+            Toast.makeText(this, "OKOK", Toast.LENGTH_SHORT).show();
+            save();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void save() {
+        // User info
+
+        // Roles (JsonArray)
+
+        // Realm Roles (JsonArray)
+        for (Role role : newRoleList) {
+//            Log.d(GlobalVars.LOG_TAG, "save: " + role.name);
+        }
+
+        // Previous Realm Roles (JsonArray)
+
+        // Previous Roles (JsonArray)
+
+        // User Asset Links (JsonArray)
+        for (LinkedDevice device :
+                newLinkedDeviceList) {
+            Log.d(GlobalVars.LOG_TAG, "save: " + device.assetName);
+        }
+        // Previous Asset Links (JsonArray)
+
     }
 }

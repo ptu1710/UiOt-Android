@@ -1,7 +1,6 @@
 package com.ixxc.myuit.Interface;
 
 import com.google.gson.JsonObject;
-import com.ixxc.myuit.Model.CreateAssetReq;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.LinkedDevice;
@@ -42,7 +41,7 @@ public interface APIInterface {
     // Get all devices
     @Headers("Content-Type: application/json")
     @POST("api/master/asset/query")
-    Call<List<Device>> queryDevices();
+    Call<List<Device>> queryDevices(@Body JsonObject body);
 
     // Get all models
     @GET("api/master/model/assetInfos")
@@ -72,6 +71,9 @@ public interface APIInterface {
     @GET("api/master/user/master/roles")
     Call<List<Role>> getRoles();
 
+    @GET("api/master/user/master/userRoles/{userId}")
+    Call<List<Role>> getRoles(@Path("userId") String userId);
+
     @GET("api/master/realm")
     Call<List<Realm>> getRealm();
 
@@ -80,6 +82,10 @@ public interface APIInterface {
 
     @GET("api/master/user/userRealmRoles")
     Call<List<Role>> getRealmRoles();
+
+    // Get a user by id
+    @GET("api/master/user/master/userRealmRoles/{userId}")
+    Call<List<Role>> getRealmRoles(@Path("userId") String userId);
 
     // Get a user by id
     @GET("api/master/user/master/{userId}")
