@@ -28,15 +28,12 @@ import java.util.List;
 
 public class RoleActivity extends AppCompatActivity {
     RecyclerView rv_Role;
-    RelativeLayout layout_Permissions;
+    RelativeLayout layout_Permissions,layout_del_save,layout_cancel_create;
     CheckBox cb_r_admin, cb_r_assets, cb_r_logs,cb_r_map,cb_r_rules,cb_r_users
             ,cb_w_admin, cb_w_assets, cb_w_attributes, cb_w_logs, cb_w_rules, cb_w_users;
 
     Integer pos_chosen = null;
     TextView tv_save,tv_delete,tv_add;
-
-    List<Role> roles = new ArrayList<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +127,8 @@ public class RoleActivity extends AppCompatActivity {
                         role_object.addProperty("name",role.name);
                         role_object.addProperty("description",role.description);
                         role_object.addProperty("composite",role.composite);
-                        JsonElement compositeRoleIds = new Gson().toJsonTree(isChecked());
+                        Log.d("ROLE", role.compositeRoleIds.toString());
+                        JsonElement compositeRoleIds = new Gson().toJsonTree(role.compositeRoleIds);
                         role_object.add("compositeRoleIds", compositeRoleIds);
                         body.add(role_object);
                     }
@@ -144,7 +142,7 @@ public class RoleActivity extends AppCompatActivity {
                     role_object.addProperty("composite",role.composite);
                     body.add(role_object);
                 }
-                Log.d("API", body.toString());
+                Log.d("DEL", body.toString());
                 new Thread(()->{
                     Boolean del_state =APIManager.updateRole(body);
                     if(del_state){
@@ -161,6 +159,14 @@ public class RoleActivity extends AppCompatActivity {
             }
         });
 
+        tv_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layout_Permissions.setVisibility(View.VISIBLE);
+                layout_cancel_create.setVisibility(View.VISIBLE);
+            }
+        });
+
     }
 
 
@@ -172,6 +178,7 @@ public class RoleActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 pos_chosen = position;
                 layout_Permissions.setVisibility(View.VISIBLE);
+                layout_del_save.setVisibility(View.VISIBLE);
 
                 Message msg = handler.obtainMessage();
                 Bundle bundle = new Bundle();
@@ -229,45 +236,49 @@ public class RoleActivity extends AppCompatActivity {
     private void Checked() {
         for (String permissionID: Role.getCompositeRoleList().get(pos_chosen).compositeRoleIds) {
             String name = Role.getNameByID(Role.getRoleList(),permissionID);
-            switch (name){
-                case "read:rules":
-                    cb_r_rules.setChecked(true);
-                    break;
-                case "read:admin":
-                    cb_r_admin.setChecked(true);
-                    break;
-                case "read:assets":
-                    cb_r_assets.setChecked(true);
-                    break;
-                case "read:logs":
-                    cb_r_logs.setChecked(true);
-                    break;
-                case "read:users":
-                    cb_r_users.setChecked(true);
-                    break;
-                case "read:map":
-                    cb_r_map.setChecked(true);
-                    break;
-                case "write:admin":
-                    cb_w_admin.setChecked(true);
-                    break;
-                case "write:assets":
-                    cb_w_assets.setChecked(true);
-                    break;
-                case "write:rules":
-                    cb_w_rules.setChecked(true);
-                    break;
-                case "write:attributes":
-                    cb_w_attributes.setChecked(true);
-                    break;
-                case "write:logs":
-                    cb_w_logs.setChecked(true);
-                    break;
-                case "write:user":
-                    cb_w_users.setChecked(true);
-                    break;
+            if(name!=null){
+                switch (name){
+                    case "read:rules":
+                        cb_r_rules.setChecked(true);
+                        break;
+                    case "read:admin":
+                        cb_r_admin.setChecked(true);
+                        break;
+                    case "read:assets":
+                        cb_r_assets.setChecked(true);
+                        break;
+                    case "read:logs":
+                        cb_r_logs.setChecked(true);
+                        break;
+                    case "read:users":
+                        cb_r_users.setChecked(true);
+                        break;
+                    case "read:map":
+                        cb_r_map.setChecked(true);
+                        break;
+                    case "write:admin":
+                        cb_w_admin.setChecked(true);
+                        break;
+                    case "write:assets":
+                        cb_w_assets.setChecked(true);
+                        break;
+                    case "write:rules":
+                        cb_w_rules.setChecked(true);
+                        break;
+                    case "write:attributes":
+                        cb_w_attributes.setChecked(true);
+                        break;
+                    case "write:logs":
+                        cb_w_logs.setChecked(true);
+                        break;
+                    case "write:user":
+                        cb_w_users.setChecked(true);
+                        break;
+
+                }
 
             }
+
         }
 
     }
@@ -290,7 +301,11 @@ public class RoleActivity extends AppCompatActivity {
 
     private void InitView() {
         rv_Role = (RecyclerView) findViewById(R.id.rv_role);
+
         layout_Permissions = (RelativeLayout) findViewById(R.id.layout_permissions);
+        layout_del_save = (RelativeLayout) findViewById(R.id.layout_save);
+        layout_cancel_create = (RelativeLayout) findViewById(R.id.layout_create);
+
         cb_r_admin = (CheckBox) findViewById(R.id.cb_r_admin);
         cb_r_assets = (CheckBox) findViewById(R.id.cb_r_asset);
         cb_r_logs = (CheckBox) findViewById(R.id.cb_r_logs);

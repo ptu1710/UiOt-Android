@@ -45,16 +45,17 @@
         android:id="@+id/tv_add_role"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add"
-        android:textSize="30dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="ADD ROLE"
         android:textColor="#76FF7A"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
+        android:textSize="25dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_rv_role"/>
+        app:layout_constraintTop_toBottomOf="@+id/layout_rv_role" />
+
     <RelativeLayout
         android:id="@+id/layout_permissions"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/tv_add_role">
@@ -149,6 +150,16 @@
 
         </ScrollView>
 
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/layout_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_permissions">
+
         <TextView
             android:id="@+id/tv_del_role"
             android:layout_width="wrap_content"
@@ -157,8 +168,7 @@
             android:textColor="#76FF7A"
             android:textSize="25dp"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp"
-            android:layout_below="@+id/src"/>
+            android:layout_marginLeft="5dp" />
 
         <TextView
             android:id="@+id/tv_save_role"
@@ -169,10 +179,42 @@
             android:textSize="25dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="5dp"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/src"/>
+            android:layout_alignParentRight="true" />
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/layout_create"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_permissions">
+
+        <TextView
+            android:id="@+id/tv_cancel_role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:textColor="#76FF7A"
+            android:textSize="25dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp" />
+
+        <TextView
+            android:id="@+id/tv_create_role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CREATE"
+            android:textColor="#76FF7A"
+            android:textSize="25dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true" />
+
+    </RelativeLayout>
+
+
 
 
 
