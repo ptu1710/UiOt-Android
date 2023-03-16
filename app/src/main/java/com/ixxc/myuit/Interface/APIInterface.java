@@ -1,5 +1,6 @@
 package com.ixxc.myuit.Interface;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
@@ -78,7 +79,7 @@ public interface APIInterface {
     Call<List<Realm>> getRealm();
 
     @PUT("api/master/user/master/roles")
-    Call<String> updateRole(@Body JsonObject requestBody);
+    Call<String> updateRole(@Body JsonArray requestBody);
 
     @GET("api/master/user/userRealmRoles")
     Call<List<Role>> getRealmRoles();

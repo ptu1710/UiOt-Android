@@ -68,5 +68,15 @@ public class Role {
         return null;
     }
 
+    public static String getIdByDescription(String description){
+        for (Role role:Role.getRoleList()) {
+            if(role.description.equals(description) ){
+                return role.id;
+            }
+
+        }
+        return null;
+    }
+
 
 }
