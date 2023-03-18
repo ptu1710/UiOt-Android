@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -14,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -33,7 +35,8 @@ public class RoleActivity extends AppCompatActivity {
             ,cb_w_admin, cb_w_assets, cb_w_attributes, cb_w_logs, cb_w_rules, cb_w_users;
 
     Integer pos_chosen = null;
-    TextView tv_save,tv_delete,tv_add;
+    TextView tv_save,tv_delete,tv_add,tv_cancel,tv_create;
+    TextInputEditText ti_role,ti_description;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +61,20 @@ public class RoleActivity extends AppCompatActivity {
         Bundle bundle = message.getData();
         boolean isRole = bundle.getBoolean("ROLE_OK");
         boolean isUpdated = bundle.getBoolean("UPDATE_OK");
+        boolean isGone = bundle.getBoolean("GONE");
 
         if (isRole) {
             setAdapter();
         }
-
         else if (isUpdated) {
             unChecked();
             Checked();
+        }
+        if (isGone) {
+            layout_Permissions.setVisibility(View.GONE);
+            layout_del_save.setVisibility(View.GONE);
+            layout_cancel_create.setVisibility(View.GONE);
+
         }
         return false;
     });
@@ -78,16 +87,18 @@ public class RoleActivity extends AppCompatActivity {
                 for (Role role: Role.getCompositeRoleList()) {
                     JsonObject role_object = new JsonObject();
                     role_object.addProperty("id",role.id);
-                    role_object.addProperty("name",role.name);
-                    role_object.addProperty("description",role.description);
-                    role_object.addProperty("composite",role.composite);
                     JsonElement compositeRoleIds;
                     if(role.id.equals(Role.getCompositeRoleList().get(pos_chosen).id)){
+                        role_object.addProperty("name", String.valueOf(ti_role.getText()));
+                        role_object.addProperty("description", String.valueOf(ti_description.getText()));
                         compositeRoleIds = new Gson().toJsonTree(isChecked());
                     }
                     else {
+                        role_object.addProperty("name", role.name);
+                        role_object.addProperty("description", role.description);
                         compositeRoleIds = new Gson().toJsonTree(role.compositeRoleIds);
                     }
+                    role_object.addProperty("composite",role.composite);
                     role_object.add("compositeRoleIds", compositeRoleIds);
                     body.add(role_object);
                 }
@@ -99,7 +110,7 @@ public class RoleActivity extends AppCompatActivity {
                     role_object.addProperty("composite",role.composite);
                     body.add(role_object);
                 }
-                Log.d("API", body.toString());
+                Log.d("SAVE", body.toString());
                 new Thread(()->{
                     Boolean save_state =APIManager.updateRole(body);
                     if(save_state){
@@ -151,6 +162,7 @@ public class RoleActivity extends AppCompatActivity {
                         Message msg = handler.obtainMessage();
                         Bundle bundle = new Bundle();
                         bundle.putBoolean("ROLE_OK", true);
+                        bundle.putBoolean("GONE", true);
                         msg.setData(bundle);
                         handler.sendMessage(msg);
                     }
@@ -163,9 +175,88 @@ public class RoleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 layout_Permissions.setVisibility(View.VISIBLE);
+                layout_del_save.setVisibility(View.GONE);
                 layout_cancel_create.setVisibility(View.VISIBLE);
+                ti_role.setText("");
+                ti_description.setText("");
+                unChecked();
             }
         });
+
+        tv_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layout_Permissions.setVisibility(View.GONE);
+                layout_del_save.setVisibility(View.GONE);
+                layout_cancel_create.setVisibility(View.GONE);
+            }
+        });
+
+        tv_create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JsonArray body = new JsonArray();
+
+                if(isChecked().size() !=0 && !TextUtils.isEmpty(ti_role.getText().toString())){
+
+                    for (Role role: Role.getCompositeRoleList()) {
+                        JsonObject role_object = new JsonObject();
+                        role_object.addProperty("id",role.id);
+                        role_object.addProperty("name",role.name);
+                        role_object.addProperty("description",role.description);
+                        role_object.addProperty("composite",role.composite);
+                        Log.d("ROLE", role.compositeRoleIds.toString());
+                        JsonElement compositeRoleIds = new Gson().toJsonTree(role.compositeRoleIds);
+                        role_object.add("compositeRoleIds", compositeRoleIds);
+                        body.add(role_object);
+
+                    }
+
+                    JsonObject new_object = new JsonObject();
+                    new_object.addProperty("composite",true);
+                    new_object.addProperty("name", String.valueOf(ti_role.getText()));
+                    JsonElement new_compositeRoleIds = new Gson().toJsonTree(isChecked());
+                    new_object.add("compositeRoleIds",new_compositeRoleIds);
+                    new_object.addProperty("description", String.valueOf(ti_description.getText()));
+                    body.add(new_object);
+
+
+                    for (Role role:Role.getRoleList()) {
+                        JsonObject role_object = new JsonObject();
+                        role_object.addProperty("id",role.id);
+                        role_object.addProperty("name",role.name);
+                        role_object.addProperty("description",role.description);
+                        role_object.addProperty("composite",role.composite);
+                        body.add(role_object);
+                    }
+                    Log.d("CREATE", body.toString());
+                    new Thread(()->{
+                        Boolean create_state =APIManager.updateRole(body);
+                        if(create_state){
+                            APIManager.getRoles();
+
+                            Message msg = handler.obtainMessage();
+                            Bundle bundle = new Bundle();
+                            bundle.putBoolean("ROLE_OK", true);
+                            bundle.putBoolean("GONE", true);
+                            msg.setData(bundle);
+                            handler.sendMessage(msg);
+
+                        }
+                    }).start();
+                } else if (TextUtils.isEmpty(ti_role.getText().toString())) {
+                    Toast.makeText(getApplicationContext(), "Role field cannot be empty!", Toast.LENGTH_LONG).show();
+
+                } else if (isChecked().size() ==0) {
+                    Toast.makeText(getApplicationContext(), "No permissions have been checked!", Toast.LENGTH_LONG).show();
+
+                }
+
+
+            }
+        });
+
+
 
     }
 
@@ -179,6 +270,9 @@ public class RoleActivity extends AppCompatActivity {
                 pos_chosen = position;
                 layout_Permissions.setVisibility(View.VISIBLE);
                 layout_del_save.setVisibility(View.VISIBLE);
+                layout_cancel_create.setVisibility(View.GONE);
+                ti_role.setText(Role.getCompositeRoleList().get(position).name);
+                ti_description.setText(Role.getCompositeRoleList().get(position).description);
 
                 Message msg = handler.obtainMessage();
                 Bundle bundle = new Bundle();
@@ -323,6 +417,11 @@ public class RoleActivity extends AppCompatActivity {
         tv_add = (TextView) findViewById(R.id.tv_add_role);
         tv_save = (TextView) findViewById(R.id.tv_save_role);
         tv_delete = (TextView) findViewById(R.id.tv_del_role);
+        tv_cancel = (TextView) findViewById(R.id.tv_cancel_role);
+        tv_create = (TextView) findViewById(R.id.tv_create_role);
+
+        ti_role = (TextInputEditText) findViewById(R.id.ti_role);
+        ti_description = (TextInputEditText) findViewById(R.id.ti_description);
 
     }
 }

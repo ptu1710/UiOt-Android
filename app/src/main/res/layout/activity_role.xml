@@ -59,8 +59,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/tv_add_role">
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/et_role"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ti_role"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Role* "
+                android:singleLine="true"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/et_description"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"            android:layout_marginEnd="10dp"
+            android:layout_below="@+id/et_role">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ti_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Description* "
+                android:singleLine="true"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
         <ScrollView
             android:id="@+id/src"
+            android:layout_below="@+id/et_description"
             android:layout_width="match_parent"
             android:layout_height="350dp">
             <LinearLayout
