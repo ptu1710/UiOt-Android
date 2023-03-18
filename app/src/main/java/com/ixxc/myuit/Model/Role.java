@@ -2,6 +2,9 @@ package com.ixxc.myuit.Model;
 
 import android.util.Log;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ixxc.myuit.GlobalVars;
 
 import java.util.ArrayList;
@@ -14,10 +17,11 @@ public class Role {
     public String description;
     public boolean composite;
     public boolean assigned;
-    private static List<Role> roleList = new ArrayList<>();
-    private static List<Role> compositeRoleList = new ArrayList<>();
-    private static List<Role> realmRoleList = new ArrayList<>();
     public ArrayList<String> compositeRoleIds;
+
+    private static final List<Role> roleList = new ArrayList<>();
+    private static final List<Role> compositeRoleList = new ArrayList<>();
+    private static List<Role> realmRoleList = new ArrayList<>();
 
     public static List<Role> getRoleList() {
         return roleList;
@@ -42,41 +46,41 @@ public class Role {
     }
 
     public static Role getCompositeRoleByName(String roleName) {
-        return compositeRoleList.stream()
-                .filter(r -> r.name.equals(roleName)).collect(Collectors.toList()).get(0);
+        return compositeRoleList.stream().filter(r -> r.name.equals(roleName)).collect(Collectors.toList()).get(0);
     }
 
     public static List<Role> getCompositeRoleList() {
         return compositeRoleList;
     }
 
-    public ArrayList getCompositeRolelds() {
-        return compositeRoleIds;
-    }
-
-    public void setCompositeRolelds(ArrayList compositeRolelds) {
-        this.compositeRoleIds = compositeRolelds;
-    }
-
     public static String getNameByID(List<Role> roles, String id){
-        for (Role role:roles) {
-            if(role.id.equals(id) ){
-                return role.name;
-            }
-
+        for (Role role : roles) {
+            if(role.id.equals(id)) { return role.name; }
         }
+
         return null;
     }
 
     public static String getIdByDescription(String description){
-        for (Role role:Role.getRoleList()) {
-            if(role.description.equals(description) ){
-                return role.id;
-            }
-
+        for (Role role : Role.getRoleList()) {
+            if(role.description.equals(description)){ return role.id; }
         }
+
         return null;
     }
 
+    public JsonObject toJSON() {
+        JsonObject o = new JsonObject();
+        o.addProperty("id", id);
+        o.addProperty("name", name);
+        o.addProperty("description", description);
+        o.addProperty("composite", composite);
+        if (compositeRoleIds != null) {
+            JsonArray arr = new JsonArray();
+            for (String id : compositeRoleIds) arr.add(id);
+            o.add("compositeRoleIds", arr);
+        }
 
+        return o;
+    }
 }

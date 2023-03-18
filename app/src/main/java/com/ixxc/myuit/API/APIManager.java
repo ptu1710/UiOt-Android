@@ -226,6 +226,17 @@ public class APIManager {
         return roles;
     }
 
+    public static void setRoles(String userId, JsonArray body){
+        Call<String> call = userAI.setRoles(userId, body);
+
+        try {
+            Response<String> response = call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static void getRealmRoles(){
         Call<List<Role>> call = userAI.getRealmRoles();
 
@@ -255,6 +266,17 @@ public class APIManager {
         return roles;
     }
 
+    public static void setRealmRoles(String userId, JsonArray body){
+        Call<String> call = userAI.setRealmRoles(userId, body);
+
+        try {
+            Response<String> response = call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static boolean updateRole(JsonArray requestBody){
         Call<String> call = userAI.updateRole(requestBody);
         try {
@@ -281,5 +303,57 @@ public class APIManager {
         }
 
         return devices;
+    }
+
+    public static int setLinkedDevices(JsonArray body){
+        Call<String> call = userAI.setLinkedDevices(body);
+
+        int statusCode = -1;
+        try {
+            Response<String> response = call.execute();
+            statusCode = response.code();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return statusCode;
+    }
+
+    public static int setUnlinkedDevices(JsonArray body){
+        Call<String> call = userAI.setUnlinkedDevices(body);
+
+        int statusCode = -1;
+        try {
+            Response<String> response = call.execute();
+            statusCode = response.code();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return statusCode;
+    }
+
+    public static int updateUserInfo(JsonObject query) {
+        Call<User> call = userAI.updateUserInfo(query);
+
+        int returnCode = -1;
+        try {
+            Response<User> response = call.execute();
+            returnCode = response.code();
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return returnCode;
+    }
+
+    public static int updatePassword(String id, JsonObject query) {
+        Call<String> call = userAI.updatePassword(id, query);
+
+        int returnCode = -1;
+        try {
+            Response<String> response = call.execute();
+            returnCode = response.code();
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return returnCode;
     }
 }

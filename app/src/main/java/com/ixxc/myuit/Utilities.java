@@ -78,24 +78,6 @@ public class Utilities {
         return -1;
     }
 
-//    public static void showToast(Activity activity, Context ctx, String msg, int duration, int res) {
-//        LayoutInflater inflater = activity.getLayoutInflater();
-//        View layout = inflater.inflate(R.layout.custom_toast, activity.findViewById(R.id.customToast));
-//
-//        TextView textView = layout.findViewById(R.id.toastTitle);
-//        textView.setText(msg);
-//        ImageView imageView = layout.findViewById(R.id.toastIcon);
-//        if (res == -1) {
-//            imageView.setImageResource(R.drawable.ic_launcher_foreground);
-//        } else {
-//            imageView.setImageResource(res);
-//        }
-//
-//        Toast toast = new Toast(ctx);
-//        toast.setDuration(duration);
-//        toast.setView(layout);
-//        toast.show();
-//    }
 //
 //    public static void sendNoti(Context context, String title, String msg) {
 //        if (MainActivity.isRunning) {

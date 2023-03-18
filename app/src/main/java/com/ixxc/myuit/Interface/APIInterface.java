@@ -75,12 +75,17 @@ public interface APIInterface {
     @GET("api/master/user/master/userRoles/{userId}")
     Call<List<Role>> getRoles(@Path("userId") String userId);
 
+    @Headers("Content-Type: application/json")
+    @PUT("api/master/user/master/userRoles/{userId}")
+    Call<String> setRoles(@Path("userId") String userId, @Body JsonArray body);
+
     @GET("api/master/realm")
     Call<List<Realm>> getRealm();
 
     @PUT("api/master/user/master/roles")
     Call<String> updateRole(@Body JsonArray requestBody);
 
+    // Get realm roles
     @GET("api/master/user/userRealmRoles")
     Call<List<Role>> getRealmRoles();
 
@@ -88,10 +93,36 @@ public interface APIInterface {
     @GET("api/master/user/master/userRealmRoles/{userId}")
     Call<List<Role>> getRealmRoles(@Path("userId") String userId);
 
+    // Update realm roles
+    @Headers("Content-Type: application/json")
+    @PUT("api/master/user/master/userRealmRoles/{userId}")
+    Call<String> setRealmRoles(@Path("userId") String userId, @Body JsonArray body);
+
     // Get a user by id
     @GET("api/master/user/master/{userId}")
     Call<User> getUser(@Path("userId") String userId);
 
+    // Query linked device(s)
     @GET("api/master/asset/user/link")
     Call<List<LinkedDevice>> getLinkedDevices(@Query("realm") String realm, @Query("userId") String userId);
+
+    // Set link device(s)
+    @Headers("Content-Type: application/json")
+    @POST("api/master/asset/user/link")
+    Call<String> setLinkedDevices(@Body JsonArray body);
+
+    // Delete linked device(s)
+    @Headers("Content-Type: application/json")
+    @POST("api/master/asset/user/link/delete")
+    Call<String> setUnlinkedDevices(@Body JsonArray body);
+
+    // Update user's info
+    @Headers("Content-Type: application/json")
+    @POST("api/master/user/master/users")
+    Call<User> updateUserInfo(@Body JsonObject body);
+
+    // Update user's password
+    @Headers("Content-Type: application/json")
+    @PUT("api/master/user/master/reset-password/{userId}")
+    Call<String> updatePassword(@Path("userId") String userId, @Body JsonObject body);
 }

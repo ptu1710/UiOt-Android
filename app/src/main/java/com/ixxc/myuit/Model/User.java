@@ -72,6 +72,11 @@ public class User {
     }
 
     public List<Role> getCompositeRoleList() {
+        for (Role role :
+                compositeRoleList) {
+            role.compositeRoleIds = Role.getCompositeRoleByName(role.name).compositeRoleIds;
+        }
+
         return compositeRoleList;
     }
 
@@ -97,5 +102,21 @@ public class User {
         } else {
             return firstName.equals("") ? lastName : firstName;
         }
+    }
+
+    public JsonObject toJson() {
+        JsonObject o = new JsonObject();
+        o.addProperty("realm", realm);
+        o.addProperty("realmId", realmId);
+        o.addProperty("id", id);
+        o.addProperty("firstName", firstName);
+        o.addProperty("lastName", lastName);
+        o.addProperty("email", email);
+        o.addProperty("enabled", enabled);
+        o.addProperty("createdOn", createdOn);
+        o.addProperty("serviceAccount", serviceAccount);
+        o.addProperty("username", username);
+
+        return o;
     }
 }

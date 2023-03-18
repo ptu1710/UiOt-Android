@@ -27,4 +27,17 @@ public class LinkedDevice {
 
         return returnDevice;
     }
+
+    public JsonObject toJson() {
+        JsonObject o = new JsonObject();
+        o.add("id", id);
+        o.addProperty("createdOn", createdOn);
+        o.addProperty("assetName", assetName);
+        if (!parentAssetName.equals("")) {
+            o.addProperty("parentAssetName", parentAssetName);
+        }
+        o.addProperty("userFullName", userFullName);
+
+        return o;
+    }
 }
