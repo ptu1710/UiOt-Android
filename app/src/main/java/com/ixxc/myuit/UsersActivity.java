@@ -47,8 +47,6 @@ public class UsersActivity extends AppCompatActivity {
         if (code == 403) {
             tv_forbidden.setVisibility(View.VISIBLE);
         } else if (code == 200) {
-            rv_users.setVisibility(View.VISIBLE);
-            userList = User.getUsersList();
             showUsers();
         } else {
             // Something went wrong here
@@ -97,24 +95,18 @@ public class UsersActivity extends AppCompatActivity {
     }
 
     private void showUsers() {
-        for (User user : userList) {
-            userNameList.add(user.getDisplayName());
-        }
+        userList = User.getUsersList();
+        for (User user : userList) userNameList.add(user.getDisplayName());
 
         UserAdapter adapter = new UserAdapter(this, userNameList);
-        adapter.setClickListener(new UserAdapter.ItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Intent intent = new Intent(UsersActivity.this, UserInfoActivity.class);
-                intent.putExtra("USER_ID", userList.get(position).id);
-                startActivity(intent);
-            }
+        adapter.setClickListener((view, position) -> {
+            Intent intent = new Intent(UsersActivity.this, UserInfoActivity.class);
+            intent.putExtra("USER_ID", userList.get(position).id);
+            startActivity(intent);
         });
 
         rv_users.setLayoutManager(new LinearLayoutManager(this));
         rv_users.setAdapter(adapter);
-
-        rv_users.setVisibility(View.VISIBLE);
     }
 
     @Override

@@ -17,10 +17,10 @@
         <activity
             android:name=".UserInfoActivity"
             android:parentActivityName=".UsersActivity"
-
             android:exported="false" />
         <activity
             android:name=".RoleActivity"
+            android:parentActivityName=".UsersActivity"
             android:exported="false" />
         <activity
             android:name=".UsersActivity"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.MyUIT.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#6DC0E4</item>
+        <item name="windowSplashScreenBackground">@color/white</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo_large</item>
         <item name="postSplashScreenTheme">@style/Theme.MyUIT</item>
     </style>

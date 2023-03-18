@@ -34,12 +34,8 @@ public class SignInFragment extends Fragment {
 
     Handler loginHandler = new Handler(message -> {
         Bundle bundle = message.getData();
-        boolean isPublic = bundle.getBoolean("LOGIN");
-        if (isPublic) {
-            String usr = String.valueOf(et_usr.getText());
-            String pwd = String.valueOf(et_pwd.getText());
-            getToken(false, usr, pwd);
-        } else {
+        boolean isOK = bundle.getBoolean("LOGIN");
+        if (isOK) {
             startActivity(new Intent(loginActivity, HomeActivity.class));
             loginActivity.finish();
         }
@@ -84,14 +80,16 @@ public class SignInFragment extends Fragment {
         btn_sign_in.setOnClickListener(view -> {
             pb_loading.setVisibility(View.VISIBLE);
             btn_sign_in.setVisibility(View.GONE);
-            getToken(true, "public", "public");
+            String usr = String.valueOf(et_usr.getText());
+            String pwd = String.valueOf(et_pwd.getText());
+            getToken(usr, pwd);
         });
 
 //        btn_sign_in.setOnClickListener(view -> startActivity(new Intent(loginActivity, HomeActivity.class)));
         btn_back.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.welcome));
     }
 
-    private void getToken(boolean isPublic, String usr, String pwd) {
+    private void getToken(String usr, String pwd) {
         CookieManager cm = CookieManager.getInstance();
         cm.removeAllCookie();
 
@@ -102,7 +100,7 @@ public class SignInFragment extends Fragment {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (url.contains("&code=")) {
                     String code = url.split("&code=")[1];
-                    getTokenByCode(isPublic, code);
+                    getTokenByCode(code);
                 }
             }
 
@@ -125,14 +123,14 @@ public class SignInFragment extends Fragment {
         webView.loadUrl(GlobalVars.getCodeUrl);
     }
 
-    private void getTokenByCode(boolean isPublic, String code) {
+    private void getTokenByCode(String code) {
         final Message msg = loginHandler.obtainMessage();
         final Bundle bundle = new Bundle();
 
         new Thread(() -> {
-            APIManager.getToken(isPublic, code);
+            APIManager.getToken(code);
 
-            bundle.putBoolean("LOGIN", isPublic);
+            bundle.putBoolean("LOGIN", true);
             msg.setData(bundle);
             loginHandler.sendMessage(msg);
         }).start();

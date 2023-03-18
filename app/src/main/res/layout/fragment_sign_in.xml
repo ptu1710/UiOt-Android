@@ -6,39 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".SignInFragment">
 
-    <Button
-        android:id="@+id/btn_back"
-        android:layout_width="140dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="32dp"
-        android:text="Back"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pb_loading" />
-
-    <Button
-        android:id="@+id/btn_sign_in_2"
-        android:layout_width="140dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="48dp"
-        android:background="@drawable/bg_button_1"
-        android:text="Sign in"
-        android:textAllCaps="true"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_realm_role" />
-
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="140dp"
         android:layout_height="180dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="56dp"
+        app:layout_constraintBottom_toTopOf="@+id/et_usr"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_uit" />
 
     <EditText
@@ -46,8 +23,8 @@
         android:layout_width="280dp"
         android:layout_height="52dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="48dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/custom_input"
         android:drawableStart="@drawable/ic_person"
         android:drawablePadding="12dp"
@@ -58,17 +35,17 @@
         android:paddingEnd="12dp"
         android:text="admin"
         android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/et_realm_role"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView6" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/et_realm_role"
         android:layout_width="280dp"
         android:layout_height="52dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="128dp"
         android:background="@drawable/custom_input"
         android:drawableStart="@drawable/ic_lock"
         android:drawablePadding="12dp"
@@ -79,19 +56,44 @@
         android:paddingEnd="12dp"
         android:text="secret"
         android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_back"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_usr" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
         android:id="@+id/pb_loading"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginBottom="24dp"
+        android:indeterminateTint="@color/bg"
         android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/btn_back"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_realm_role" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_sign_in_2"
+        android:layout_width="140dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/bg"
+        android:text="Sign in"
+        android:textAllCaps="true"
+        app:layout_constraintBottom_toTopOf="@+id/btn_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_back"
+        android:layout_width="140dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="64dp"
+        android:backgroundTint="@color/bg"
+        android:text="Back"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

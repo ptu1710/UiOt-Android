@@ -19,7 +19,7 @@ public class APIClient {
     public String PublicToken = "";
     public String UserToken = "";
 
-    public OkHttpClient getUnsafeOkHttpClient(boolean isPublic) {
+    public OkHttpClient getUnsafeOkHttpClient() {
         try {
             final TrustManager[] trustAllCerts = new TrustManager[] {
                     new X509TrustManager() {
@@ -52,7 +52,7 @@ public class APIClient {
             builder.addInterceptor(chain -> {
                 Request newRequest = chain.request()
                         .newBuilder()
-                        .addHeader("Authorization", "Bearer " + (isPublic ? PublicToken : UserToken))
+                        .addHeader("Authorization", "Bearer " + UserToken)
                         .build();
 
                 return chain.proceed(newRequest);
@@ -67,8 +67,8 @@ public class APIClient {
         }
     }
 
-    public Retrofit getClient(boolean isPublic) {
-        OkHttpClient client = getUnsafeOkHttpClient(isPublic);
+    public Retrofit getClient() {
+        OkHttpClient client = getUnsafeOkHttpClient();
         return new Retrofit.Builder()
                 .baseUrl(GlobalVars.baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())

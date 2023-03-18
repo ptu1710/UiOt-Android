@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,7 +21,6 @@ import android.view.animation.Transformation;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,7 +31,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.ixxc.myuit.API.APIManager;
-import com.ixxc.myuit.Adapter.RolesAdapter;
+import com.ixxc.myuit.Adapter.UserRoleAdapter;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.LinkedDevice;
 import com.ixxc.myuit.Model.Role;
@@ -60,7 +58,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
     AlertDialog customRoleDialog;
     AlertDialog linkedDevicesDialog;
-    RolesAdapter realmRolesAdapter, roleSetAdapter;
+    UserRoleAdapter realmRolesAdapter, roleSetAdapter;
     User user;
     List<Role> realmRoleList;
     List<Role> roleList;
@@ -80,9 +78,7 @@ public class UserInfoActivity extends AppCompatActivity {
             isGetDataDone = true;
             InitVars();
             showUserInfo();
-        } else {
-            Toast.makeText(this, "Update with status: " + updateCode, Toast.LENGTH_SHORT).show();
-        }
+        } else Toast.makeText(this, "Update with status: " + updateCode, Toast.LENGTH_SHORT).show();
 
         return false;
     });
@@ -283,7 +279,7 @@ public class UserInfoActivity extends AppCompatActivity {
         for (Role role : realmRoles) { if (role.assigned) realmRolesName.add(role.name); }
         act_realm_roles.setText(String.join(", ", realmRolesName));
 
-        realmRolesAdapter = new RolesAdapter(this, R.layout.spinner_item, realmRoles, (v, role, isChecked) -> {
+        realmRolesAdapter = new UserRoleAdapter(this, R.layout.spinner_item, realmRoles, (v, role, isChecked) -> {
             isRealmRoleModified = true;
             role.assigned = isChecked;
         });
@@ -291,7 +287,7 @@ public class UserInfoActivity extends AppCompatActivity {
         act_realm_roles.setAdapter(realmRolesAdapter);
 
         List<String> compositeRoleIds = roleList.stream().map(r -> r.id).collect(Collectors.toList());
-        roleSetAdapter = new RolesAdapter(this, R.layout.spinner_item, roleSetList, (v, role, isChecked) -> {
+        roleSetAdapter = new UserRoleAdapter(this, R.layout.spinner_item, roleSetList, (v, role, isChecked) -> {
             role.assigned = isChecked;
 
             for (String id : role.compositeRoleIds) {
@@ -337,17 +333,6 @@ public class UserInfoActivity extends AppCompatActivity {
                         }
                     }
                 }).create();
-    }
-
-    public static boolean isValidPwd(final String password) {
-        Pattern pattern;
-        Matcher matcher;
-        final String PASSWORD_PATTERN = "^(?=.*\\d)(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{4,}$";
-        pattern = Pattern.compile(PASSWORD_PATTERN);
-        matcher = pattern.matcher(password);
-
-        return matcher.matches();
-
     }
 
     private AlertDialog linkedDevicesDialog() {
@@ -401,9 +386,8 @@ public class UserInfoActivity extends AppCompatActivity {
         {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if(interpolatedTime == 1){
-                    v.setVisibility(View.GONE);
-                }else{
+                if(interpolatedTime == 1) v.setVisibility(View.GONE);
+                else {
                     v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
                     v.requestLayout();
                 }
@@ -460,56 +444,6 @@ public class UserInfoActivity extends AppCompatActivity {
         body.addProperty("firstName", firstName);
         body.addProperty("lastName", lastName);
 
-        // Roles (JsonArray)
-//        JsonArray roles = new JsonArray();
-//        for (Role role : newRoleList) {
-//            JsonObject o = role.toJSON();
-//            o.addProperty("assigned", true);
-//            roles.add(o);
-//        }
-
-        // Realm Roles (JsonArray)
-//        JsonArray realmRoles = new JsonArray();
-//        for (Role role : newRealmRoleList) {
-//            if (role.assigned) {
-//                JsonObject o = role.toJSON();
-//                o.addProperty("assigned", true);
-//                realmRoles.add(o);
-//            }
-//        }
-
-        // Previous Realm Roles (JsonArray)
-//        JsonArray previousRealmRoles = new JsonArray();
-//        for (Role role : realmRoleList) {
-//            if (role.assigned) {
-//                JsonObject o = role.toJSON();
-//                o.addProperty("assigned", true);
-//                previousRealmRoles.add(o);
-//            }
-//        }
-
-        // Previous Roles (JsonArray)
-//        JsonArray previousRoles = new JsonArray();
-//        for (Role role : roleList) {
-//            if (role.assigned) {
-//                JsonObject o = role.toJSON();
-//                o.addProperty("assigned", true);
-//                previousRoles.add(o);
-//            }
-//        }
-
-        // User Asset Links (JsonArray)
-//        JsonArray linkedDevices = new JsonArray();
-//        for (LinkedDevice device : newLinkedDeviceList) {
-//            linkedDevices.add(device.toJson());
-//        }
-
-        // Previous Asset Links (JsonArray)
-//        JsonArray previousLinked = new JsonArray();
-//        for (LinkedDevice device : linkedDeviceList) {
-//            previousLinked.add(device.toJson());
-//        }
-
         // Modify linked devices
         JsonArray linkToUser = new JsonArray();
         for (LinkedDevice device : newLinkedDeviceList) {
@@ -549,20 +483,6 @@ public class UserInfoActivity extends AppCompatActivity {
                 newRoles.add(o);
             }
         }
-        Log.d(GlobalVars.LOG_TAG, "" + newRoles);
-
-
-        // Body
-//        body.add("roles", roles);
-//        body.add("realmRoles", realmRoles);
-//        body.add("previousRealmRoles", previousRealmRoles);
-//        body.add("previousRoles", previousRoles);
-//        body.add("userAssetLinks", linkedDevices);
-//        if (isLinkedModified) body.add("previousAssetLinks", previousLinked);
-
-//        Log.d(GlobalVars.LOG_TAG, "" + body);
-        Log.d(GlobalVars.LOG_TAG, "" + linkToUser);
-        Log.d(GlobalVars.LOG_TAG, "" + unlinkToUser);
 
         new Thread(() -> {
             int updateCode = APIManager.updateUserInfo(body);

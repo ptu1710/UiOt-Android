@@ -115,7 +115,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
             til_attribute_name = itemView.findViewById(R.id.til_username);
-            et_attribute_value = itemView.findViewById(R.id.et_username);
+            et_attribute_value = itemView.findViewById(R.id.til_device_name);
         }
     }
 

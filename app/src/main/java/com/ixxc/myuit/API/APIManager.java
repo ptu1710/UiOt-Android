@@ -24,20 +24,15 @@ import retrofit2.Response;
 
 public class APIManager {
     private static final APIClient apiClient = new APIClient();
-    private static final APIInterface publicAI = apiClient.getClient(true).create(APIInterface.class);
-    private static APIInterface userAI;
+    private static final APIInterface userAI = apiClient.getClient().create(APIInterface.class);;
 
-    public static void getToken(boolean isPublic, String code) {
-        Call<Token> call =  publicAI.getToken(GlobalVars.authType, code, GlobalVars.client, GlobalVars.redirectUrl);
+    public static void getToken(String code) {
+        Call<Token> call =  userAI.getToken(GlobalVars.authType, code, GlobalVars.client, GlobalVars.redirectUrl);
         try {
             Response<Token> response = call.execute();
             if (response.isSuccessful()) {
                 Token token = response.body();
-                if (isPublic) {
-                    apiClient.PublicToken = token.access_token;
-                } else {
-                    apiClient.UserToken = token.access_token;
-                }
+                apiClient.UserToken = token.access_token;
             }
             else { Log.d("API LOG", "getToken: Not Successful"); }
         } catch (IOException e) {
@@ -46,7 +41,6 @@ public class APIManager {
     }
 
     public static boolean getUserInfo() {
-        userAI = apiClient.getClient(false).create(APIInterface.class);
         Call<User> call = userAI.getUserInfo();
 
         boolean isSuccess = false;
@@ -202,12 +196,8 @@ public class APIManager {
 
         try {
             Response<List<Role>> response = call.execute();
-            if(response.isSuccessful()){
-                Role.setRoleList(response.body(), false);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            if(response.isSuccessful()) Role.setRoleList(response.body(), false);
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     public static List<Role> getRoles(String userId){
@@ -277,16 +267,18 @@ public class APIManager {
 
     }
 
-    public static boolean updateRole(JsonArray requestBody){
+    public static int updateRole(JsonArray requestBody){
         Call<String> call = userAI.updateRole(requestBody);
+
+        int code = -1;
         try {
             Response<String> response = call.execute();
-            return response.isSuccessful();
+            code = response.code();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return code;
     }
     
     public static List<LinkedDevice> getLinkedDevices(String userId){

@@ -70,6 +70,5 @@ public class UserItemAdapter extends RecyclerView.Adapter<UserItemAdapter.ViewHo
 
     public interface ItemClickListener {
         void onItemClick(View view, int position);
-
     }
 }

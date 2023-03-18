@@ -1,5 +1,6 @@
 package com.ixxc.myuit.Model;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -14,10 +15,10 @@ import java.util.stream.Collectors;
 public class Role {
     public String id;
     public String name;
-    public String description;
+    public String description = "";
     public boolean composite;
     public boolean assigned;
-    public ArrayList<String> compositeRoleIds;
+    public ArrayList<String> compositeRoleIds = new ArrayList<>();
 
     private static final List<Role> roleList = new ArrayList<>();
     private static final List<Role> compositeRoleList = new ArrayList<>();
@@ -28,6 +29,8 @@ public class Role {
     }
 
     public static void setRoleList(List<Role> roles, boolean isRealm) {
+        roles.sort((r1, r2) -> r2.name.compareTo(r1.name));
+
         if (isRealm) {
             realmRoleList.clear();
             realmRoleList = roles;
@@ -69,13 +72,25 @@ public class Role {
         return null;
     }
 
+    public Role() {
+
+    }
+
+    public Role(String id, String name, String description, boolean composite, ArrayList<String> compositeRoleIds) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.composite = composite;
+        this.compositeRoleIds = compositeRoleIds;
+    }
+
     public JsonObject toJSON() {
         JsonObject o = new JsonObject();
         o.addProperty("id", id);
         o.addProperty("name", name);
-        o.addProperty("description", description);
+        if (!TextUtils.isEmpty(description)) o.addProperty("description", description);
         o.addProperty("composite", composite);
-        if (compositeRoleIds != null) {
+        if (composite) {
             JsonArray arr = new JsonArray();
             for (String id : compositeRoleIds) arr.add(id);
             o.add("compositeRoleIds", arr);

@@ -4,14 +4,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NavUtils;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -133,7 +130,7 @@ public class AddDeviceActivity extends AppCompatActivity {
         act_device = findViewById(R.id.act_device);
         act_parent = findViewById(R.id.act_parent);
 
-        ti_name = findViewById(R.id.ti_name);
+        ti_name = findViewById(R.id.et_device_name);
 
         til_type = findViewById(R.id.til_type);
 

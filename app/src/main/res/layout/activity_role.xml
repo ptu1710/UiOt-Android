@@ -1,260 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".RoleActivity">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_name"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:text="Name"
-        android:textSize="25dp"
-        android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Description"
-        android:textSize="25dp"
-        android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="80dp"
-        app:layout_constraintStart_toEndOf="@id/tv_name"
-        app:layout_constraintTop_toTopOf="parent" />
-    <LinearLayout
-        android:id="@+id/layout_rv_role"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_name">
+        tools:context=".RoleActivity">
+
+        <include
+            android:id="@+id/action_bar"
+            layout="@layout/actionbar_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_role"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/action_bar">
 
-    <TextView
-        android:id="@+id/tv_add_role"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="ADD ROLE"
-        android:textColor="#76FF7A"
-        android:textSize="25dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_rv_role" />
+        </androidx.recyclerview.widget.RecyclerView>
 
-    <RelativeLayout
-        android:id="@+id/layout_permissions"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/tv_add_role">
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/et_role"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <Button
+            android:id="@+id/btn_add_role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/bg"
+            android:tag="true"
+            android:text="Create new"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_role_layout" />
+
+        <ProgressBar
+            android:id="@+id/pb_loading_2"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="16dp"
+            android:indeterminateTint="@color/bg"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_add_role"
+            app:layout_constraintEnd_toStartOf="@+id/btn_add_role"
+            app:layout_constraintTop_toTopOf="@+id/btn_add_role" />
+
+        <LinearLayout
+            android:id="@+id/add_role_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp">
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rv_role">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ti_role"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_role_name"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Role* "
-                android:singleLine="true"
-                android:textStyle="bold" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/et_description"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"            android:layout_marginEnd="10dp"
-            android:layout_below="@+id/et_role">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_role_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Role name"
+                    android:singleLine="true"
+                    android:textStyle="bold" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ti_description"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_role_desc"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Description* "
-                android:singleLine="true"
-                android:textStyle="bold" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp">
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_role_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Role Description"
+                    android:singleLine="true"
+                    android:textStyle="bold" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <ScrollView
-            android:id="@+id/src"
-            android:layout_below="@+id/et_description"
-            android:layout_width="match_parent"
-            android:layout_height="350dp">
-            <LinearLayout
-                android:paddingTop="10dp"
-                android:orientation="vertical"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
+                android:layout_height="wrap_content"
+                android:clickable="true">
+
+                <Button
+                    android:id="@+id/btn_cancel"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Read permissions"
-                    android:textSize="22dp"
-                    android:layout_marginLeft="5dp"
-                    android:textStyle="bold"/>
-                <CheckBox
-                    android:id="@+id/cb_r_admin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="admin: Read system settings, realms, and users" />
-                <CheckBox
-                    android:id="@+id/cb_r_asset"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="assets: Read asset data" />
-                <CheckBox
-                    android:id="@+id/cb_r_logs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="logs: Read logs and log settings" />
-                <CheckBox
-                    android:id="@+id/cb_r_map"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="map: View map" />
-                <CheckBox
-                    android:id="@+id/cb_r_rules"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="rules: Read rulesets" />
-                <CheckBox
-                    android:id="@+id/cb_r_users"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="users: Read limited set of user details for use in rules etc." />
+                    android:text="Cancel"
+                    android:textAllCaps="false"
+                    android:textColor="@color/bg"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Write permissions"
-                    android:textSize="22dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="10dp"
-                    android:textStyle="bold"/>
-                <CheckBox
-                    android:id="@+id/cb_w_admin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="admin: Write system settings, realms, and users" />
-                <CheckBox
-                    android:id="@+id/cb_w_asset"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="assets: Write asset data" />
-                <CheckBox
-                    android:id="@+id/cb_w_attributes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="attributes: Write attribute data" />
-                <CheckBox
-                    android:id="@+id/cb_w_logs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="logs: Write log settings" />
-                <CheckBox
-                    android:id="@+id/cb_w_rules"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="rules: Write rulesets (NOTE: effectively super-user access!)" />
-                <CheckBox
-                    android:id="@+id/cb_w_users"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="user: Write data of the authenticated user" />
-
-            </LinearLayout>
-
-        </ScrollView>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:visibility="gone"
-        android:id="@+id/layout_save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_permissions">
-
-        <TextView
-            android:id="@+id/tv_del_role"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="DELETE"
-            android:textColor="#76FF7A"
-            android:textSize="25dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp" />
-
-        <TextView
-            android:id="@+id/tv_save_role"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SAVE"
-            android:textColor="#76FF7A"
-            android:textSize="25dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="5dp"
-            android:layout_alignParentRight="true" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:visibility="gone"
-        android:id="@+id/layout_create"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_permissions">
-
-        <TextView
-            android:id="@+id/tv_cancel_role"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CANCEL"
-            android:textColor="#76FF7A"
-            android:textSize="25dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp" />
-
-        <TextView
-            android:id="@+id/tv_create_role"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CREATE"
-            android:textColor="#76FF7A"
-            android:textSize="25dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="5dp"
-            android:layout_alignParentRight="true" />
-
-    </RelativeLayout>
-
-
-
-
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

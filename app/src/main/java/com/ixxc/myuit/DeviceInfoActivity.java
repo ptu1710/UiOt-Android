@@ -134,7 +134,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     private void InitViews() {
         rv_attribute = findViewById(R.id.rv_attribute);
-        et_name = findViewById(R.id.et_username);
+        et_name = findViewById(R.id.til_device_name);
         act_parent = findViewById(R.id.act_parent);
         til_name = findViewById(R.id.til_username);
         til_parent = findViewById(R.id.til_parent);
