@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -86,16 +87,18 @@ public class RoleActivity extends AppCompatActivity {
                 for (Role role: Role.getCompositeRoleList()) {
                     JsonObject role_object = new JsonObject();
                     role_object.addProperty("id",role.id);
-                    role_object.addProperty("name", String.valueOf(ti_role.getText()));
-                    role_object.addProperty("description", String.valueOf(ti_description.getText()));
-                    role_object.addProperty("composite",role.composite);
                     JsonElement compositeRoleIds;
                     if(role.id.equals(Role.getCompositeRoleList().get(pos_chosen).id)){
+                        role_object.addProperty("name", String.valueOf(ti_role.getText()));
+                        role_object.addProperty("description", String.valueOf(ti_description.getText()));
                         compositeRoleIds = new Gson().toJsonTree(isChecked());
                     }
                     else {
+                        role_object.addProperty("name", role.name);
+                        role_object.addProperty("description", role.description);
                         compositeRoleIds = new Gson().toJsonTree(role.compositeRoleIds);
                     }
+                    role_object.addProperty("composite",role.composite);
                     role_object.add("compositeRoleIds", compositeRoleIds);
                     body.add(role_object);
                 }
@@ -194,7 +197,7 @@ public class RoleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 JsonArray body = new JsonArray();
 
-                if(isChecked()!=null || ti_role.getText() != null){
+                if(isChecked().size() !=0 && !TextUtils.isEmpty(ti_role.getText().toString())){
 
                     for (Role role: Role.getCompositeRoleList()) {
                         JsonObject role_object = new JsonObject();
@@ -241,6 +244,12 @@ public class RoleActivity extends AppCompatActivity {
 
                         }
                     }).start();
+                } else if (TextUtils.isEmpty(ti_role.getText().toString())) {
+                    Toast.makeText(getApplicationContext(), "Role field cannot be empty!", Toast.LENGTH_LONG).show();
+
+                } else if (isChecked().size() ==0) {
+                    Toast.makeText(getApplicationContext(), "No permissions have been checked!", Toast.LENGTH_LONG).show();
+
                 }
 
 
