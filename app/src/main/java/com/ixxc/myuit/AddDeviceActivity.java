@@ -10,9 +10,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -34,15 +36,10 @@ public class AddDeviceActivity extends AppCompatActivity {
     Toolbar toolbar;
     ActionBar actionBar;
     AutoCompleteTextView act_type, act_device, act_parent;
-
     TextInputLayout til_type;
-
     TextInputEditText ti_name;
-
-    Button btn_add;
-
-    LinearLayout add_optional_layout;
-
+    Button btn_add, btn_add_optional;
+    ImageView iv_clear_parent;
     List<String> modelsType, modelsName, parentNames;
 
     List<Model> models;
@@ -71,7 +68,7 @@ public class AddDeviceActivity extends AppCompatActivity {
         } else if (createDevice) {
             HomeActivity.devicesFrag.refreshDevices();
             finish();
-            Toast.makeText(this, "CREATED!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Created!", Toast.LENGTH_SHORT).show();
         }
 
         return false;
@@ -129,19 +126,19 @@ public class AddDeviceActivity extends AppCompatActivity {
         act_type = findViewById(R.id.act_type);
         act_device = findViewById(R.id.act_device);
         act_parent = findViewById(R.id.act_parent);
-
         ti_name = findViewById(R.id.et_device_name);
-
         til_type = findViewById(R.id.til_type);
-
-        add_optional_layout = findViewById(R.id.add_optional_layout);
-
+        btn_add_optional = findViewById(R.id.btn_add_optional);
         btn_add = findViewById(R.id.btn_add);
-
         toolbar = findViewById(R.id.action_bar);
+        iv_clear_parent = findViewById(R.id.iv_clear_parent_1);
     }
 
     private void InitEvents() {
+        iv_clear_parent.setOnClickListener(view -> {
+            act_parent.setText("");
+            act_parent.clearFocus();
+        });
         act_type.setOnItemClickListener((adapterView, view, i, l) -> {
             String type = modelsType.get(i);
             List<String> newList =  modelsName.stream().filter(name -> name.contains(type)).collect(Collectors.toList());
@@ -153,7 +150,7 @@ public class AddDeviceActivity extends AppCompatActivity {
 
         act_parent.setOnItemClickListener((adapterView, view, i, l) -> parentId = parentDevices.get(i).id);
 
-        add_optional_layout.setOnClickListener(view -> {
+        btn_add_optional.setOnClickListener(view -> {
             List<Model> result = models.stream()
                     .filter(item -> item.assetDescriptor.get("name").getAsString().equals(act_device.getText().toString()))
                     .collect(Collectors.toList());
@@ -183,17 +180,21 @@ public class AddDeviceActivity extends AppCompatActivity {
             });
 
             builder.setPositiveButton("Add", (dialogInterface, i) -> Toast.makeText(AddDeviceActivity.this, "OK", Toast.LENGTH_SHORT).show());
-
             builder.create();
             builder.show();
         });
 
         btn_add.setOnClickListener(view -> {
-            Model result = models.stream()
+            List<Model> result = models.stream()
                     .filter(item -> item.assetDescriptor.get("name").getAsString().equals(act_device.getText().toString()))
-                    .collect(Collectors.toList()).get(0);
+                    .collect(Collectors.toList());
 
-            List<Attribute> requireAttributes = result.attributeDescriptors.stream()
+            if(result.size() == 0 || String.valueOf(ti_name.getText()).equals("")) {
+                Toast.makeText(AddDeviceActivity.this, "Device type and device name fields are required!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<Attribute> requireAttributes = result.get(0).attributeDescriptors.stream()
                     .filter(item -> !item.optional)
                     .collect(Collectors.toList());
 
@@ -210,11 +211,7 @@ public class AddDeviceActivity extends AppCompatActivity {
                 JsonObject attribute = new JsonObject();
                 attribute.addProperty("name", name);
                 attribute.addProperty("type", type);
-
-                if (meta != null) {
-                    attribute.add("meta", meta);
-                }
-
+                if (meta != null) attribute.add("meta", meta);
                 attributes.add(name, attribute);
             }
 
@@ -225,8 +222,6 @@ public class AddDeviceActivity extends AppCompatActivity {
                 req.setParentId(parentId);
                 req.setAttributes(attributes);
 
-                Log.d(GlobalVars.LOG_TAG, req.getJsonObj().toString());
-
                 APIManager.createDevice(req.getJsonObj());
 
                 Message msg = handler.obtainMessage();
@@ -236,15 +231,5 @@ public class AddDeviceActivity extends AppCompatActivity {
                 handler.sendMessage(msg);
             }).start();
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

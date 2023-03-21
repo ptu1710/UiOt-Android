@@ -26,7 +26,7 @@ public class UserItemAdapter extends RecyclerView.Adapter<UserItemAdapter.ViewHo
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.user_item_layout, parent, false);
+        View view = mInflater.inflate(R.layout.admin_item, parent, false);
         return new ViewHolder(view);
     }
 

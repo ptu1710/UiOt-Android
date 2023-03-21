@@ -23,23 +23,16 @@ import com.ixxc.myuit.Model.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserFragment extends Fragment {
+public class AdminFragment extends Fragment {
     ImageView iv_user;
     TextView tv_username;
-    RecyclerView rv_user_item;
+    RecyclerView rv_admin_item;
     Context ctx;
     User user;
 
-    Handler handler = new Handler(message -> {
-        Bundle bundle = message.getData();
+    public AdminFragment() { }
 
-
-        return false;
-    });
-
-    public UserFragment() { }
-
-    public UserFragment(Context context) {
+    public AdminFragment(Context context) {
         this.ctx = context;
     }
 
@@ -50,14 +43,14 @@ public class UserFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_user, container, false);
+        return inflater.inflate(R.layout.fragment_admin, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         iv_user = view.findViewById(R.id.iv_user);
         tv_username = view.findViewById(R.id.tv_username_1);
-        rv_user_item = view.findViewById(R.id.rv_user_info);
+        rv_admin_item = view.findViewById(R.id.rv_admin_item);
 
         user = User.getMe();
 
@@ -70,32 +63,24 @@ public class UserFragment extends Fragment {
         items.add("Roles");
 
         UserItemAdapter adapter = new UserItemAdapter(ctx, items);
-        adapter.setClickListener(new UserItemAdapter.ItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (position == 1) {
+        adapter.setClickListener((view1, position) -> {
+            switch (position) {
+                case 1:
                     ctx.startActivity(new Intent(ctx, UsersActivity.class));
-                }
-                else if (position == 2) {
+                    break;
+                case 2:
                     ctx.startActivity(new Intent(ctx, RealmActivity.class));
-                }
-                else if (position == 3) {
+                    break;
+                case 3:
                     ctx.startActivity(new Intent(ctx, RoleActivity.class));
-                }
+                    break;
+                default:
+                    break;
             }
-
         });
 
-        rv_user_item.setLayoutManager(new LinearLayoutManager(ctx));
-        rv_user_item.setAdapter(adapter);
-
-        new Thread(() -> {
-//            Message msg = handler.obtainMessage();
-//            Bundle bundle = new Bundle();
-//            bundle.putString("USER", User.getUser().username);
-//            msg.setData(bundle);
-//            handler.sendMessage(msg);
-        }).start();
+        rv_admin_item.setLayoutManager(new LinearLayoutManager(ctx));
+        rv_admin_item.setAdapter(adapter);
 
         super.onViewCreated(view, savedInstanceState);
     }

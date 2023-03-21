@@ -37,19 +37,12 @@ import java.util.List;
 public class DeviceInfoActivity extends AppCompatActivity {
     Toolbar toolbar;
     ActionBar actionBar;
-
     Menu actionbarMenu;
-
     RecyclerView rv_attribute;
-
     EditText et_name;
-
     TextInputLayout til_parent, til_name;
-
     ImageView iv_clear_parent;
-
     CheckBox cb_public;
-
     AutoCompleteTextView act_parent;
 
     String device_id, selected_id;

@@ -13,6 +13,7 @@ import com.ixxc.myuit.Model.User;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.Body;
@@ -125,4 +126,8 @@ public interface APIInterface {
     @Headers("Content-Type: application/json")
     @PUT("api/master/user/master/reset-password/{userId}")
     Call<String> updatePassword(@Path("userId") String userId, @Body JsonObject body);
+
+    // Update secret for service user
+    @GET("api/master/user/master/reset-secret/{userId}")
+    Call<ResponseBody> getNewSecret(@Path("userId") String userId);
 }

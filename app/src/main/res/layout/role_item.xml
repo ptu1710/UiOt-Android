@@ -11,13 +11,13 @@
     android:weightSum="10">
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/checkbox"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="4" />
 
     <TextView
-        android:id="@+id/textView10"
+        android:id="@+id/text"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="6"

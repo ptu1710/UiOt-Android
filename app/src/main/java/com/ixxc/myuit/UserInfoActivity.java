@@ -39,8 +39,6 @@ import com.ixxc.myuit.Model.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -50,7 +48,7 @@ public class UserInfoActivity extends AppCompatActivity {
     LinearLayout pwd_layout, pwd_layout_1, pwd_layout_2, roles_layout, roles_layout_1, roles_layout_2;
     ImageView iv_pwd_expand, iv_roles_expand;
     CheckBox cb_active;
-    TextInputLayout til_email, til_firstname, til_lastname, til_rePwd;
+    TextInputLayout til_email, til_firstname, til_lastname, til_pwd, til_rePwd;
     EditText et_email, et_firstname, et_lastname, et_pwd, et_rePwd;
     AutoCompleteTextView act_realm_roles, act_roles;
     Button btn_custom_role_set, btn_linked_devices, btn_regenerate;
@@ -73,11 +71,16 @@ public class UserInfoActivity extends AppCompatActivity {
         Bundle bundle = message.getData();
         boolean isOK = bundle.getBoolean("USER");
         int updateCode = bundle.getInt("UPDATE_USER");
+        String secret = bundle.getString("SECRET");
 
         if (isOK) {
             isGetDataDone = true;
             InitVars();
             showUserInfo();
+        } else if (!secret.equals("")) {
+            et_pwd.setText(secret);
+            et_pwd.clearFocus();
+            Toast.makeText(this, "New secret has been generated", Toast.LENGTH_SHORT).show();
         } else Toast.makeText(this, "Update with status: " + updateCode, Toast.LENGTH_SHORT).show();
 
         return false;
@@ -108,6 +111,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
+        actionBar.setTitle("...");
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
@@ -136,6 +140,7 @@ public class UserInfoActivity extends AppCompatActivity {
         til_firstname = findViewById(R.id.til_firstname);
         til_lastname = findViewById(R.id.til_lastname);
         til_rePwd = findViewById(R.id.til_repwd);
+        til_pwd = findViewById(R.id.til_pwd);
         pb_user_info = findViewById(R.id.pb_user_info);
     }
 
@@ -216,6 +221,31 @@ public class UserInfoActivity extends AppCompatActivity {
                 }
             }
         });
+
+        et_rePwd.setOnFocusChangeListener((view, focused) -> {
+            if (focused) til_rePwd.setEndIconMode(TextInputLayout.END_ICON_PASSWORD_TOGGLE);
+            else til_rePwd.setEndIconMode(TextInputLayout.END_ICON_NONE);
+        });
+
+        et_pwd.setOnFocusChangeListener((view, focused) -> {
+            if (focused) til_pwd.setEndIconMode(TextInputLayout.END_ICON_PASSWORD_TOGGLE);
+            else til_pwd.setEndIconMode(TextInputLayout.END_ICON_NONE);
+        });
+
+        btn_regenerate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Thread(() -> {
+                    String secret = APIManager.getNewSecret(user.id);
+
+                    Message message = handler.obtainMessage();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("SECRET", secret);
+                    message.setData(bundle);
+                    handler.sendMessage(message);
+                }).start();
+            }
+        });
     }
 
     private void InitVars() {
@@ -228,7 +258,7 @@ public class UserInfoActivity extends AppCompatActivity {
         roleSetList = user.getCompositeRoleList();
     }
 
-    private void checkRoles() {
+    private void checkDefaultRoles() {
         List<String> compositeRoleIds = roleList.stream().map(r -> r.id).collect(Collectors.toList());
 
         for (Role role : roleSetList) {
@@ -257,7 +287,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
             et_lastname.setVisibility(View.GONE);
             et_email.setVisibility(View.GONE);
-            et_rePwd.setVisibility(View.GONE);
+            til_rePwd.setVisibility(View.GONE);
         } else {
             et_firstname.setText(user.firstName);
             et_lastname.setText(user.lastName);
@@ -279,7 +309,7 @@ public class UserInfoActivity extends AppCompatActivity {
         for (Role role : realmRoles) { if (role.assigned) realmRolesName.add(role.name); }
         act_realm_roles.setText(String.join(", ", realmRolesName));
 
-        realmRolesAdapter = new UserRoleAdapter(this, R.layout.spinner_item, realmRoles, (v, role, isChecked) -> {
+        realmRolesAdapter = new UserRoleAdapter(this, R.layout.user_role_item, realmRoles, (v, role, isChecked) -> {
             isRealmRoleModified = true;
             role.assigned = isChecked;
         });
@@ -287,7 +317,7 @@ public class UserInfoActivity extends AppCompatActivity {
         act_realm_roles.setAdapter(realmRolesAdapter);
 
         List<String> compositeRoleIds = roleList.stream().map(r -> r.id).collect(Collectors.toList());
-        roleSetAdapter = new UserRoleAdapter(this, R.layout.spinner_item, roleSetList, (v, role, isChecked) -> {
+        roleSetAdapter = new UserRoleAdapter(this, R.layout.user_role_item, roleSetList, (v, role, isChecked) -> {
             role.assigned = isChecked;
 
             for (String id : role.compositeRoleIds) {
@@ -300,7 +330,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
         customRoleDialog = customRoleDialog();
         customRoleDialog.create();
-        checkRoles();
+        checkDefaultRoles();
 
         linkedDevicesDialog = linkedDevicesDialog();
         linkedDevicesDialog.create();
