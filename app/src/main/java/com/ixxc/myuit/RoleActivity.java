@@ -1,6 +1,7 @@
 package com.ixxc.myuit;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -98,46 +99,6 @@ public class RoleActivity extends AppCompatActivity {
     }
 
     private void InitEvent() {
-//        btn_delete_role.setOnClickListener(v -> {
-////            JsonArray body = new JsonArray();
-////            for (Role role: Role.getCompositeRoleList()) {
-////                if(!role.id.equals(Role.getCompositeRoleList().get(pos_chosen).id)){
-////                    JsonObject role_object = new JsonObject();
-////                    role_object.addProperty("id",role.id);
-////                    role_object.addProperty("name",role.name);
-////                    role_object.addProperty("description",role.description);
-////                    role_object.addProperty("composite",role.composite);
-////                    Log.d("ROLE", role.compositeRoleIds.toString());
-////                    JsonElement compositeRoleIds = new Gson().toJsonTree(role.compositeRoleIds);
-////                    role_object.add("compositeRoleIds", compositeRoleIds);
-////                    body.add(role_object);
-////                }
-////
-////            }
-////            for (Role role:Role.getRoleList()) {
-////                JsonObject role_object = new JsonObject();
-////                role_object.addProperty("id",role.id);
-////                role_object.addProperty("name",role.name);
-////                role_object.addProperty("description",role.description);
-////                role_object.addProperty("composite",role.composite);
-////                body.add(role_object);
-////            }
-////            Log.d("DEL", body.toString());
-////            new Thread(()->{
-////                boolean del_state =APIManager.updateRole(body);
-////                if(del_state){
-////                    APIManager.getRoles();
-////
-////                    Message msg = handler.obtainMessage();
-////                    Bundle bundle = new Bundle();
-////                    bundle.putBoolean("ROLE_OK", true);
-////                    bundle.putBoolean("GONE", true);
-////                    msg.setData(bundle);
-////                    handler.sendMessage(msg);
-////                }
-////            }).start();
-//            Log.d(GlobalVars.LOG_TAG, "DELETE");
-//        });
 
         btn_add_role.setOnClickListener(v -> {
             addRoleSet();
@@ -174,7 +135,15 @@ public class RoleActivity extends AppCompatActivity {
         Button btn_delete_role = view.findViewById(R.id.btn_delete_role);
 
         btn_save_role.setOnClickListener(view1 -> updateRoleSet(String.valueOf(et_name.getText()), String.valueOf(et_desc.getText()), roleSet, false));
-        btn_delete_role.setOnClickListener(view2 -> updateRoleSet(String.valueOf(et_name.getText()), String.valueOf(et_desc.getText()), roleSet, true));
+        btn_delete_role.setOnClickListener(view2 -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Warning!");
+            builder.setMessage("Delete this role?");
+            builder.setPositiveButton("Delete", (dialogInterface, i) -> updateRoleSet(String.valueOf(et_name.getText()), String.valueOf(et_desc.getText()), roleSet, true));
+            builder.setNegativeButton("Cancel", (dialogInterface, i) -> {});
+
+            builder.show();
+        });
 
         addRoleToLayout(layout, roleSet);
 
@@ -296,109 +265,4 @@ public class RoleActivity extends AppCompatActivity {
             UserInfoActivity.expand(add_role_layout);
         }
     }
-
-//    private ArrayList<String> isChecked(){
-//        ArrayList<String> id = new ArrayList<>();
-//        if(cb_r_admin.isChecked()){
-//            id.add(Role.getIdByDescription("Read system settings, realms, and users"));
-//        }
-//        if(cb_r_assets.isChecked()){
-//            id.add(Role.getIdByDescription("Read asset data"));
-//        }
-//        if(cb_r_logs.isChecked()){
-//            id.add(Role.getIdByDescription("Read logs and log settings"));
-//        }
-//        if(cb_r_map.isChecked()){
-//            id.add(Role.getIdByDescription("View map"));
-//        }
-//        if(cb_r_rules.isChecked()){
-//            id.add(Role.getIdByDescription("Read rulesets"));
-//        }
-//        if(cb_r_users.isChecked()){
-//            id.add(Role.getIdByDescription("Read limited set of user details for use in rules etc."));
-//        }
-//
-//        if(cb_w_admin.isChecked()){
-//            id.add(Role.getIdByDescription("Write system settings, realms, and users"));
-//        }
-//        if(cb_w_assets.isChecked()){
-//            id.add(Role.getIdByDescription("Write asset data"));
-//        }
-//        if(cb_w_users.isChecked()){
-//            id.add(Role.getIdByDescription("Write data of the authenticated user"));
-//        }
-//        if(cb_w_attributes.isChecked()){
-//            id.add(Role.getIdByDescription("Write attribute data"));
-//        }
-//        if(cb_w_logs.isChecked()){
-//            id.add(Role.getIdByDescription("Write log settings"));
-//        }
-//        if(cb_w_rules.isChecked()){
-//            id.add(Role.getIdByDescription("Write rulesets (NOTE: effectively super-user access!)"));
-//        }
-//
-//        return id;
-//    }
-
-//    private void Checked() {
-//        for (String permissionID: Role.getCompositeRoleList().get(pos_chosen).compositeRoleIds) {
-//            String name = Role.getNameByID(Role.getRoleList(),permissionID);
-//            if(name!=null){
-//                switch (name){
-//                    case "read:rules":
-//                        cb_r_rules.setChecked(true);
-//                        break;
-//                    case "read:admin":
-//                        cb_r_admin.setChecked(true);
-//                        break;
-//                    case "read:assets":
-//                        cb_r_assets.setChecked(true);
-//                        break;
-//                    case "read:logs":
-//                        cb_r_logs.setChecked(true);
-//                        break;
-//                    case "read:users":
-//                        cb_r_users.setChecked(true);
-//                        break;
-//                    case "read:map":
-//                        cb_r_map.setChecked(true);
-//                        break;
-//                    case "write:admin":
-//                        cb_w_admin.setChecked(true);
-//                        break;
-//                    case "write:assets":
-//                        cb_w_assets.setChecked(true);
-//                        break;
-//                    case "write:rules":
-//                        cb_w_rules.setChecked(true);
-//                        break;
-//                    case "write:attributes":
-//                        cb_w_attributes.setChecked(true);
-//                        break;
-//                    case "write:logs":
-//                        cb_w_logs.setChecked(true);
-//                        break;
-//                    case "write:user":
-//                        cb_w_users.setChecked(true);
-//                        break;
-//                }
-//            }
-//        }
-//    }
-
-//    private void unChecked() {
-//        cb_r_admin.setChecked(false);
-//        cb_r_assets.setChecked(false);
-//        cb_r_rules.setChecked(false);
-//        cb_r_map.setChecked(false);
-//        cb_r_logs.setChecked(false);
-//        cb_r_users.setChecked(false);
-//
-//        cb_w_admin.setChecked(false);
-//        cb_w_assets.setChecked(false);
-//        cb_w_rules.setChecked(false);
-//        cb_w_attributes.setChecked(false);
-//        cb_w_logs.setChecked(false);
-//        cb_w_users.setChecked(false);
-//    }
 }
