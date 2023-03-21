@@ -21,6 +21,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.http.Body;
 
 public class APIManager {
     private static final APIClient apiClient = new APIClient();
@@ -177,18 +178,17 @@ public class APIManager {
         return user;
     }
 
-    public static List<Realm> getRealm(){
+    public static void getRealm(){
         Call<List<Realm>> call = userAI.getRealm();
         List<Realm> realms = null;
         try {
             Response<List<Realm>> response = call.execute();
             if(response.isSuccessful()){
-                realms = response.body();
+                Realm.setRealmList(response.body());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return realms;
     }
 
     public static void getRoles(){
@@ -347,5 +347,20 @@ public class APIManager {
         } catch (IOException e) { e.printStackTrace(); }
 
         return returnCode;
+    }
+
+    public static int createRealm(JsonObject body){
+        Call<String> call = userAI.createRealm(body);
+
+        int returnCode = -1;
+        try {
+            Response<String> response = call.execute();
+            returnCode = response.code();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  returnCode;
+
+
     }
 }

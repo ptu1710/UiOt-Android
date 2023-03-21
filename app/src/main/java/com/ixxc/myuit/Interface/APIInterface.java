@@ -125,4 +125,8 @@ public interface APIInterface {
     @Headers("Content-Type: application/json")
     @PUT("api/master/user/master/reset-password/{userId}")
     Call<String> updatePassword(@Path("userId") String userId, @Body JsonObject body);
+
+    //Create a realm
+    @POST("api/master/realm")
+    Call<String> createRealm(@Body JsonObject body);
 }
