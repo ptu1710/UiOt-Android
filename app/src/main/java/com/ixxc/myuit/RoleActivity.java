@@ -173,9 +173,9 @@ public class RoleActivity extends AppCompatActivity {
         for (Role r : Role.getRoleList()) {
             if (layout.findViewWithTag(r.id) == null) {
                 LayoutInflater vi = getLayoutInflater();
-                View v = vi.inflate(R.layout.role_item_layout, null);
+                View v = vi.inflate(R.layout.role_item, null);
 
-                CheckBox cb = v.findViewById(R.id.checkBox);
+                CheckBox cb = v.findViewById(R.id.checkbox);
                 cb.setText(r.name);
                 cb.setTag(r.id);
                 cb.setChecked(compositeRoles.contains(r.id));
@@ -187,7 +187,7 @@ public class RoleActivity extends AppCompatActivity {
                     else compositeRoles.removeIf(roleId -> roleId.equals(id));
                 });
 
-                TextView tv = v.findViewById(R.id.textView10);
+                TextView tv = v.findViewById(R.id.text);
                 tv.setText(r.description);
                 tv.setOnClickListener(view1 -> cb.setChecked(!cb.isChecked()));
 

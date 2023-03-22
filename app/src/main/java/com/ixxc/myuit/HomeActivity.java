@@ -16,7 +16,7 @@ public class HomeActivity extends AppCompatActivity {
     public  static HomeFragment homeFrag;
     public  static DevicesFragment devicesFrag;
     public  static MapsFragment mapsFrag;
-    public  static UserFragment userFrag;
+    public  static AdminFragment userFrag;
     public static HomeActivity homeActivity;
     Fragment fragment = null;
     int selectedIndex;
@@ -44,7 +44,7 @@ public class HomeActivity extends AppCompatActivity {
         homeFrag = new HomeFragment();
         devicesFrag = new DevicesFragment();
         mapsFrag = new MapsFragment();
-        userFrag = new UserFragment(this);
+        userFrag = new AdminFragment(this);
     }
 
     private void InitViews() {
@@ -52,7 +52,11 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void InitEvents() {
-        navbar.setOnNavigationItemSelectedListener(item -> {
+        navbar.setOnItemReselectedListener(item -> { });
+
+        navbar.setOnItemSelectedListener(item -> {
+            if (fragment == devicesFrag) devicesFrag.changeSelectedDevice(-1, "");
+
             switch (item.getItemId()) {
                 case (R.id.nav_home):
                     if (homeFrag == null) { homeFrag = new HomeFragment(); }
@@ -73,7 +77,7 @@ public class HomeActivity extends AppCompatActivity {
                     fm.beginTransaction().hide(fragment).commit();
                     fragment = devicesFrag;
                     break;
-                case (R.id.nav_user):
+                case (R.id.nav_admin):
                     if (fm.findFragmentByTag("user") == null) {
                         fm.beginTransaction().add(R.id.main_frame, userFrag, "user").commit();
                     }
@@ -86,13 +90,26 @@ public class HomeActivity extends AppCompatActivity {
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .show(fragment)
                     .commit();
+
             return true;
         });
     }
 
-    public void replaceFragment(Fragment fragment) {
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction().replace(R.id.main_frame, fragment);
-        ft.commit();
+    @Override
+    public void onBackPressed() {
+        switch (navbar.getSelectedItemId()) {
+            case R.id.nav_home:
+                super.onBackPressed();
+            case R.id.nav_devices:
+                if(!devicesFrag.selected_device_id.equals("")) {
+                    devicesFrag.changeSelectedDevice(-1, "");
+                    return;
+                }
+                break;
+            default:
+                break;
+        }
+
+        navbar.setSelectedItemId(R.id.nav_home);
     }
 }

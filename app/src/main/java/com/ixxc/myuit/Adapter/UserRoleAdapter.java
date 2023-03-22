@@ -27,7 +27,7 @@ public class UserRoleAdapter extends ArrayAdapter<Role> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
-        if (view == null) { view = LayoutInflater.from(getContext()).inflate(R.layout.spinner_item, parent, false); }
+        if (view == null) { view = LayoutInflater.from(getContext()).inflate(R.layout.user_role_item, parent, false); }
 
         Role role = getItem(position);
 

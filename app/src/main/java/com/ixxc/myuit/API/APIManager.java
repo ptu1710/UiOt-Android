@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.Body;
@@ -337,7 +338,7 @@ public class APIManager {
         return returnCode;
     }
 
-    public static int updatePassword(String id, JsonObject query) {
+    public static void updatePassword(String id, JsonObject query) {
         Call<String> call = userAI.updatePassword(id, query);
 
         int returnCode = -1;
@@ -346,7 +347,19 @@ public class APIManager {
             returnCode = response.code();
         } catch (IOException e) { e.printStackTrace(); }
 
-        return returnCode;
+    }
+
+    public static String getNewSecret(String userId){
+        Call<ResponseBody> call = userAI.getNewSecret(userId);
+
+        try {
+            Response<ResponseBody> response = call.execute();
+            if(response.code() == 200){
+                return response.body().string();
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return "";
     }
 
     public static int createRealm(JsonObject body){

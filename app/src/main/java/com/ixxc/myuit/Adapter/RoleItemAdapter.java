@@ -29,7 +29,7 @@ public class RoleItemAdapter extends RecyclerView.Adapter<RoleItemAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.roleset_item_layout, parent, false));
+        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.roleset_item, parent, false));
     }
 
     @Override

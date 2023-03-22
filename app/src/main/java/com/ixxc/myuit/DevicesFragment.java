@@ -36,7 +36,7 @@ public class DevicesFragment extends Fragment {
     SwipeRefreshLayout srl_devices;
     View rootView;
 
-    public static String selected_device_id = "";
+    public String selected_device_id = "";
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -121,9 +121,7 @@ public class DevicesFragment extends Fragment {
         iv_add.setOnClickListener(view -> startActivity(new Intent(HomeActivity.homeActivity, AddDeviceActivity.class)));
 
         iv_delete.setOnClickListener(view -> {
-            if (selected_device_id.equals("")) {
-                return;
-            }
+            if (selected_device_id.equals("")) return;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.homeActivity);
             builder.setTitle("Warning!");
@@ -131,40 +129,26 @@ public class DevicesFragment extends Fragment {
             builder.setPositiveButton("Delete", (dialogInterface, i) -> new Thread(() -> {
                 Message msg = handler.obtainMessage();
                 Bundle bundle = new Bundle();
-
                 bundle.putBoolean("DELETE_DEVICE", APIManager.delDevice(selected_device_id));
                 msg.setData(bundle);
                 handler.sendMessage(msg);
             }).start());
 
-            builder.setNegativeButton("Cancel", (dialogInterface, i) -> {
-
-            });
-
+            builder.setNegativeButton("Cancel", (dialogInterface, i) -> { });
             builder.show();
         });
 
         iv_cancel.setOnClickListener(view -> {
-            iv_add.setVisibility(View.VISIBLE);
-            iv_community.setVisibility(View.VISIBLE);
-            iv_delete.setVisibility(View.GONE);
-            iv_cancel.setVisibility(View.GONE);
-
-            devicesAdapter.notifyItemChanged(devicesAdapter.checkedPos);
-            devicesAdapter.checkedPos = -1;
-
-            selected_device_id = "";
+            changeSelectedDevice(-1, "");
         });
 
         srl_devices.setOnRefreshListener(() -> {
-            srl_devices.setRefreshing(false);
             refreshDevices();
         });
     }
 
     public void refreshDevices() {
         rv_devices.smoothScrollToPosition(0);
-        if (srl_devices.isRefreshing()) return;
 
         srl_devices.setRefreshing(true);
 //        sv.setQuery("", true);
@@ -191,17 +175,13 @@ public class DevicesFragment extends Fragment {
         devicesAdapter = new DevicesAdapter(deviceList, new DevicesListener() {
             @Override
             public void onItemClicked(View v, Device device) {
-                ViewDeviceInfo(device.id);
+                viewDeviceInfo(device.id);
+                changeSelectedDevice(-1, "");
             }
 
             @Override
             public void onItemLongClicked(View v, Device device) {
-                iv_add.setVisibility(View.GONE);
-                iv_community.setVisibility(View.GONE);
-                iv_delete.setVisibility(View.VISIBLE);
-                iv_cancel.setVisibility(View.VISIBLE);
-
-                selected_device_id = device.id;
+                changeSelectedDevice(0, device.id);
             }
         });
 
@@ -214,9 +194,28 @@ public class DevicesFragment extends Fragment {
         pb_loading_1.setVisibility(View.GONE);
     }
 
-    public void ViewDeviceInfo(String id) {
+    private void viewDeviceInfo(String id) {
         Intent toDetails = new Intent(getContext(), DeviceInfoActivity.class);
         toDetails.putExtra("DEVICE_ID", id);
         getContext().startActivity(toDetails);
+    }
+
+    public void changeSelectedDevice(int index, String id) {
+        if (index != -1) {
+            iv_add.setVisibility(View.GONE);
+            iv_community.setVisibility(View.GONE);
+            iv_delete.setVisibility(View.VISIBLE);
+            iv_cancel.setVisibility(View.VISIBLE);
+        } else {
+            iv_add.setVisibility(View.VISIBLE);
+            iv_community.setVisibility(View.VISIBLE);
+            iv_delete.setVisibility(View.GONE);
+            iv_cancel.setVisibility(View.GONE);
+
+            devicesAdapter.notifyItemChanged(devicesAdapter.checkedPos);
+            devicesAdapter.checkedPos = index;
+        }
+
+        selected_device_id = id;
     }
 }
