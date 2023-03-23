@@ -77,7 +77,7 @@ public class UserInfoActivity extends AppCompatActivity {
             isGetDataDone = true;
             InitVars();
             showUserInfo();
-        } else if (!secret.equals("")) {
+        } else if (secret != null && !secret.equals("")) {
             et_pwd.setText(secret);
             et_pwd.clearFocus();
             Toast.makeText(this, "New secret has been generated", Toast.LENGTH_SHORT).show();
@@ -150,10 +150,10 @@ public class UserInfoActivity extends AppCompatActivity {
 
             Animation a;
             if (isExpanded) {
-                a = new RotateAnimation(90.0f, 0.0f, 20, 18);
+                a = new RotateAnimation(90, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 collapse(pwd_layout_2);
             } else {
-                a = new RotateAnimation(0.0f, 90.0f, 20, 18);
+                a = new RotateAnimation(0, 90, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 expand(pwd_layout_2);
             }
 
@@ -232,20 +232,15 @@ public class UserInfoActivity extends AppCompatActivity {
             else til_pwd.setEndIconMode(TextInputLayout.END_ICON_NONE);
         });
 
-        btn_regenerate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Thread(() -> {
-                    String secret = APIManager.getNewSecret(user.id);
+        btn_regenerate.setOnClickListener(view -> new Thread(() -> {
+            String secret = APIManager.getNewSecret(user.id);
 
-                    Message message = handler.obtainMessage();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("SECRET", secret);
-                    message.setData(bundle);
-                    handler.sendMessage(message);
-                }).start();
-            }
-        });
+            Message message = handler.obtainMessage();
+            Bundle bundle = new Bundle();
+            bundle.putString("SECRET", secret);
+            message.setData(bundle);
+            handler.sendMessage(message);
+        }).start());
     }
 
     private void InitVars() {

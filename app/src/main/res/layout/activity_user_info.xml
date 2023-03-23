@@ -108,7 +108,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_lastname">
@@ -124,7 +124,6 @@
                         android:id="@+id/iv_expand_1"
                         android:layout_width="14dp"
                         android:layout_height="14dp"
-                        android:layout_marginStart="4dp"
                         app:layout_constraintBottom_toBottomOf="@+id/textView11"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/textView11"
@@ -193,11 +192,11 @@
                         android:layout_marginEnd="16dp"
                         app:boxBackgroundColor="#FFFFFF"
                         app:boxBackgroundMode="outline"
+                        app:endIconMode="password_toggle"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/til_pwd"
-                        app:passwordToggleEnabled="false"
-                        app:endIconMode="password_toggle">
+                        app:passwordToggleEnabled="false">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_repwd"

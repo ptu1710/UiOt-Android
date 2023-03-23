@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ixxc.myuit.Model.Realm;
-import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.R;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class RealmItemAdapter extends RecyclerView.Adapter<RealmItemAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.realmset_item_layout, parent, false));
+        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.realm_item_layout, parent, false));
     }
 
     @Override

@@ -139,6 +139,7 @@ public class AddDeviceActivity extends AppCompatActivity {
             act_parent.setText("");
             act_parent.clearFocus();
         });
+
         act_type.setOnItemClickListener((adapterView, view, i, l) -> {
             String type = modelsType.get(i);
             List<String> newList =  modelsName.stream().filter(name -> name.contains(type)).collect(Collectors.toList());
@@ -189,10 +190,10 @@ public class AddDeviceActivity extends AppCompatActivity {
                     .filter(item -> item.assetDescriptor.get("name").getAsString().equals(act_device.getText().toString()))
                     .collect(Collectors.toList());
 
-            if(result.size() == 0 || String.valueOf(ti_name.getText()).equals("")) {
-                Toast.makeText(AddDeviceActivity.this, "Device type and device name fields are required!", Toast.LENGTH_SHORT).show();
-                return;
-            }
+//            if(result.size() == 0 || String.valueOf(ti_name.getText()).equals("")) {
+//                Toast.makeText(AddDeviceActivity.this, "Device type and device name fields are required!", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
 
             List<Attribute> requireAttributes = result.get(0).attributeDescriptors.stream()
                     .filter(item -> !item.optional)

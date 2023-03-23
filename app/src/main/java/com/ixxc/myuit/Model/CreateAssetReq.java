@@ -3,7 +3,7 @@ package com.ixxc.myuit.Model;
 import com.google.gson.JsonObject;
 
 public class CreateAssetReq {
-    String name, type, realm, parentId;
+    String name, type, realm, parentId = "";
     JsonObject attributes;
 
     public void setName(String name) {
@@ -39,7 +39,9 @@ public class CreateAssetReq {
         obj.addProperty("name", name);
         obj.addProperty("type", type);
         obj.addProperty("realm", realm);
-        obj.addProperty("parentId", parentId);
+        if (!parentId.equals("")) {
+            obj.addProperty("parentId", parentId);
+        }
         obj.add("attributes", attributes);
 
         return obj;
