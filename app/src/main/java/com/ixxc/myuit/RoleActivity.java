@@ -43,6 +43,7 @@ public class RoleActivity extends AppCompatActivity {
     LinearLayout add_role_layout;
     List<Role> roleSetList;
     Role newRoleSet;
+
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
         boolean isOK = bundle.getBoolean("ROLE_OK");
@@ -99,7 +100,6 @@ public class RoleActivity extends AppCompatActivity {
     }
 
     private void InitEvent() {
-
         btn_add_role.setOnClickListener(v -> {
             addRoleSet();
         });

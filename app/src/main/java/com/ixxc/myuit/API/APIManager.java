@@ -181,15 +181,13 @@ public class APIManager {
 
     public static void getRealm(){
         Call<List<Realm>> call = userAI.getRealm();
-        List<Realm> realms = null;
+
         try {
             Response<List<Realm>> response = call.execute();
             if(response.isSuccessful()){
                 Realm.setRealmList(response.body());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     public static void getRoles(){
@@ -369,11 +367,34 @@ public class APIManager {
         try {
             Response<String> response = call.execute();
             returnCode = response.code();
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return  returnCode;
+    }
+
+    public static int updateRealm(String name, JsonObject body){
+        Call<String> call = userAI.updateRealm(name, body);
+
+        int code = -1;
+        try {
+            Response<String> response = call.execute();
+            code = response.code();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return  returnCode;
 
+        return code;
+    }
 
+    public static int deleteRealm(String realmName){
+        Call<String> call = userAI.deleteRealm(realmName);
+
+        int code = -1;
+        try {
+            Response<String> response = call.execute();
+            code = response.code();
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return code;
     }
 }

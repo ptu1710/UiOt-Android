@@ -134,4 +134,13 @@ public interface APIInterface {
     //Create a realm
     @POST("api/master/realm")
     Call<String> createRealm(@Body JsonObject body);
+
+    // Update a realm
+    @Headers("Content-Type: application/json")
+    @PUT("api/master/realm/{realmName}")
+    Call<String> updateRealm(@Path("realmName") String name, @Body JsonObject body);
+
+    // Delete Realm
+    @DELETE("api/master/realm/{realmName}")
+    Call<String> deleteRealm(@Path("realmName") String name);
 }

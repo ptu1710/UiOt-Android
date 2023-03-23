@@ -39,8 +39,10 @@ public class RealmItemAdapter extends RecyclerView.Adapter<RealmItemAdapter.View
 
         holder.tv_name.setText(realms.get(position).name);
         holder.tv_f_name.setText(realms.get(position).displayName);
-        if (realms.get(position).enabled){
+        if (realms.get(position).enabled) {
             holder.tv_status.setText("Enabled");
+        } else {
+            holder.tv_status.setText("Disabled");
         }
     }
 

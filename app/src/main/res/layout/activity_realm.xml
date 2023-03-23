@@ -23,7 +23,7 @@
             android:id="@+id/rv_realm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/action_bar">
@@ -81,8 +81,7 @@
                     android:id="@+id/et_realm_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Realm*"
-                    android:singleLine="true"
+                    android:hint="Realm"
                     android:textStyle="bold" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,10 +99,21 @@
                     android:id="@+id/et_realm_f_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Friendly name*"
-                    android:singleLine="true"
-                    android:textStyle="bold" />
+                    android:hint="Friendly name"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPersonName"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/sw_enabled2"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Enabled"
+                app:switchPadding="8dp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
