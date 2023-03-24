@@ -39,7 +39,7 @@ public class CreateAssetReq {
         obj.addProperty("name", name);
         obj.addProperty("type", type);
         obj.addProperty("realm", realm);
-        if (!parentId.equals("")) {
+        if (!parentId.equals("None")) {
             obj.addProperty("parentId", parentId);
         }
         obj.add("attributes", attributes);

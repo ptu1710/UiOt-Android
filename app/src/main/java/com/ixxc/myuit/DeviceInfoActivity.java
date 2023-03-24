@@ -1,15 +1,22 @@
 package com.ixxc.myuit;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,11 +35,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.AttributesAdapter;
+import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.Model.Device;
+import com.ixxc.myuit.Model.Model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DeviceInfoActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -44,14 +55,12 @@ public class DeviceInfoActivity extends AppCompatActivity {
     ImageView iv_clear_parent;
     CheckBox cb_public;
     AutoCompleteTextView act_parent;
+    Button btn_add_attribute;
 
     String device_id, selected_id;
     Device current_device;
 
     AttributesAdapter attributesAdapter;
-
-    ArrayAdapter parentAdapter;
-    List<Device> parentDevices;
     List<String> parentNames;
 
     boolean isEditMode = false;
@@ -81,7 +90,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
             selected_id = current_device.getParentId();
             act_parent.setText(selected_id);
 
-            act_parent.setAdapter(parentAdapter);
+            act_parent.setAdapter(new ArrayAdapter<>(this, R.layout.dropdown_item, parentNames));
 
             showAttributes();
         }
@@ -106,16 +115,11 @@ public class DeviceInfoActivity extends AppCompatActivity {
     }
 
     private void InitVars() {
-        parentNames = new ArrayList<>();
-        parentDevices = Device.getAllDevices();
-        for (Device d : parentDevices) {
-            parentNames.add(d.name + "(" + d.id + ")");
-        }
-
-        parentAdapter = new ArrayAdapter(this, R.layout.dropdown_item, parentNames);
+        parentNames = Device.getDeviceNames();
 
         new Thread(() -> {
             current_device = APIManager.getDevice(device_id);
+            APIManager.getDeviceModels();
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -134,11 +138,45 @@ public class DeviceInfoActivity extends AppCompatActivity {
         iv_clear_parent = findViewById(R.id.iv_clear_parent);
         toolbar = findViewById(R.id.action_bar);
         cb_public = findViewById(R.id.cb_public);
+        btn_add_attribute = findViewById(R.id.btn_add_attribute);
     }
 
     private void InitEvents() {
+        btn_add_attribute.setOnClickListener(view -> {
+            Dialog d = new Dialog(DeviceInfoActivity.this);
+            d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            d.setContentView(R.layout.add_device_attribute);
+            Window window = d.getWindow();
+
+            if (window == null) return;
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+            AutoCompleteTextView act_type = d.findViewById(R.id.act_type);
+            AutoCompleteTextView act_value = d.findViewById(R.id.act_value);
+
+            List<Model> result = Model.getModelList().stream()
+                    .filter(item -> item.assetDescriptor.get("name").getAsString().equals(current_device.type))
+                    .collect(Collectors.toList());
+
+            List<String> types = result.get(0).attributeDescriptors.stream()
+                    .filter(item -> item.optional)
+                    .map(item -> item.name)
+                    .collect(Collectors.toList());
+
+            types.add(0, "Custom");
+
+            ArrayAdapter typeAdapter = new ArrayAdapter(DeviceInfoActivity.this, R.layout.dropdown_item, types);
+            act_type.setAdapter(typeAdapter);
+
+            List<String> valueType = result.get(0).valueDescriptors;
+            ArrayAdapter valueTypeAdapter = new ArrayAdapter(DeviceInfoActivity.this, R.layout.dropdown_item, valueType);
+            act_value.setAdapter(valueTypeAdapter);
+
+            d.show();
+        });
+
         act_parent.setOnItemClickListener((adapterView, view, i, l) -> {
-            selected_id = parentDevices.get(i).id;
+            selected_id = getSelectedId(parentNames.get(i));
             act_parent.setSelection(0);
         });
 
@@ -147,6 +185,10 @@ public class DeviceInfoActivity extends AppCompatActivity {
             selected_id = "";
             act_parent.clearFocus();
         });
+    }
+
+    private String getSelectedId(String s) {
+        return s.substring(s.indexOf("(") + 1, s.indexOf(")"));
     }
 
     private void showAttributes() {
@@ -192,6 +234,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
             til_parent.setVisibility(View.VISIBLE);
             iv_clear_parent.setVisibility(View.VISIBLE);
             cb_public.setVisibility(View.VISIBLE);
+            btn_add_attribute.setVisibility(View.VISIBLE);
 
             et_name.setText(current_device.name);
             attributesAdapter.notifyDataSetChanged();
@@ -247,6 +290,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
             til_parent.setVisibility(View.GONE);
             iv_clear_parent.setVisibility(View.GONE);
             cb_public.setVisibility(View.GONE);
+            btn_add_attribute.setVisibility(View.GONE);
         }
     }
 }

@@ -1,22 +1,22 @@
 package com.ixxc.myuit;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -39,7 +39,6 @@ public class AddDeviceActivity extends AppCompatActivity {
     TextInputLayout til_type;
     TextInputEditText ti_name;
     Button btn_add, btn_add_optional;
-    ImageView iv_clear_parent;
     List<String> modelsType, modelsName, parentNames;
 
     List<Model> models;
@@ -49,6 +48,8 @@ public class AddDeviceActivity extends AppCompatActivity {
     List<Attribute> selectedOptional;
 
     ArrayAdapter typeAdapter, devicesAdapter, parentAdapter;
+
+    String parentId = "None";
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -66,15 +67,14 @@ public class AddDeviceActivity extends AppCompatActivity {
             parentAdapter = new ArrayAdapter(this, R.layout.dropdown_item, parentNames);
             act_parent.setAdapter(parentAdapter);
         } else if (createDevice) {
-            HomeActivity.devicesFrag.refreshDevices();
+            Intent returnIntent = new Intent();
+            setResult(Activity.RESULT_OK, returnIntent);
             finish();
             Toast.makeText(this, "Created!", Toast.LENGTH_SHORT).show();
         }
 
         return false;
-    });;
-
-    String parentId = "";
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,10 +88,10 @@ public class AddDeviceActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Add Device");
+        actionBar.setTitle("New device");
 
         new Thread(() -> {
-            models = APIManager.getDeviceModels();
+            APIManager.getDeviceModels();
 
             for (Model model : models) {
                 String name = model.assetDescriptor.get("name").getAsString();
@@ -114,6 +114,7 @@ public class AddDeviceActivity extends AppCompatActivity {
 
         parentDevices = Device.getAllDevices();
 
+        parentNames.add("None");
         for (Device d : parentDevices) {
             parentNames.add(d.name);
         }
@@ -131,15 +132,9 @@ public class AddDeviceActivity extends AppCompatActivity {
         btn_add_optional = findViewById(R.id.btn_add_optional);
         btn_add = findViewById(R.id.btn_add);
         toolbar = findViewById(R.id.action_bar);
-        iv_clear_parent = findViewById(R.id.iv_clear_parent_1);
     }
 
     private void InitEvents() {
-        iv_clear_parent.setOnClickListener(view -> {
-            act_parent.setText("");
-            act_parent.clearFocus();
-        });
-
         act_type.setOnItemClickListener((adapterView, view, i, l) -> {
             String type = modelsType.get(i);
             List<String> newList =  modelsName.stream().filter(name -> name.contains(type)).collect(Collectors.toList());
@@ -190,10 +185,10 @@ public class AddDeviceActivity extends AppCompatActivity {
                     .filter(item -> item.assetDescriptor.get("name").getAsString().equals(act_device.getText().toString()))
                     .collect(Collectors.toList());
 
-//            if(result.size() == 0 || String.valueOf(ti_name.getText()).equals("")) {
-//                Toast.makeText(AddDeviceActivity.this, "Device type and device name fields are required!", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
+            if(result.size() == 0 || String.valueOf(ti_name.getText()).equals("")) {
+                Toast.makeText(AddDeviceActivity.this, "Device type and device name fields are required!", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             List<Attribute> requireAttributes = result.get(0).attributeDescriptors.stream()
                     .filter(item -> !item.optional)
@@ -232,5 +227,15 @@ public class AddDeviceActivity extends AppCompatActivity {
                 handler.sendMessage(msg);
             }).start();
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

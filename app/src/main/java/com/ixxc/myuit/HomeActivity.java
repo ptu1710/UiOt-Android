@@ -13,11 +13,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class HomeActivity extends AppCompatActivity {
     public static BottomNavigationView navbar;
     FragmentManager fm;
-    public  static HomeFragment homeFrag;
-    public  static DevicesFragment devicesFrag;
-    public  static MapsFragment mapsFrag;
-    public  static AdminFragment userFrag;
-    public static HomeActivity homeActivity;
+    public HomeFragment homeFrag;
+    public DevicesFragment devicesFrag;
+    public static MapsFragment mapsFrag;
+    public AdminFragment userFrag;
     Fragment fragment = null;
     int selectedIndex;
 
@@ -37,12 +36,11 @@ public class HomeActivity extends AppCompatActivity {
 
     private void InitVars() {
         selectedIndex = 0;
-        homeActivity = this;
 
         fm = getSupportFragmentManager();
 
         homeFrag = new HomeFragment();
-        devicesFrag = new DevicesFragment();
+        devicesFrag = new DevicesFragment(this);
         mapsFrag = new MapsFragment();
         userFrag = new AdminFragment(this);
     }

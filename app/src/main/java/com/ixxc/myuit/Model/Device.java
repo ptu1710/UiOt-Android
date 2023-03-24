@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Device {
     @SerializedName("id")
@@ -54,6 +55,10 @@ public class Device {
             }
         }
         return null;
+    }
+
+    public static List<String> getDeviceNames() {
+        return deviceListFiltered.stream().map(d -> d.name + "(" + d.id + ")").collect(Collectors.toList());
     }
 
     public List<JsonObject> getDeviceAttribute() {

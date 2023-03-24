@@ -81,18 +81,15 @@ public class APIManager {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    public static List<Model> getDeviceModels() {
+    public static void getDeviceModels() {
         Call<List<Model>> call = userAI.getDeviceModels();
 
-        List<Model> models = null;
         try {
             Response<List<Model>> response = call.execute();
             if (response.isSuccessful()) {
-                models = response.body();
+                Model.setModelList(response.body());
             }
         } catch (IOException e) { e.printStackTrace(); }
-
-        return models;
     }
 
     public static boolean delDevice(String deviceId){

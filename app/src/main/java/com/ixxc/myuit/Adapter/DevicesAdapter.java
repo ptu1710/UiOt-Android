@@ -1,5 +1,6 @@
 package com.ixxc.myuit.Adapter;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +26,15 @@ import java.util.List;
 public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceViewHolder> {
     private List<Device> devices;
     private final DevicesListener devicesListener;
+    private Context ctx;
 
      public int checkedPos = -1;
+     public int lastPosition = -1;
 
-    public DevicesAdapter(List<Device> devices, DevicesListener listener) {
+    public DevicesAdapter(List<Device> devices, DevicesListener listener, Context context) {
         this.devices = devices;
         this.devicesListener = listener;
+        this.ctx = context;
     }
 
     public void setFilteredDevices(List<Device> filteredDevices) {
@@ -52,7 +56,9 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
 
     @Override
     public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
-        holder.bind(devices.get(position));
+        holder.bind(devices.get(holder.getAdapterPosition()));
+        Animation animation = AnimationUtils.loadAnimation(ctx, R.anim.devices_rv_anim);
+        holder.itemView.startAnimation(animation);
     }
 
     @Override
@@ -92,8 +98,6 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
             tv_id.setText("ID: " + device.id);
             iv_icon.setImageResource(R.drawable.ic_vn);
 
-            cv_device.startAnimation(AnimationUtils.loadAnimation(cv_device.getContext(), R.anim.devices_rv_anim));
-
             cv_device.setOnClickListener(view -> devicesListener.onItemClicked(view, device));
             cv_device.setOnLongClickListener(view -> {
                 devicesListener.onItemLongClicked(view, device);
@@ -106,5 +110,11 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
                 return true;
             });
         }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull DeviceViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.itemView.clearAnimation();
     }
 }

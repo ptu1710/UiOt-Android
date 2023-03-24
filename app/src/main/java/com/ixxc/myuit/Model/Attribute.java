@@ -42,7 +42,7 @@ public class Attribute {
             case "integerMap":
             case "numberMap":
             case "multivaluedTextMap":
-                return InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE;
             case "timestamp":
             case "timestampISO8601":
             case "dateAndTime":
@@ -72,5 +72,38 @@ public class Attribute {
             default:
                 return InputType.TYPE_CLASS_TEXT;
         }
+    }
+
+    public static String formatJsonValue(String text){
+        StringBuilder json = new StringBuilder();
+        String indentString = "";
+
+        for (int i = 0; i < text.length(); i++) {
+            char letter = text.charAt(i);
+            switch (letter) {
+                case '{':
+                case '[':
+                    if (i != 0) {
+                        json.append("\n");
+                    }
+                    json.append(indentString).append(letter).append("\n");
+                    indentString = indentString + "\t\t";
+                    json.append(indentString);
+                    break;
+                case '}':
+                case ']':
+                    indentString = indentString.replaceFirst("\t\t", "");
+                    json.append("\n").append(indentString).append(letter);
+                    break;
+                case ',':
+                    json.append(letter).append("\n").append(indentString);
+                    break;
+                default:
+                    json.append(letter);
+                    break;
+            }
+        }
+
+        return json.toString();
     }
 }

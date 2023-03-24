@@ -19,4 +19,14 @@ public class Model {
 
     @SerializedName("valueDescriptors")
     public ArrayList<String> valueDescriptors;
+
+    private static List<Model> modelList;
+
+    public static List<Model> getModelList() {
+        return modelList;
+    }
+
+    public static void setModelList(List<Model> modelList) {
+        Model.modelList = modelList;
+    }
 }

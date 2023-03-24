@@ -167,10 +167,10 @@ public class UserInfoActivity extends AppCompatActivity {
 
             Animation a;
             if (isExpanded) {
-                a = new RotateAnimation(90.0f, 0.0f, 20, 18);
+                a = new RotateAnimation(90, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 collapse(roles_layout_2);
             } else {
-                a = new RotateAnimation(0.0f, 90.0f, 20, 18);
+                a = new RotateAnimation(0, 90, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 expand(roles_layout_2);
             }
 

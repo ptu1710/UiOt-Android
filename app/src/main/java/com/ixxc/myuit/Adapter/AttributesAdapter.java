@@ -6,7 +6,9 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -69,27 +71,33 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         try { value = String.valueOf(attr.get("value").getAsInt()); }
         catch (UnsupportedOperationException exception) {
             if (exception.getMessage().equals("JsonObject")) {
-                value = String.valueOf(attr.get("value").getAsJsonObject());
+                value = Attribute.formatJsonValue(attr.get("value").getAsJsonObject().toString());
             }
         } catch (NumberFormatException exception) {
             value = attr.get("value").getAsString();
         } catch (NullPointerException ignored) { }
 
-        holder.til_attribute_name.setHint(name);
-        holder.et_attribute_value.setText(value);
-        holder.et_attribute_value.setInputType(Attribute.GetType(type));
+        holder.tv_name.setText(name);
 
-        holder.et_attribute_value.setEnabled(isEditMode);
+        if (isEditMode) {
+            holder.et_value.setInputType(Attribute.GetType(type));
+        }
 
-        holder.et_attribute_value.setOnFocusChangeListener((view, b) -> {
+        holder.et_value.setText(value);
+        holder.et_value.setFocusable(isEditMode);
+        holder.et_value.setFocusableInTouchMode(isEditMode);
+
+        Log.d(GlobalVars.LOG_TAG, name + " - " + type);
+
+        holder.et_value.setOnFocusChangeListener((view, b) -> {
             if (!b) {
-                if (String.valueOf(holder.et_attribute_value.getText()).equals("")) {
+                if (String.valueOf(holder.et_value.getText()).equals("")) {
                     attr.add("value", null);
                 } else {
-                    if (holder.et_attribute_value.getInputType() == InputType.TYPE_CLASS_NUMBER) {
-                        attr.addProperty("value", Integer.parseInt(holder.et_attribute_value.getText().toString()));
+                    if (holder.et_value.getInputType() == InputType.TYPE_CLASS_NUMBER) {
+                        attr.addProperty("value", Integer.parseInt(holder.et_value.getText().toString()));
                     } else {
-                        attr.addProperty("value", holder.et_attribute_value.getText().toString());
+                        attr.addProperty("value", holder.et_value.getText().toString());
                     }
                 }
 
@@ -97,8 +105,6 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
                 changedAttributes.remove(attr);
                 changedAttributes.put(name, attr);
-
-                Log.d(GlobalVars.LOG_TAG, "onFocusChange: " + holder.getAdapterPosition() + " : " + attr);
             }
         });
     }
@@ -109,13 +115,13 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     }
 
     static class AttrsViewHolder extends RecyclerView.ViewHolder {
-        private final TextInputLayout til_attribute_name;
-        private final EditText et_attribute_value;
+        private final TextView tv_name;
+        private final EditText et_value;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
-            til_attribute_name = itemView.findViewById(R.id.til_username);
-            et_attribute_value = itemView.findViewById(R.id.til_device_name);
+            tv_name = itemView.findViewById(R.id.tv_name);
+            et_value = itemView.findViewById(R.id.et_value);
         }
     }
 

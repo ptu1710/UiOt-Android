@@ -1,8 +1,15 @@
 package com.ixxc.myuit;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -30,11 +37,14 @@ import com.ixxc.myuit.Model.Device;
 import java.util.List;
 
 public class DevicesFragment extends Fragment {
+    HomeActivity homeActivity;
     RecyclerView rv_devices;
     ImageView iv_add, iv_delete, iv_community, iv_cancel;
     ProgressBar pb_loading_1;
     SwipeRefreshLayout srl_devices;
     View rootView;
+
+    ActivityResultLauncher<Intent> mLauncher;
 
     public String selected_device_id = "";
 
@@ -51,9 +61,9 @@ public class DevicesFragment extends Fragment {
         } else {
             if (delete_device) {
                 refreshDevices();
-                Toast.makeText(HomeActivity.homeActivity,"Device was deleted successfully", Toast.LENGTH_LONG).show();
+                Toast.makeText(homeActivity,"Device was deleted successfully", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(HomeActivity.homeActivity,"An error occurred while deleting the device", Toast.LENGTH_LONG).show();
+                Toast.makeText(homeActivity,"An error occurred while deleting the device", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -64,9 +74,16 @@ public class DevicesFragment extends Fragment {
 
     public DevicesFragment() { }
 
+    public DevicesFragment(HomeActivity homeActivity) {
+        this.homeActivity = homeActivity;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) refreshDevices();
+        });
     }
 
     @Override
@@ -118,12 +135,15 @@ public class DevicesFragment extends Fragment {
     }
 
     private void InitEvents() {
-        iv_add.setOnClickListener(view -> startActivity(new Intent(HomeActivity.homeActivity, AddDeviceActivity.class)));
+        iv_add.setOnClickListener(view -> {
+            Intent intent = new Intent(homeActivity, AddDeviceActivity.class);
+            mLauncher.launch(intent);
+        });
 
         iv_delete.setOnClickListener(view -> {
             if (selected_device_id.equals("")) return;
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.homeActivity);
+            AlertDialog.Builder builder = new AlertDialog.Builder(homeActivity);
             builder.setTitle("Warning!");
             builder.setMessage("Delete this device?");
             builder.setPositiveButton("Delete", (dialogInterface, i) -> new Thread(() -> {
@@ -142,9 +162,7 @@ public class DevicesFragment extends Fragment {
             changeSelectedDevice(-1, "");
         });
 
-        srl_devices.setOnRefreshListener(() -> {
-            refreshDevices();
-        });
+        srl_devices.setOnRefreshListener(this::refreshDevices);
     }
 
     public void refreshDevices() {
@@ -183,7 +201,7 @@ public class DevicesFragment extends Fragment {
             public void onItemLongClicked(View v, Device device) {
                 changeSelectedDevice(0, device.id);
             }
-        });
+        }, homeActivity);
 
         LinearLayoutManager layoutManager =  new LinearLayoutManager(rootView.getContext());
         rv_devices.setLayoutManager(layoutManager);
@@ -197,7 +215,7 @@ public class DevicesFragment extends Fragment {
     private void viewDeviceInfo(String id) {
         Intent toDetails = new Intent(getContext(), DeviceInfoActivity.class);
         toDetails.putExtra("DEVICE_ID", id);
-        getContext().startActivity(toDetails);
+        homeActivity.startActivity(toDetails);
     }
 
     public void changeSelectedDevice(int index, String id) {
