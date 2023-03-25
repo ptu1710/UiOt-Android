@@ -278,8 +278,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
                 ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),ms,DeviceInfoActivity.this::onMetaItemListener);
                 rv_config_item.setAdapter(configurationAdapter);
                 dlg.show();
-            }
-        });
+            });
 
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);
