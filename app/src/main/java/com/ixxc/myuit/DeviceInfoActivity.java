@@ -241,9 +241,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     private void showAttributes() {
         attributeList = current_device.getDeviceAttribute();
 
-        attributesAdapter = new AttributesAdapter(attributeList, new Test() {
-            @Override
-            public void onItemClicked(View v, int position) {
+        attributesAdapter = new AttributesAdapter(attributeList, (v, position) -> {
 
                 Dialog dlg = new Dialog(DeviceInfoActivity.this);
                 dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
