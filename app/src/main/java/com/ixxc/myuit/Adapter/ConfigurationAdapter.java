@@ -1,5 +1,6 @@
 package com.ixxc.myuit.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,23 +12,28 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ixxc.myuit.Interface.MetaItemListener;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>{
 
     Context context;
     List<MetaItem> metaItems;
+    ArrayList<MetaItem> items_chosen= new ArrayList<>();
     ConfigurationAdapter.ViewHolder viewHolder;
+    MetaItemListener metaItemListener;
     private ConfigurationAdapter.ItemClickListener mClickListener;
 
-    public ConfigurationAdapter(Context context, List<MetaItem> metaItems) {
+    public ConfigurationAdapter(Context context, List<MetaItem> metaItems,MetaItemListener metaItemListener) {
         this.context = context;
         this.metaItems = metaItems;
+        this.metaItemListener = metaItemListener;
     }
 
 
@@ -38,11 +44,24 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ConfigurationAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ConfigurationAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         viewHolder = holder;
 
         holder.cb_config_item.setText(metaItems.get(position).name);
-        holder.cb_config_item.setChecked(false);
+        holder.cb_config_item.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(holder.cb_config_item.isChecked()){
+                    items_chosen.add(metaItems.get(position));
+                }
+                else {
+                    items_chosen.remove(metaItems.get(position));
+                }
+                metaItemListener.onMetaItemListener(items_chosen);
+
+            }
+        });
+
     }
 
     @Override

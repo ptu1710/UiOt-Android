@@ -16,29 +16,32 @@
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:layout_below="@+id/tv_title"/>
-
-    <TextView
-        android:id="@+id/tv_add_config_item"
+    <Button
+        android:id="@+id/btn_add_configuration"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
         android:text="ADD"
-        android:textSize="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="30dp"
         android:textColor="@color/bg"
         android:layout_below="@+id/rv_config_item"
         android:layout_alignParentRight="true"/>
 
-    <TextView
-        android:id="@+id/tv_cancel_config_item"
+
+    <Button
+        android:id="@+id/btn_cancel_configuration"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CANCEL"
-        android:textSize="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        android:text="CANNCEL"
         android:textColor="@color/bg"
         android:layout_below="@+id/rv_config_item"
-        android:layout_toLeftOf="@+id/tv_add_config_item"/>
+        android:layout_toLeftOf="@+id/btn_add_configuration"/>
+
 
 </RelativeLayout>

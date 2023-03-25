@@ -38,6 +38,7 @@ import com.google.gson.JsonParser;
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.AttributesAdapter;
 import com.ixxc.myuit.Adapter.ConfigurationAdapter;
+import com.ixxc.myuit.Interface.MetaItemListener;
 import com.ixxc.myuit.Interface.Test;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.Model.Device;
@@ -50,7 +51,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DeviceInfoActivity extends AppCompatActivity {
+public class DeviceInfoActivity extends AppCompatActivity implements MetaItemListener {
     Toolbar toolbar;
     ActionBar actionBar;
     Menu actionbarMenu;
@@ -69,6 +70,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
     AttributesAdapter attributesAdapter;
     List<String> parentNames;
     List<MetaItem> metaItems;
+    ArrayList<MetaItem> metaItems_chosen;
 
 
     boolean isEditMode = false;
@@ -248,29 +250,34 @@ public class DeviceInfoActivity extends AppCompatActivity {
                 dlg.setContentView(R.layout.add_configuration_items);
                 Window window = dlg.getWindow();
                 if (window == null) return;
+                Button btn_cancel = dlg.findViewById(R.id.btn_cancel_configuration);
+                btn_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dlg.dismiss();
+                    }
+                });
+                Button btn_add = dlg.findViewById(R.id.btn_add_configuration);
+                btn_add.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for (MetaItem item:metaItems_chosen) {
+                            attributeList.get(position).meta.add(item.name,null);
+
+                        }
+                        attributesAdapter.notifyDataSetChanged();
+                        dlg.dismiss();
+
+                    }
+                });
                 window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
                 RecyclerView rv_config_item= dlg.findViewById(R.id.rv_config_item);
                 rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
 
                 JsonObject meta = attributeList.get(position).meta;
-                List<MetaItem> ms = new ArrayList<>();
-                for (MetaItem item:metaItems) {
-                    Boolean f = false;
+                List<MetaItem> ms = metaItems.stream().filter(metaItem -> !meta.keySet().contains(metaItem.name)).collect(Collectors.toList());
 
-                    if(meta!=null){
-                        for (String key:meta.keySet()) {
-                            if(item.name.equals(key)){
-                                f=true;
-                                break;
-                            }
-                        }
-                    }
-                    if(!f){
-                        ms.add(item);
-                    }
-                }
-
-                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),ms);
+                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),ms,DeviceInfoActivity.this::onMetaItemListener);
                 rv_config_item.setAdapter(configurationAdapter);
                 dlg.show();
             }
@@ -379,5 +386,10 @@ public class DeviceInfoActivity extends AppCompatActivity {
             cb_public.setVisibility(View.GONE);
             btn_add_attribute.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onMetaItemListener(ArrayList<MetaItem> metaItems) {
+        metaItems_chosen = metaItems;
     }
 }
