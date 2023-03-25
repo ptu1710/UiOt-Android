@@ -1,9 +1,11 @@
 package com.ixxc.myuit.Adapter;
 
 import android.content.Context;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -14,7 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.GlobalVars;
 import com.ixxc.myuit.R;
@@ -25,12 +30,12 @@ import java.util.List;
 
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.AttrsViewHolder> {
     Context ctx;
-    private final List<JsonObject> attributes;
+    private final List<Attribute> attributes;
     public static Dictionary<String, JsonObject> changedAttributes;
 
     public boolean isEditMode = false;
 
-    public AttributesAdapter(List<JsonObject> attrsObj) {
+    public AttributesAdapter(List<Attribute> attrsObj) {
         this.attributes = attrsObj;
         changedAttributes = new Hashtable<>();
     }
@@ -61,50 +66,49 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             return;
         }
 
-        JsonObject attr = attributes.get(position);
+        Attribute attr = attributes.get(position);
 
-        String name = attr.get("name").getAsString();
-        String type = attr.get("type").getAsString();
+        String name = attr.name;
+        String type = attr.type;
 
-        String value = "";
-
-        try { value = String.valueOf(attr.get("value").getAsInt()); }
-        catch (UnsupportedOperationException exception) {
-            if (exception.getMessage().equals("JsonObject")) {
-                value = Attribute.formatJsonValue(attr.get("value").getAsJsonObject().toString());
-            }
-        } catch (NumberFormatException exception) {
-            value = attr.get("value").getAsString();
-        } catch (NullPointerException ignored) { }
+        String value;
+        switch (attr.getValueType()) {
+            case 0: // value is NULL
+                value = "";
+                break;
+            case 1: // value is JsonObject
+                value = Attribute.formatJsonValue(String.valueOf(attr.value.getAsJsonObject()));
+                break;
+            case 2: // value is int
+                value = String.valueOf(attr.value.getAsInt());
+                break;
+            default: // value is String or something else
+                value = attr.value.getAsString();
+        }
 
         holder.tv_name.setText(name);
 
-        if (isEditMode) {
+        if (value.equals("") && !isEditMode) {
+            holder.tv_value.setText("null");
+            holder.til_value.setVisibility(View.GONE);
+        } else {
+            holder.tv_value.setText(type);
+            holder.et_value.setText(value);
             holder.et_value.setInputType(Attribute.GetType(type));
+            holder.et_value.setFocusableInTouchMode(isEditMode);
+            holder.til_value.setVisibility(View.VISIBLE);
         }
-
-        holder.et_value.setText(value);
-        holder.et_value.setFocusable(isEditMode);
-        holder.et_value.setFocusableInTouchMode(isEditMode);
 
         Log.d(GlobalVars.LOG_TAG, name + " - " + type);
 
-        holder.et_value.setOnFocusChangeListener((view, b) -> {
-            if (!b) {
-                if (String.valueOf(holder.et_value.getText()).equals("")) {
-                    attr.add("value", null);
-                } else {
-                    if (holder.et_value.getInputType() == InputType.TYPE_CLASS_NUMBER) {
-                        attr.addProperty("value", Integer.parseInt(holder.et_value.getText().toString()));
-                    } else {
-                        attr.addProperty("value", holder.et_value.getText().toString());
-                    }
-                }
-
-                attr.addProperty("timestamp", System.currentTimeMillis());
+        holder.et_value.setOnFocusChangeListener((view, focused) -> {
+            EditText et = (EditText) view;
+            if (!focused) {
+                attr.value = new JsonParser().parse(et.getText().toString());
+                attr.timestamp = System.currentTimeMillis();
 
                 changedAttributes.remove(attr);
-                changedAttributes.put(name, attr);
+                changedAttributes.put(attr.name, attr.toJson());
             }
         });
     }
@@ -115,15 +119,16 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     }
 
     static class AttrsViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tv_name;
+        private final TextView tv_name, tv_value;
         private final EditText et_value;
+        private final TextInputLayout til_value;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_name = itemView.findViewById(R.id.tv_name);
+            tv_value = itemView.findViewById(R.id.tv_value);
             et_value = itemView.findViewById(R.id.et_value);
+            til_value = itemView.findViewById(R.id.til_value);
         }
     }
-
-
 }

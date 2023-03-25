@@ -1,5 +1,6 @@
 package com.ixxc.myuit.Model;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
@@ -25,9 +26,18 @@ public class Device {
     public String type;
     @SerializedName("attributes")
     public JsonObject attributes;
-
     @SerializedName("path")
     public ArrayList<String> path;
+
+    private List<Attribute> optional;
+
+    public List<Attribute> getOptional() {
+        return optional;
+    }
+
+    public void setOptional(List<Attribute> optional) {
+        this.optional = optional;
+    }
 
     private static final List<Device> deviceListFiltered = new ArrayList<>();
 
@@ -61,11 +71,12 @@ public class Device {
         return deviceListFiltered.stream().map(d -> d.name + "(" + d.id + ")").collect(Collectors.toList());
     }
 
-    public List<JsonObject> getDeviceAttribute() {
-        List<JsonObject> attributeList = new ArrayList<>();
+    public List<Attribute> getDeviceAttribute() {
+        List<Attribute> attributeList = new ArrayList<>();
 
         for (String key : attributes.keySet()) {
-            JsonObject attribute = attributes.get(key).getAsJsonObject();
+            JsonObject o = attributes.get(key).getAsJsonObject();
+            Attribute attribute = new Gson().fromJson(o, Attribute.class);
             attributeList.add(attribute);
         }
 

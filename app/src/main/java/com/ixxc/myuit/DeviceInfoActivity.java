@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -33,6 +35,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.AttributesAdapter;
 import com.ixxc.myuit.Model.Attribute;
@@ -59,7 +62,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     String device_id, selected_id;
     Device current_device;
-
+    Model current_model;
+    List<Attribute> attributeList;
     AttributesAdapter attributesAdapter;
     List<String> parentNames;
 
@@ -118,8 +122,9 @@ public class DeviceInfoActivity extends AppCompatActivity {
         parentNames = Device.getDeviceNames();
 
         new Thread(() -> {
-            current_device = APIManager.getDevice(device_id);
             APIManager.getDeviceModels();
+            current_device = APIManager.getDevice(device_id);
+            current_model = Model.getDeviceModel(current_device.type);
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -143,36 +148,53 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     private void InitEvents() {
         btn_add_attribute.setOnClickListener(view -> {
-            Dialog d = new Dialog(DeviceInfoActivity.this);
-            d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            d.setContentView(R.layout.add_device_attribute);
-            Window window = d.getWindow();
+            Dialog dialog = new Dialog(DeviceInfoActivity.this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.add_device_attribute);
+            Window window = dialog.getWindow();
 
             if (window == null) return;
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
-            AutoCompleteTextView act_type = d.findViewById(R.id.act_type);
-            AutoCompleteTextView act_value = d.findViewById(R.id.act_value);
+            AutoCompleteTextView act_type = dialog.findViewById(R.id.act_type);
+            AutoCompleteTextView act_value = dialog.findViewById(R.id.act_value);
+            TextInputLayout til_value = dialog.findViewById(R.id.til_value);
+            EditText et_name_1 = dialog.findViewById(R.id.et_name);
+            Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
+            Button btn_add = dialog.findViewById(R.id.btn_add);
 
-            List<Model> result = Model.getModelList().stream()
-                    .filter(item -> item.assetDescriptor.get("name").getAsString().equals(current_device.type))
-                    .collect(Collectors.toList());
-
-            List<String> types = result.get(0).attributeDescriptors.stream()
-                    .filter(item -> item.optional)
+            List<String> types = current_model.getOptional().stream()
                     .map(item -> item.name)
                     .collect(Collectors.toList());
 
             types.add(0, "Custom");
-
-            ArrayAdapter typeAdapter = new ArrayAdapter(DeviceInfoActivity.this, R.layout.dropdown_item, types);
+            ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(DeviceInfoActivity.this, R.layout.dropdown_item, types);
             act_type.setAdapter(typeAdapter);
+            act_type.setOnItemClickListener((adapterView, view1, pos, l) -> {
+                if (pos == 0) {
+                    et_name_1.setVisibility(View.VISIBLE);
+                    et_name_1.setVisibility(View.VISIBLE);
+                } else {
+                    et_name_1.setVisibility(View.GONE);
+                    til_value.setVisibility(View.GONE);
+                }
+            });
 
-            List<String> valueType = result.get(0).valueDescriptors;
-            ArrayAdapter valueTypeAdapter = new ArrayAdapter(DeviceInfoActivity.this, R.layout.dropdown_item, valueType);
+            List<String> valueTypes = current_model.valueDescriptors;
+            ArrayAdapter<String> valueTypeAdapter = new ArrayAdapter<>(DeviceInfoActivity.this, R.layout.dropdown_item, valueTypes);
             act_value.setAdapter(valueTypeAdapter);
 
-            d.show();
+            btn_add.setOnClickListener(view1 -> {
+                String type = act_type.getText().toString();
+                String name = et_name_1.getText().toString();
+                String valueType = act_value.getText().toString();
+                addAttribute(type, name, valueType);
+                dialog.dismiss();
+            });
+
+            btn_cancel.setOnClickListener(view2 -> dialog.dismiss());
+
+            dialog.show();
         });
 
         act_parent.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -187,16 +209,28 @@ public class DeviceInfoActivity extends AppCompatActivity {
         });
     }
 
+    private void addAttribute(String type, String name, String value) {
+        Attribute attribute;
+        if (type.equals("Custom")) {
+            attribute = new Attribute(name, type);
+        } else {
+            attribute = current_model.getOptional(type);
+            attribute.value = new JsonParser().parse("");
+        }
+
+        attributeList.add(attribute);
+        attributesAdapter.notifyItemInserted(attributeList.size() - 1);
+    }
+
     private String getSelectedId(String s) {
         return s.substring(s.indexOf("(") + 1, s.indexOf(")"));
     }
 
     private void showAttributes() {
-        attributesAdapter = new AttributesAdapter(current_device.getDeviceAttribute());
-
+        attributeList = current_device.getDeviceAttribute();
+        attributesAdapter = new AttributesAdapter(attributeList);
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);
-
         rv_attribute.setVisibility(View.VISIBLE);
     }
 
@@ -263,6 +297,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
             body.addProperty("id", current_device.id);
             body.addProperty("version",  current_device.version);
             body.addProperty("createdOn", current_device.createdOn);
+
             // Change name
             body.addProperty("name", String.valueOf(et_name.getText()));
 
