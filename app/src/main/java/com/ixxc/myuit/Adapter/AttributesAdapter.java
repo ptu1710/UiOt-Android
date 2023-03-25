@@ -1,5 +1,6 @@
 package com.ixxc.myuit.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.text.InputType;
@@ -7,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -15,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.ixxc.myuit.Interface.Test;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.GlobalVars;
 import com.ixxc.myuit.R;
@@ -27,13 +31,11 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     Context ctx;
     private final List<Attribute> attributes;
     public static Dictionary<String, JsonObject> changedAttributes;
-
+    Test test;
     public boolean isEditMode = false;
 
-    public AttributesAdapter(List<Attribute> attrsObj) {
-    Test test;
+    public AttributesAdapter(List<Attribute> attrsObj,Test test) {
 
-    public AttributesAdapter(List<JsonObject> attrsObj, Test test) {
         this.attributes = attrsObj;
         changedAttributes = new Hashtable<>();
         this.test = test;
@@ -66,16 +68,14 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         }
 
         Attribute attr = attributes.get(position);
-
         String name = attr.name;
         String type = attr.type;
-        String name = attr.get("name").getAsString();
-        String type = attr.get("type").getAsString();
         String metaItem= "";
-        if(attr.get("meta")!=null){
-            JsonObject meta = attr.get("meta").getAsJsonObject();
-            Log.d("aaa",meta.toString());
-            metaItem+=meta.toString()+"\n";
+        if(attr.meta!=null){
+            JsonObject meta = attr.meta;
+            for (String key:meta.keySet()) {
+                metaItem+=key+"\n";
+            }
         }
         holder.tv_meta_item.setText(metaItem);
 
@@ -134,10 +134,10 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         return attributes == null ? 0 : attributes.size() + 1;
     }
 
-    static class AttrsViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tv_name, tv_value;
+
+
     class AttrsViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tv_name;
+        private final TextView tv_name, tv_value;
         private final EditText et_value;
         private final TextInputLayout til_value;
         private Button btn_add_config;

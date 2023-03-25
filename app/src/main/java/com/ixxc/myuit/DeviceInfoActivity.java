@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,10 +34,14 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.AttributesAdapter;
+import com.ixxc.myuit.Adapter.ConfigurationAdapter;
+import com.ixxc.myuit.Interface.Test;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.Model.Device;
+import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Model;
 
 import java.util.ArrayList;
@@ -228,11 +233,10 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     private void showAttributes() {
         attributeList = current_device.getDeviceAttribute();
-        attributesAdapter = new AttributesAdapter(attributeList);
-        attributesAdapter = new AttributesAdapter(current_device.getDeviceAttribute(), new Test() {
+
+        attributesAdapter = new AttributesAdapter(attributeList, new Test() {
             @Override
-            public void onItemClicked(View v,int position) {
-                Log.d("AAA", current_device.getDeviceAttribute().get(position).toString());
+            public void onItemClicked(View v, int position) {
 
                 Dialog dlg = new Dialog(DeviceInfoActivity.this);
                 dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -240,13 +244,30 @@ public class DeviceInfoActivity extends AppCompatActivity {
                 Window window = dlg.getWindow();
                 if (window == null) return;
                 window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-                Log.d("MetaItem", metaItems.get(0).name.toString());
                 RecyclerView rv_config_item= dlg.findViewById(R.id.rv_config_item);
                 rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
-                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),metaItems);
+
+                JsonObject meta = attributeList.get(position).meta;
+                List<MetaItem> ms = new ArrayList<>();
+                for (MetaItem item:metaItems) {
+                    Boolean f = false;
+
+                    if(meta!=null){
+                        for (String key:meta.keySet()) {
+                            if(item.name.equals(key)){
+                                f=true;
+                                break;
+                            }
+                        }
+                    }
+                    if(!f){
+                        ms.add(item);
+                    }
+                }
+
+                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),ms);
                 rv_config_item.setAdapter(configurationAdapter);
                 dlg.show();
-
             }
         });
 

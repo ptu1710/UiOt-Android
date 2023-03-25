@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.R;
@@ -40,7 +41,7 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
     public void onBindViewHolder(@NonNull ConfigurationAdapter.ViewHolder holder, int position) {
         viewHolder = holder;
 
-        holder.tv_name.setText(metaItems.get(position).name);
+        holder.cb_config_item.setText(metaItems.get(position).name);
         holder.cb_config_item.setChecked(false);
     }
 
@@ -50,13 +51,12 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tv_name;
         CheckBox cb_config_item;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tv_name = itemView.findViewById(R.id.tv_name_config_item);
+
             cb_config_item = itemView.findViewById(R.id.cb_config_item);
 
             itemView.setOnClickListener(this);
