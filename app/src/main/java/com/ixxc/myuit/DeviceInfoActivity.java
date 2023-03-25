@@ -70,7 +70,6 @@ public class DeviceInfoActivity extends AppCompatActivity {
     List<String> parentNames;
     List<MetaItem> metaItems;
 
-
     boolean isEditMode = false;
 
     Handler handler = new Handler(message -> {
@@ -239,41 +238,23 @@ public class DeviceInfoActivity extends AppCompatActivity {
     private void showAttributes() {
         attributeList = current_device.getDeviceAttribute();
 
-        attributesAdapter = new AttributesAdapter(attributeList, new Test() {
-            @Override
-            public void onItemClicked(View v, int position) {
+        attributesAdapter = new AttributesAdapter(attributeList, (v, position) -> {
 
-                Dialog dlg = new Dialog(DeviceInfoActivity.this);
-                dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dlg.setContentView(R.layout.add_configuration_items);
-                Window window = dlg.getWindow();
-                if (window == null) return;
-                window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-                RecyclerView rv_config_item= dlg.findViewById(R.id.rv_config_item);
-                rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
+            Dialog dlg = new Dialog(DeviceInfoActivity.this);
+            dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dlg.setContentView(R.layout.add_configuration_items);
+            Window window = dlg.getWindow();
+            if (window == null) return;
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            RecyclerView rv_config_item= dlg.findViewById(R.id.rv_config_item);
+            rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
 
-                JsonObject meta = attributeList.get(position).meta;
-                List<MetaItem> ms = new ArrayList<>();
-                for (MetaItem item:metaItems) {
-                    Boolean f = false;
+            JsonObject meta = attributeList.get(position).meta;
+            List<MetaItem> ms = metaItems.stream().filter(metaItem -> !meta.keySet().contains(metaItem.name)).collect(Collectors.toList());
 
-                    if(meta!=null){
-                        for (String key:meta.keySet()) {
-                            if(item.name.equals(key)){
-                                f=true;
-                                break;
-                            }
-                        }
-                    }
-                    if(!f){
-                        ms.add(item);
-                    }
-                }
-
-                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),ms);
-                rv_config_item.setAdapter(configurationAdapter);
-                dlg.show();
-            }
+            ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),ms);
+            rv_config_item.setAdapter(configurationAdapter);
+            dlg.show();
         });
 
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
@@ -344,6 +325,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
             body.addProperty("id", current_device.id);
             body.addProperty("version",  current_device.version);
             body.addProperty("createdOn", current_device.createdOn);
+
             // Change name
             body.addProperty("name", String.valueOf(et_name.getText()));
 

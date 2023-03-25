@@ -399,16 +399,11 @@ public class APIManager {
     public static List<MetaItem> getMetaItem(String parentId){
         Call<List<MetaItem>> call = userAI.getMetaItem(parentId);
 
-        List<MetaItem> metaItems = new ArrayList<>();
         try {
             Response<List<MetaItem>> response = call.execute();
-            if(response.isSuccessful()){
-                metaItems = response.body();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            if(response.isSuccessful()) return response.body();
+        } catch (IOException e) { e.printStackTrace(); }
 
-        return metaItems;
+        return new ArrayList<>();
     }
 }

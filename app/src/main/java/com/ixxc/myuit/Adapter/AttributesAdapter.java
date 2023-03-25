@@ -69,15 +69,13 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         Attribute attr = attributes.get(position);
         String name = attr.name;
         String type = attr.type;
-        String metaItem= "";
-        if(attr.meta!=null){
-            JsonObject meta = attr.meta;
-            for (String key:meta.keySet()) {
-                metaItem+=key+"\n";
-            }
-        }
-        holder.tv_meta_item.setText(metaItem);
+        StringBuilder metaItem= new StringBuilder();
 
+        if(attr.meta != null){
+            for (String key:attr.meta.keySet()) { metaItem.append(key).append("\n"); }
+        }
+
+        holder.tv_meta_item.setText(metaItem.toString());
 
         String value;
         switch (attr.getValueType()) {
@@ -107,8 +105,6 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             holder.til_value.setVisibility(View.VISIBLE);
         }
 
-        Log.d(GlobalVars.LOG_TAG, name + " - " + type);
-
         holder.et_value.setOnFocusChangeListener((view, focused) -> {
             EditText et = (EditText) view;
             if (!focused) {
@@ -120,12 +116,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             }
         });
 
-        holder.btn_add_config.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                test.onItemClicked(v,position);
-            }
-        });
+        holder.btn_add_config.setOnClickListener(v -> test.onItemClicked(v,position));
     }
 
     @Override
@@ -137,9 +128,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         private final TextView tv_name, tv_value;
         private final EditText et_value;
         private final TextInputLayout til_value;
-        private Button btn_add_config;
-        private TextView tv_meta_item;
-
+        private final Button btn_add_config;
+        private final TextView tv_meta_item;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -149,8 +139,6 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             til_value = itemView.findViewById(R.id.til_value);
             btn_add_config = itemView.findViewById(R.id.btn_add_config);
             tv_meta_item = itemView.findViewById(R.id.tv_meta_item);
-
-
         }
     }
 }
