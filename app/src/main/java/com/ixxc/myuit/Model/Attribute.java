@@ -4,7 +4,9 @@ import android.text.InputType;
 
 import androidx.annotation.Nullable;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -26,23 +28,35 @@ public class Attribute {
     @SerializedName("optional")
     public boolean optional;
 
-    @Nullable
     @SerializedName("value")
-    public String value;
+    public JsonElement value = new JsonParser().parse("");;
+
+    public Attribute(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
 
     @SerializedName("timestamp")
     public long timestamp;
+
+    public int getValueType() {
+        if (value.isJsonNull()) return 0;
+        else if (value.isJsonObject()) return 1;
+        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return 2;
+        else return -1;
+    }
 
     public static int GetType(String type){
         switch (type.trim()){
             case "JSONObject":
             case "JSONArray":
+            case "GEO_JSONPoint":
             case "JSON":
             case "booleanMap":
             case "integerMap":
             case "numberMap":
             case "multivaluedTextMap":
-                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
             case "timestamp":
             case "timestampISO8601":
             case "dateAndTime":
@@ -105,5 +119,16 @@ public class Attribute {
         }
 
         return json.toString();
+    }
+
+    public JsonObject toJson() {
+        JsonObject o = new JsonObject();
+        o.addProperty("type", type);
+        o.addProperty("name", name);
+        o.addProperty("timestamp", timestamp);
+        o.add("value", value);
+        o.add("meta", meta);
+
+        return o;
     }
 }

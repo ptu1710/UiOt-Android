@@ -57,10 +57,11 @@
         app:layout_constraintTop_toBottomOf="@+id/til_type">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_device_name"
+            android:id="@+id/et_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
+            android:inputType="textPersonName|textNoSuggestions"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
