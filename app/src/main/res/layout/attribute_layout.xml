@@ -64,8 +64,7 @@
                 android:paddingBottom="8dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
+
         <TextView
             android:id="@+id/tv_meta_item"
             android:layout_width="match_parent"

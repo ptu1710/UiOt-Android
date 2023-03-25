@@ -31,7 +31,7 @@ import java.util.List;
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.AttrsViewHolder> {
     Context ctx;
     private final List<Attribute> attributes;
-    public static Dictionary<String, JsonObject> changedAttributes;
+    public static Dictionary<String, Attribute> changedAttributes;
     Test test;
     public boolean isEditMode = false;
 
@@ -63,7 +63,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AttrsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AttrsViewHolder holder, @SuppressLint("RecyclerView") int position) {
         if (position == attributes.size()) return;
 
         Attribute attr = attributes.get(position);
