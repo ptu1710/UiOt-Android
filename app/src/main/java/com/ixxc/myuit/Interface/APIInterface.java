@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.LinkedDevice;
+import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Model;
 import com.ixxc.myuit.Model.Realm;
 import com.ixxc.myuit.Model.Role;
@@ -143,4 +144,8 @@ public interface APIInterface {
     // Delete Realm
     @DELETE("api/master/realm/{realmName}")
     Call<String> deleteRealm(@Path("realmName") String name);
+
+    // Get metaItemDescriptors
+    @GET("api/master/model/metaItemDescriptors")
+    Call<List<MetaItem>> getMetaItem(@Query("parentId") String parentId);
 }

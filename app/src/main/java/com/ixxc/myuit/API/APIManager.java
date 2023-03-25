@@ -9,6 +9,7 @@ import com.ixxc.myuit.Interface.APIInterface;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.LinkedDevice;
+import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Model;
 import com.ixxc.myuit.Model.Realm;
 import com.ixxc.myuit.Model.Role;
@@ -393,5 +394,21 @@ public class APIManager {
         } catch (IOException e) { e.printStackTrace(); }
 
         return code;
+    }
+
+    public static List<MetaItem> getMetaItem(String parentId){
+        Call<List<MetaItem>> call = userAI.getMetaItem(parentId);
+
+        List<MetaItem> metaItems = new ArrayList<>();
+        try {
+            Response<List<MetaItem>> response = call.execute();
+            if(response.isSuccessful()){
+                metaItems = response.body();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return metaItems;
     }
 }

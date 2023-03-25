@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,8 +37,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.AttributesAdapter;
+import com.ixxc.myuit.Adapter.ConfigurationAdapter;
+import com.ixxc.myuit.Adapter.RoleItemAdapter;
+import com.ixxc.myuit.Interface.Test;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.Model.Device;
+import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Model;
 
 import java.util.ArrayList;
@@ -62,6 +68,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     AttributesAdapter attributesAdapter;
     List<String> parentNames;
+    List<MetaItem> metaItems;
+
 
     boolean isEditMode = false;
 
@@ -120,6 +128,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
         new Thread(() -> {
             current_device = APIManager.getDevice(device_id);
             APIManager.getDeviceModels();
+            metaItems = APIManager.getMetaItem(null);
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -139,6 +148,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.action_bar);
         cb_public = findViewById(R.id.cb_public);
         btn_add_attribute = findViewById(R.id.btn_add_attribute);
+
     }
 
     private void InitEvents() {
@@ -185,6 +195,28 @@ public class DeviceInfoActivity extends AppCompatActivity {
             selected_id = "";
             act_parent.clearFocus();
         });
+
+//        tv_add_configure.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Dialog dlg = new Dialog(DeviceInfoActivity.this);
+//                dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                dlg.setContentView(R.layout.add_configuration_items);
+//                Window window = dlg.getWindow();
+//                if (window == null) return;
+//                window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+//
+////                metaItems = APIManager.getMetaItem(null);
+////                Log.d("MetaItem", metaItems.toString());
+////                RecyclerView rv_config_item= (RecyclerView) findViewById(R.id.rv_config_item);
+////                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),metaItems);
+////                configurationAdapter.setClickListener(((view, position, metaItem) -> {}));
+////                rv_config_item.setAdapter(configurationAdapter);
+//
+//                dlg.show();
+//
+//            }
+//        });
     }
 
     private String getSelectedId(String s) {
@@ -192,10 +224,30 @@ public class DeviceInfoActivity extends AppCompatActivity {
     }
 
     private void showAttributes() {
-        attributesAdapter = new AttributesAdapter(current_device.getDeviceAttribute());
+        attributesAdapter = new AttributesAdapter(current_device.getDeviceAttribute(), new Test() {
+            @Override
+            public void onItemClicked(View v,int position) {
+                Log.d("AAA", current_device.getDeviceAttribute().get(position).toString());
+
+                Dialog dlg = new Dialog(DeviceInfoActivity.this);
+                dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dlg.setContentView(R.layout.add_configuration_items);
+                Window window = dlg.getWindow();
+                if (window == null) return;
+                window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+                Log.d("MetaItem", metaItems.get(0).name.toString());
+                RecyclerView rv_config_item= dlg.findViewById(R.id.rv_config_item);
+                rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
+                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),metaItems);
+                rv_config_item.setAdapter(configurationAdapter);
+                dlg.show();
+
+            }
+        });
 
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);
+
 
         rv_attribute.setVisibility(View.VISIBLE);
     }

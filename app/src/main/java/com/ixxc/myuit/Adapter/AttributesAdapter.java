@@ -1,24 +1,28 @@
 package com.ixxc.myuit.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.ixxc.myuit.Interface.Test;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.GlobalVars;
+import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.R;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
@@ -30,9 +34,12 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
     public boolean isEditMode = false;
 
-    public AttributesAdapter(List<JsonObject> attrsObj) {
+    Test test;
+
+    public AttributesAdapter(List<JsonObject> attrsObj, Test test) {
         this.attributes = attrsObj;
         changedAttributes = new Hashtable<>();
+        this.test = test;
     }
 
     @Override
@@ -56,7 +63,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AttrsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AttrsViewHolder holder, @SuppressLint("RecyclerView") int position) {
         if (position == attributes.size()) {
             return;
         }
@@ -65,6 +72,14 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         String name = attr.get("name").getAsString();
         String type = attr.get("type").getAsString();
+        String metaItem= "";
+        if(attr.get("meta")!=null){
+            JsonObject meta = attr.get("meta").getAsJsonObject();
+            Log.d("aaa",meta.toString());
+            metaItem+=meta.toString()+"\n";
+        }
+        holder.tv_meta_item.setText(metaItem);
+
 
         String value = "";
 
@@ -107,6 +122,13 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 changedAttributes.put(name, attr);
             }
         });
+
+        holder.btn_add_config.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                test.onItemClicked(v,position);
+            }
+        });
     }
 
     @Override
@@ -114,16 +136,26 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         return attributes == null ? 0 : attributes.size() + 1;
     }
 
-    static class AttrsViewHolder extends RecyclerView.ViewHolder {
+    class AttrsViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_name;
         private final EditText et_value;
+        private Button btn_add_config;
+        private TextView tv_meta_item;
+
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_name = itemView.findViewById(R.id.tv_name);
             et_value = itemView.findViewById(R.id.et_value);
+            btn_add_config = itemView.findViewById(R.id.btn_add_config);
+            tv_meta_item = itemView.findViewById(R.id.tv_meta_item);
+
+
         }
+
+
     }
+
 
 
 }

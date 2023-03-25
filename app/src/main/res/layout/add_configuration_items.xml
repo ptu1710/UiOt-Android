@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_config_item"
+        android:layout_width="match_parent"
+        android:layout_height="400dp" />
+
+    <TextView
+        android:id="@+id/tv_add_config_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADD"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:textColor="@color/bg"
+        android:layout_below="@+id/rv_config_item"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        android:id="@+id/tv_cancel_config_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CANCEL"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:textColor="@color/bg"
+        android:layout_below="@+id/rv_config_item"
+        android:layout_toLeftOf="@+id/tv_add_config_item"/>
+
+</RelativeLayout>
