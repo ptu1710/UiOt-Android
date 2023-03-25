@@ -59,6 +59,7 @@
                 android:id="@+id/et_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
         </com.google.android.material.textfield.TextInputLayout>

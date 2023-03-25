@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.GlobalVars;
 import com.ixxc.myuit.R;
@@ -31,7 +32,7 @@ import java.util.List;
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.AttrsViewHolder> {
     Context ctx;
     private final List<Attribute> attributes;
-    public static Dictionary<String, JsonObject> changedAttributes;
+    public static Dictionary<String, Attribute> changedAttributes;
 
     public boolean isEditMode = false;
 
@@ -62,9 +63,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
     @Override
     public void onBindViewHolder(@NonNull AttrsViewHolder holder, int position) {
-        if (position == attributes.size()) {
-            return;
-        }
+        if (position == attributes.size()) return;
 
         Attribute attr = attributes.get(position);
 
@@ -99,16 +98,14 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             holder.til_value.setVisibility(View.VISIBLE);
         }
 
-        Log.d(GlobalVars.LOG_TAG, name + " - " + type);
-
         holder.et_value.setOnFocusChangeListener((view, focused) -> {
             EditText et = (EditText) view;
             if (!focused) {
-                attr.value = new JsonParser().parse(et.getText().toString());
+                attr.value = new JsonPrimitive(et.getText().toString());
                 attr.timestamp = System.currentTimeMillis();
 
                 changedAttributes.remove(attr);
-                changedAttributes.put(attr.name, attr.toJson());
+                changedAttributes.put(attr.name, attr);
             }
         });
     }

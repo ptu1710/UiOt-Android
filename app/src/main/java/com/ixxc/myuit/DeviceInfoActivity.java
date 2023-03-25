@@ -164,9 +164,11 @@ public class DeviceInfoActivity extends AppCompatActivity {
             Button btn_add = dialog.findViewById(R.id.btn_add);
 
             List<String> types = current_model.getOptional().stream()
+                    .filter(item -> attributeList.stream().noneMatch(a -> a.name.equals(item.name)))
                     .map(item -> item.name)
                     .collect(Collectors.toList());
 
+            act_type.setText("Custom");
             types.add(0, "Custom");
             ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(DeviceInfoActivity.this, R.layout.dropdown_item, types);
             act_type.setAdapter(typeAdapter);
@@ -188,8 +190,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
                 String type = act_type.getText().toString();
                 String name = et_name_1.getText().toString();
                 String valueType = act_value.getText().toString();
-                addAttribute(type, name, valueType);
-                dialog.dismiss();
+                if (addAttribute(type, name, valueType)) dialog.dismiss();
+                else Toast.makeText(this, "Some fields are empty!", Toast.LENGTH_SHORT).show();
             });
 
             btn_cancel.setOnClickListener(view2 -> dialog.dismiss());
@@ -209,17 +211,20 @@ public class DeviceInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void addAttribute(String type, String name, String value) {
+    private boolean addAttribute(String type, String name, String valueType) {
+        if (type.equals("Custom") && (name.equals("") || valueType.equals(""))) return false;
+
         Attribute attribute;
-        if (type.equals("Custom")) {
-            attribute = new Attribute(name, type);
-        } else {
+        if (type.equals("Custom")) attribute = new Attribute(name, valueType);
+        else {
             attribute = current_model.getOptional(type);
             attribute.value = new JsonParser().parse("");
         }
 
         attributeList.add(attribute);
         attributesAdapter.notifyItemInserted(attributeList.size() - 1);
+
+        return true;
     }
 
     private String getSelectedId(String s) {
@@ -236,8 +241,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_edit, menu);
+        getMenuInflater().inflate(R.menu.menu_edit, menu);
         actionbarMenu = menu;
 
         return true;
@@ -291,7 +295,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
             Enumeration<String> keys = AttributesAdapter.changedAttributes.keys();
             while (keys.hasMoreElements()) {
                 String key = keys.nextElement();
-                current_device.attributes.add(key, AttributesAdapter.changedAttributes.get(key));
+                attributeList.add(AttributesAdapter.changedAttributes.get(key));
             }
 
             body.addProperty("id", current_device.id);
@@ -306,10 +310,16 @@ public class DeviceInfoActivity extends AppCompatActivity {
             body.addProperty("type", current_device.type);
 
             // Change attributes
+            for (Attribute a : attributeList) {
+                current_device.attributes.add(a.name, a.toJson());
+            }
+
             body.add("attributes", current_device.attributes);
 
+            Log.d(GlobalVars.LOG_TAG, body.toString());
+
             // Commit device changes here
-            new Thread(() ->{
+            new Thread(() -> {
                 boolean updated = APIManager.updateDeviceInfo(device_id, body);
                 current_device = APIManager.getDevice(device_id);
 
