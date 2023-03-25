@@ -58,6 +58,9 @@ public class AddDeviceActivity extends AppCompatActivity {
         boolean createDevice = bundle.getBoolean("CREATE_DEV");
 
         if (getDevice) {
+            models = Model.getModelList();
+            modelsName = models.stream().map(model -> model.assetDescriptor.get("name").getAsString()).collect(Collectors.toList());
+
             typeAdapter = new ArrayAdapter(this, R.layout.dropdown_item, modelsType);
             act_type.setAdapter(typeAdapter);
 
@@ -93,11 +96,6 @@ public class AddDeviceActivity extends AppCompatActivity {
         new Thread(() -> {
             APIManager.getDeviceModels();
 
-            for (Model model : models) {
-                String name = model.assetDescriptor.get("name").getAsString();
-                modelsName.add(name);
-            }
-
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
             bundle.putBoolean("GET_DEV", true);
@@ -110,14 +108,11 @@ public class AddDeviceActivity extends AppCompatActivity {
         selectedOptional = new ArrayList<>();
         modelsType = new ArrayList<>();
         modelsName = new ArrayList<>();
-        parentNames = new ArrayList<>();
 
         parentDevices = Device.getAllDevices();
 
-        parentNames.add("None");
-        for (Device d : parentDevices) {
-            parentNames.add(d.name);
-        }
+        parentNames = parentDevices.stream().map(device -> device.name).collect(Collectors.toList());
+        parentNames.add(0, "None");
 
         modelsType.add("Agent");
         modelsType.add("Asset");

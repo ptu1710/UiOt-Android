@@ -19,6 +19,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ixxc.myuit.Interface.Test;
+import com.google.gson.JsonPrimitive;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.GlobalVars;
 import com.ixxc.myuit.R;
@@ -62,10 +63,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AttrsViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        if (position == attributes.size()) {
-            return;
-        }
+    public void onBindViewHolder(@NonNull AttrsViewHolder holder, int position) {
+        if (position == attributes.size()) return;
 
         Attribute attr = attributes.get(position);
         String name = attr.name;
@@ -113,11 +112,11 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         holder.et_value.setOnFocusChangeListener((view, focused) -> {
             EditText et = (EditText) view;
             if (!focused) {
-                attr.value = new JsonParser().parse(et.getText().toString());
+                attr.value = new JsonPrimitive(et.getText().toString());
                 attr.timestamp = System.currentTimeMillis();
 
                 changedAttributes.remove(attr);
-                changedAttributes.put(attr.name, attr.toJson());
+                changedAttributes.put(attr.name, attr);
             }
         });
 
@@ -134,9 +133,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         return attributes == null ? 0 : attributes.size() + 1;
     }
 
-
-
-    class AttrsViewHolder extends RecyclerView.ViewHolder {
+    static class AttrsViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_name, tv_value;
         private final EditText et_value;
         private final TextInputLayout til_value;
@@ -155,10 +152,5 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
 
         }
-
-
     }
-
-
-
 }

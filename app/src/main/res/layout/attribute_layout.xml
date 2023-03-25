@@ -45,19 +45,25 @@
 
         </LinearLayout>
 
-
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_value"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-            android:id="@id/til_value"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            android:visibility="visible">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_value"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
         <TextView
