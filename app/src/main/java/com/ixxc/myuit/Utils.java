@@ -11,7 +11,7 @@ import android.util.DisplayMetrics;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class Utilities {
+public class Utils {
     public static SimpleDateFormat hhFormat = new SimpleDateFormat("HH");
     public static SimpleDateFormat hhmmFormat = new SimpleDateFormat("HH:mm");
     public static SimpleDateFormat ddFormat = new SimpleDateFormat("dd");

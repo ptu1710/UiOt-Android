@@ -25,7 +25,6 @@ public class Attribute {
     @SerializedName("meta")
     public JsonObject meta;
 
-
     @SerializedName("optional")
     public boolean optional;
 
@@ -40,11 +39,22 @@ public class Attribute {
     @SerializedName("timestamp")
     public long timestamp;
 
-    public int getValueType() {
-        if (value.isJsonNull()) return 0;
-        else if (value.isJsonObject()) return 1;
-        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return 2;
-        else return -1;
+    public String getMetaValue(String name) {
+        JsonElement element = this.meta.get(name);
+        if (element.isJsonNull()) return "";
+        else if (element.getAsJsonPrimitive().isBoolean()) {
+            return String.valueOf(element.getAsBoolean());
+        }
+        else {
+            return element.getAsString();
+        }
+    }
+
+    public String getValueString() {
+        if (value.isJsonNull()) return "";
+        else if (value.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(value.getAsJsonObject()));
+        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return String.valueOf(value.getAsInt());
+        else return value.getAsString();
     }
 
     public static int GetType(String type){

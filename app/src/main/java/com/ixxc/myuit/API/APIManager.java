@@ -396,14 +396,18 @@ public class APIManager {
         return code;
     }
 
-    public static List<MetaItem> getMetaItem(String parentId){
+    public static int getMetaItem(String parentId){
         Call<List<MetaItem>> call = userAI.getMetaItem(parentId);
 
+        int code = -1;
         try {
             Response<List<MetaItem>> response = call.execute();
-            if(response.isSuccessful()) return response.body();
+            if (response.isSuccessful()) MetaItem.setMetaItemList(response.body());
+            else MetaItem.setMetaItemList(null);
+
+            code = response.code();
         } catch (IOException e) { e.printStackTrace(); }
 
-        return new ArrayList<>();
+        return code;
     }
 }

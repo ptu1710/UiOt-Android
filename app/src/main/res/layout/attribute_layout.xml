@@ -30,7 +30,8 @@
                 android:gravity="center_vertical|start"
                 android:singleLine="true"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:text="Humidity" />
 
             <TextView
                 android:id="@+id/tv_value"
@@ -41,43 +42,41 @@
                 android:gravity="center_vertical|end"
                 android:singleLine="true"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:text="Number" />
 
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_value"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+        <LinearLayout
+            android:id="@+id/config_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="visible">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_value"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionDone"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <TextView
-            android:id="@+id/tv_meta_item"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <Button
-            android:id="@+id/btn_add_config"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="+ Add configuration item"
-            android:textColor="@color/bg"/>
+            android:orientation="vertical" >
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_value"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="12dp"
+                android:hint="Value">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_add_config"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Add configuration item"
+                android:textColor="@color/bg"/>
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

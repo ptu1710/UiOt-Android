@@ -17,16 +17,18 @@ import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Role;
 import com.ixxc.myuit.R;
+import com.ixxc.myuit.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.internal.Util;
 
 public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>{
 
     Context context;
     List<MetaItem> metaItems;
     ArrayList<MetaItem> items_chosen= new ArrayList<>();
-    ConfigurationAdapter.ViewHolder viewHolder;
     MetaItemListener metaItemListener;
     private ConfigurationAdapter.ItemClickListener mClickListener;
 
@@ -36,7 +38,6 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
         this.metaItemListener = metaItemListener;
     }
 
-
     @NonNull
     @Override
     public ConfigurationAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -45,23 +46,14 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
 
     @Override
     public void onBindViewHolder(@NonNull ConfigurationAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        viewHolder = holder;
+        String name = Utils.validateString(metaItems.get(position).name);
+        holder.cb_config_item.setText(name);
+        holder.cb_config_item.setOnClickListener(v -> {
+            if(holder.cb_config_item.isChecked()) items_chosen.add(metaItems.get(position));
+            else items_chosen.remove(metaItems.get(position));
 
-        holder.cb_config_item.setText(metaItems.get(position).name);
-        holder.cb_config_item.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(holder.cb_config_item.isChecked()){
-                    items_chosen.add(metaItems.get(position));
-                }
-                else {
-                    items_chosen.remove(metaItems.get(position));
-                }
-                metaItemListener.onMetaItemListener(items_chosen);
-
-            }
+            metaItemListener.onMetaItemListener(items_chosen);
         });
-
     }
 
     @Override
@@ -75,9 +67,7 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-
             cb_config_item = itemView.findViewById(R.id.cb_config_item);
-
             itemView.setOnClickListener(this);
         }
 

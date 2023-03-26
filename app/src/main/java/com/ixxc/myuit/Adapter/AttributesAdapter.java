@@ -2,27 +2,29 @@ package com.ixxc.myuit.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethod;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.ixxc.myuit.Interface.Test;
+import com.ixxc.myuit.Interface.AttributeListener;
 import com.google.gson.JsonPrimitive;
 import com.ixxc.myuit.Model.Attribute;
-import com.ixxc.myuit.GlobalVars;
+import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.R;
+import com.ixxc.myuit.Utils;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -32,14 +34,13 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     Context ctx;
     private final List<Attribute> attributes;
     public static Dictionary<String, Attribute> changedAttributes;
-    Test test;
+    AttributeListener attributeListener;
     public boolean isEditMode = false;
 
-    public AttributesAdapter(List<Attribute> attrsObj,Test test) {
-
+    public AttributesAdapter(List<Attribute> attrsObj, AttributeListener attributeListener) {
         this.attributes = attrsObj;
         changedAttributes = new Hashtable<>();
-        this.test = test;
+        this.attributeListener = attributeListener;
     }
 
     @Override
@@ -67,33 +68,23 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         if (position == attributes.size()) return;
 
         Attribute attr = attributes.get(position);
-        String name = attr.name;
+        String name = Utils.validateString(attr.name);
         String type = attr.type;
-        StringBuilder metaItem= new StringBuilder();
 
-        if(attr.meta != null){
-            for (String key:attr.meta.keySet()) { metaItem.append(key).append("\n"); }
-        }
-
-        holder.tv_meta_item.setText(metaItem.toString());
-
-        String value;
-        switch (attr.getValueType()) {
-            case 0: // value is NULL
-                value = "";
-                break;
-            case 1: // value is JsonObject
-                value = Attribute.formatJsonValue(String.valueOf(attr.value.getAsJsonObject()));
-                break;
-            case 2: // value is int
-                value = String.valueOf(attr.value.getAsInt());
-                break;
-            default: // value is String or something else
-                value = attr.value.getAsString();
+        // Add Meta Info
+        JsonObject meta = attr.meta;
+        if(meta != null) {
+            // Add config view here
+            for (String key : attr.meta.keySet()) {
+                if (holder.layout.findViewWithTag(key) == null) {
+                    holder.layout.addView(createConfigView(key, MetaItem.getMetaType(key), attr.getMetaValue(key)), 1);
+                }
+            }
         }
 
         holder.tv_name.setText(name);
 
+        String value = attr.getValueString();
         if (value.equals("") && !isEditMode) {
             holder.tv_value.setText("null");
             holder.til_value.setVisibility(View.GONE);
@@ -116,7 +107,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             }
         });
 
-        holder.btn_add_config.setOnClickListener(v -> test.onItemClicked(v,position));
+        holder.btn_add_config.setOnClickListener(v -> attributeListener.onItemClicked(v,position));
     }
 
     @Override
@@ -129,7 +120,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         private final EditText et_value;
         private final TextInputLayout til_value;
         private final Button btn_add_config;
-        private final TextView tv_meta_item;
+        private final LinearLayout layout;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -138,7 +129,44 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             et_value = itemView.findViewById(R.id.et_value);
             til_value = itemView.findViewById(R.id.til_value);
             btn_add_config = itemView.findViewById(R.id.btn_add_config);
-            tv_meta_item = itemView.findViewById(R.id.tv_meta_item);
+            layout = itemView.findViewById(R.id.config_layout);
+        }
+    }
+
+    private View createConfigView(String name, String type, String value) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 0, 0, 32);
+
+        switch (type) {
+            case "boolean":
+                CheckBox cb = new CheckBox(ctx);
+                cb.setText(Utils.validateString(name));
+                cb.setChecked(value.equals("true"));
+                cb.setTag(name);
+                cb.setLayoutParams(params);
+                return cb;
+            case "text":
+            case "positiveInteger":
+                TextInputLayout til = new TextInputLayout(ctx);
+                til.setHint(Utils.validateString(name));
+                til.setLayoutParams(params);
+                til.setTag(name);
+
+                TextInputEditText et = new TextInputEditText(til.getContext());
+                et.setText(value);
+                til.addView(et);
+
+                return til;
+            case "attributeLink[]":
+            case "valueConstraint[]":
+            case "valueFormat":
+            case "text[]":
+                return null;
+            default: // agentLink
+                return null;
         }
     }
 }

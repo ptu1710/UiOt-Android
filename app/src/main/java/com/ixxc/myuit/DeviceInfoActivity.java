@@ -2,15 +2,11 @@ package com.ixxc.myuit;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -39,14 +35,12 @@ import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.AttributesAdapter;
 import com.ixxc.myuit.Adapter.ConfigurationAdapter;
 import com.ixxc.myuit.Interface.MetaItemListener;
-import com.ixxc.myuit.Interface.Test;
 import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,8 +64,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     AttributesAdapter attributesAdapter;
     List<String> parentNames;
     List<MetaItem> metaItems;
-    ArrayList<MetaItem> metaItems_chosen;
-
+    ArrayList<MetaItem> selectedMetaItems;
 
     boolean isEditMode = false;
 
@@ -93,6 +86,8 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         }
 
         if (isOK) {
+            metaItems = MetaItem.getMetaItemList();
+
             actionBar.setTitle(current_device.name);
             et_name.setText(current_device.name);
             cb_public.setChecked(current_device.accessPublicRead);
@@ -131,7 +126,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             APIManager.getDeviceModels();
             current_device = APIManager.getDevice(device_id);
             current_model = Model.getDeviceModel(current_device.type);
-            metaItems = APIManager.getMetaItem(null);
+            APIManager.getMetaItem(null);
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -249,40 +244,36 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
                 Window window = dlg.getWindow();
                 if (window == null) return;
                 Button btn_cancel = dlg.findViewById(R.id.btn_cancel_configuration);
-                btn_cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dlg.dismiss();
-                    }
-                });
+                btn_cancel.setOnClickListener(v12 -> dlg.dismiss());
+
                 Button btn_add = dlg.findViewById(R.id.btn_add_configuration);
-                btn_add.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        for (MetaItem item:metaItems_chosen) {
-                            attributeList.get(position).meta.add(item.name,null);
-
+                btn_add.setOnClickListener(v1 -> {
+                    for (MetaItem item : selectedMetaItems) {
+                        if (MetaItem.getMetaType(item.name).equals("boolean")) {
+                            attributeList.get(position).meta.addProperty(item.name, false);
+                        } else {
+                            attributeList.get(position).meta.addProperty(item.name, "");
                         }
-                        attributesAdapter.notifyDataSetChanged();
-                        dlg.dismiss();
-
                     }
+
+                    attributesAdapter.notifyDataSetChanged();
+                    dlg.dismiss();
                 });
+
                 window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
                 RecyclerView rv_config_item= dlg.findViewById(R.id.rv_config_item);
                 rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
 
-                JsonObject meta = attributeList.get(position).meta;
+                JsonObject meta = attributeList.get(position).meta == null ? new JsonObject() : attributeList.get(position).meta;
                 List<MetaItem> ms = metaItems.stream().filter(metaItem -> !meta.keySet().contains(metaItem.name)).collect(Collectors.toList());
 
-                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(getApplicationContext(),ms,DeviceInfoActivity.this::onMetaItemListener);
+                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(this, ms, DeviceInfoActivity.this);
                 rv_config_item.setAdapter(configurationAdapter);
                 dlg.show();
             });
 
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);
-
         rv_attribute.setVisibility(View.VISIBLE);
     }
 
@@ -387,6 +378,6 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
     @Override
     public void onMetaItemListener(ArrayList<MetaItem> metaItems) {
-        metaItems_chosen = metaItems;
+        selectedMetaItems = metaItems;
     }
 }
