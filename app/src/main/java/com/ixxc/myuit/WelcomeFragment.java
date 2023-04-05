@@ -38,7 +38,7 @@ public class WelcomeFragment extends Fragment {
         InitViews(view);
         InitEvent();
 
-        btn_sign_in.performClick();
+//        btn_sign_in.performClick();
     }
 
     private void InitViews(View v) {
@@ -49,5 +49,6 @@ public class WelcomeFragment extends Fragment {
 
     private void InitEvent() {
         btn_sign_in.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.sign_in));
+        btn_sign_up.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.sign_up));
     }
 }

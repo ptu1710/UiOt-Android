@@ -20,6 +20,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import com.ixxc.myuit.API.APIManager;
 import com.ixxc.myuit.Adapter.DevicesAdapter;
 import com.ixxc.myuit.Interface.DevicesListener;
 import com.ixxc.myuit.Model.Device;
+import com.ixxc.myuit.Model.User;
 
 import java.util.List;
 
@@ -46,15 +48,17 @@ public class DevicesFragment extends Fragment {
 
     ActivityResultLauncher<Intent> mLauncher;
 
+    User me;
+
     public String selected_device_id = "";
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
         boolean delete_device = bundle.getBoolean("DELETE_DEVICE");
-        boolean showDevices = bundle.getBoolean("SHOW_DEVICES");
+        boolean show_devices = bundle.getBoolean("SHOW_DEVICES");
         boolean refresh = bundle.getBoolean("REFRESH");
 
-        if (showDevices || refresh) {
+        if (show_devices || refresh) {
             showDevices();
             iv_cancel.performClick();
             srl_devices.setRefreshing(false);
@@ -120,7 +124,7 @@ public class DevicesFragment extends Fragment {
     }
 
     private void InitVars() {
-
+        me = User.getMe();
     }
 
     private void InitViews(View v) {
@@ -169,8 +173,6 @@ public class DevicesFragment extends Fragment {
         rv_devices.smoothScrollToPosition(0);
 
         srl_devices.setRefreshing(true);
-//        sv.setQuery("", true);
-//        sv.clearFocus();
 
         final Message msg = handler.obtainMessage();
         final Bundle bundle = new Bundle();
@@ -199,6 +201,7 @@ public class DevicesFragment extends Fragment {
 
             @Override
             public void onItemLongClicked(View v, Device device) {
+                if (!me.canWriteDevices()) return;
                 changeSelectedDevice(0, device.id);
             }
         }, homeActivity);
@@ -221,12 +224,12 @@ public class DevicesFragment extends Fragment {
     public void changeSelectedDevice(int index, String id) {
         if (index != -1) {
             iv_add.setVisibility(View.GONE);
-            iv_community.setVisibility(View.GONE);
             iv_delete.setVisibility(View.VISIBLE);
             iv_cancel.setVisibility(View.VISIBLE);
         } else {
-            iv_add.setVisibility(View.VISIBLE);
-            iv_community.setVisibility(View.VISIBLE);
+            if (!me.canWriteDevices()) iv_add.setVisibility(View.GONE);
+            else iv_add.setVisibility(View.VISIBLE);
+
             iv_delete.setVisibility(View.GONE);
             iv_cancel.setVisibility(View.GONE);
 

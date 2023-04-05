@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class SignInFragment extends Fragment {
     ProgressBar pb_loading;
 
     LoginActivity loginActivity;
+    WebView webView;
 
     Handler loginHandler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -64,20 +66,21 @@ public class SignInFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         InitViews(view);
         InitEvent();
-
-        btn_sign_in.performClick();
     }
 
     private void InitViews(View v) {
-        btn_sign_in = v.findViewById(R.id.btn_sign_in_2);
+        btn_sign_in = v.findViewById(R.id.btn_sign_up_2);
         btn_back = v.findViewById(R.id.btn_back);
-        et_usr = v.findViewById(R.id.et_usr);
-        et_pwd = v.findViewById(R.id.et_realm_role);
+        et_usr = v.findViewById(R.id.et_pwd);
+        et_pwd = v.findViewById(R.id.et_re_pwd);
         pb_loading = v.findViewById(R.id.pb_loading);
     }
 
     private void InitEvent() {
         btn_sign_in.setOnClickListener(view -> {
+            et_usr.clearFocus();
+            et_pwd.clearFocus();
+
             pb_loading.setVisibility(View.VISIBLE);
             btn_sign_in.setVisibility(View.GONE);
             String usr = String.valueOf(et_usr.getText());
@@ -85,21 +88,21 @@ public class SignInFragment extends Fragment {
             getToken(usr, pwd);
         });
 
-//        btn_sign_in.setOnClickListener(view -> startActivity(new Intent(loginActivity, HomeActivity.class)));
         btn_back.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.welcome));
     }
 
     private void getToken(String usr, String pwd) {
         CookieManager cm = CookieManager.getInstance();
-        cm.removeAllCookie();
+        cm.removeAllCookies(null);
 
-        WebView webView = new WebView(getContext());
+        webView = new WebView(getContext());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (url.contains("&code=")) {
                     String code = url.split("&code=")[1];
+                    Log.d(GlobalVars.LOG_TAG, "onPageStarted: " + code);
                     getTokenByCode(code);
                 }
             }

@@ -104,6 +104,26 @@ public class User {
         }
     }
 
+    public boolean canReadDevices() {
+        List<Role> hasRole = roleList.stream().filter(role -> role.name.contains("read:assets") && role.assigned).collect(Collectors.toList());
+        return hasRole.size() > 0;
+    }
+
+    public boolean canWriteDevices() {
+        List<Role> hasRole = roleList.stream().filter(role -> role.name.contains("write:assets") && role.assigned).collect(Collectors.toList());
+        return hasRole.size() > 0;
+    }
+
+    public boolean canWriteUsers() {
+        List<Role> hasRole = roleList.stream().filter(role -> role.name.contains("write:user") && role.assigned).collect(Collectors.toList());
+        return hasRole.size() > 0;
+    }
+
+    public boolean canWriteAdmin() {
+        List<Role> hasRole = roleList.stream().filter(role -> role.name.contains("write:admin") && role.assigned).collect(Collectors.toList());
+        return hasRole.size() > 0;
+    }
+
     public JsonObject toJson() {
         JsonObject o = new JsonObject();
         o.addProperty("realm", realm);

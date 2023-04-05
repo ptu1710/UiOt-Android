@@ -10,12 +10,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ixxc.myuit.Adapter.UserItemAdapter;
 import com.ixxc.myuit.Model.User;
@@ -24,16 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdminFragment extends Fragment {
+    HomeActivity homeActivity;
     ImageView iv_user;
     TextView tv_username;
     RecyclerView rv_admin_item;
     Context ctx;
-    User user;
+    User me;
 
     public AdminFragment() { }
 
-    public AdminFragment(Context context) {
-        this.ctx = context;
+    public AdminFragment(HomeActivity homeActivity) {
+        this.homeActivity = homeActivity;
     }
 
     @Override
@@ -48,25 +49,39 @@ public class AdminFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        ctx = homeActivity;
+
         iv_user = view.findViewById(R.id.iv_user);
         tv_username = view.findViewById(R.id.tv_username_1);
         rv_admin_item = view.findViewById(R.id.rv_admin_item);
 
-        user = User.getMe();
+        me = User.getMe();
 
-        tv_username.setText(user.getDisplayName());
+        tv_username.setText(me.getDisplayName());
 
         List<String> items = new ArrayList<>();
         items.add("Account");
-        items.add("Users");
-        items.add("Realm");
-        items.add("Roles");
+        if (me.canWriteAdmin()) {
+            items.add("Users");
+            items.add("Realm");
+            items.add("Roles");
+        }
+        items.add("Sign out");
 
         UserItemAdapter adapter = new UserItemAdapter(ctx, items);
         adapter.setClickListener((view1, position) -> {
             switch (position) {
+                case 0:
+                    Toast.makeText(ctx, "Feature under development!", Toast.LENGTH_SHORT).show();
+                    break;
                 case 1:
-                    ctx.startActivity(new Intent(ctx, UsersActivity.class));
+                    if (me.canWriteAdmin()) {
+                        ctx.startActivity(new Intent(ctx, UsersActivity.class));
+                    } else {
+                        User.setMe(null);
+                        ctx.startActivity(new Intent(ctx, LoginActivity.class));
+                        homeActivity.finish();
+                    }
                     break;
                 case 2:
                     ctx.startActivity(new Intent(ctx, RealmActivity.class));
@@ -74,7 +89,13 @@ public class AdminFragment extends Fragment {
                 case 3:
                     ctx.startActivity(new Intent(ctx, RoleActivity.class));
                     break;
+                case 4:
+                    User.setMe(null);
+                    ctx.startActivity(new Intent(ctx, LoginActivity.class));
+                    homeActivity.finish();
+                    break;
                 default:
+                    Toast.makeText(ctx, "Something went wrong!", Toast.LENGTH_SHORT).show();
                     break;
             }
         });

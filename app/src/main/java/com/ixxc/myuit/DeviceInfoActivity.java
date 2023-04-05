@@ -39,6 +39,7 @@ import com.ixxc.myuit.Model.Attribute;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Model;
+import com.ixxc.myuit.Model.User;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -65,6 +66,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     List<String> parentNames;
     List<MetaItem> metaItems;
     ArrayList<MetaItem> selectedMetaItems;
+    User me;
 
     boolean isEditMode = false;
 
@@ -120,6 +122,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     }
 
     private void InitVars() {
+        me = User.getMe();
         parentNames = Device.getDeviceNames();
 
         new Thread(() -> {
@@ -279,8 +282,10 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_edit, menu);
-        actionbarMenu = menu;
+        if (me.canWriteDevices()) {
+            getMenuInflater().inflate(R.menu.menu_edit, menu);
+            actionbarMenu = menu;
+        }
 
         return true;
     }

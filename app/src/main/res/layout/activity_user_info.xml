@@ -34,7 +34,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_email"
+                android:id="@+id/til_user_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -49,7 +49,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cb_active">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_email"
+                    android:id="@+id/et_user_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress" />
@@ -68,7 +68,7 @@
                 app:boxBackgroundMode="outline"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_email">
+                app:layout_constraintTop_toBottomOf="@+id/til_user_email">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_firstname"
@@ -108,7 +108,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_lastname">
@@ -152,7 +152,7 @@
                     android:visibility="gone">
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/til_pwd"
+                        android:id="@+id/til_usr_pwd"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -164,7 +164,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/textView11">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_pwd"
+                            android:id="@+id/et__usr_pwd"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="New Password"
@@ -195,7 +195,7 @@
                         app:endIconMode="password_toggle"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/til_pwd"
+                        app:layout_constraintTop_toBottomOf="@+id/til_usr_pwd"
                         app:passwordToggleEnabled="false">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -203,6 +203,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Repeat New Password"
+                            android:imeOptions="actionDone"
                             android:inputType="textPassword" />
 
                     </com.google.android.material.textfield.TextInputLayout>

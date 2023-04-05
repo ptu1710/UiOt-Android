@@ -120,7 +120,7 @@ public interface APIInterface {
 
     // Update user's info
     @Headers("Content-Type: application/json")
-    @POST("api/master/user/master/users")
+    @PUT("api/master/user/master/users")
     Call<User> updateUserInfo(@Body JsonObject body);
 
     // Update user's password

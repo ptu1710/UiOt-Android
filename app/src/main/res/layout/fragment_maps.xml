@@ -8,9 +8,14 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textView12"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Maps"
+        android:gravity="center"
+        android:text="Coming soon!"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

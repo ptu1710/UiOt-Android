@@ -81,7 +81,10 @@ public class UserInfoActivity extends AppCompatActivity {
             et_pwd.setText(secret);
             et_pwd.clearFocus();
             Toast.makeText(this, "New secret has been generated", Toast.LENGTH_SHORT).show();
-        } else Toast.makeText(this, "Update with status: " + updateCode, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Update with status: " + updateCode, Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
         return false;
     });
@@ -124,7 +127,7 @@ public class UserInfoActivity extends AppCompatActivity {
         roles_layout_1 = findViewById(R.id.roles_layout_1);
         roles_layout_2 = findViewById(R.id.roles_layout_2);
         cb_active = findViewById(R.id.cb_active);
-        et_email = findViewById(R.id.et_email);
+        et_email = findViewById(R.id.et_user_email);
         et_firstname = findViewById(R.id.et_firstname);
         et_lastname = findViewById(R.id.et_lastname);
         act_realm_roles = findViewById(R.id.act_realm_roles);
@@ -132,15 +135,15 @@ public class UserInfoActivity extends AppCompatActivity {
         btn_custom_role_set = findViewById(R.id.btn_custom_role_set);
         btn_linked_devices = findViewById(R.id.btn_linked_devices);
         btn_regenerate = findViewById(R.id.btn_regenerate);
-        et_pwd = findViewById(R.id.et_pwd);
+        et_pwd = findViewById(R.id.et__usr_pwd);
         et_rePwd = findViewById(R.id.et_repwd);
         pwd_layout = findViewById(R.id.pwd_layout);
         roles_layout = findViewById(R.id.roles_layout);
-        til_email = findViewById(R.id.til_email);
+        til_email = findViewById(R.id.til_user_email);
         til_firstname = findViewById(R.id.til_firstname);
         til_lastname = findViewById(R.id.til_lastname);
         til_rePwd = findViewById(R.id.til_repwd);
-        til_pwd = findViewById(R.id.til_pwd);
+        til_pwd = findViewById(R.id.til_usr_pwd);
         pb_user_info = findViewById(R.id.pb_user_info);
     }
 
@@ -312,6 +315,7 @@ public class UserInfoActivity extends AppCompatActivity {
         act_realm_roles.setAdapter(realmRolesAdapter);
 
         List<String> compositeRoleIds = roleList.stream().map(r -> r.id).collect(Collectors.toList());
+        List<String> roleSetAssigned = roleSetList.stream().filter(role -> role.assigned).map(r -> r.name).collect(Collectors.toList());
         roleSetAdapter = new UserRoleAdapter(this, R.layout.user_role_item, roleSetList, (v, role, isChecked) -> {
             role.assigned = isChecked;
 
@@ -321,6 +325,7 @@ public class UserInfoActivity extends AppCompatActivity {
                 roleList.get(index).assigned = isChecked;
             }
         });
+        act_roles.setText(String.join(", ", roleSetAssigned));
         act_roles.setAdapter(roleSetAdapter);
 
         customRoleDialog = customRoleDialog();
@@ -442,7 +447,6 @@ public class UserInfoActivity extends AppCompatActivity {
             finish();
             return true;
         } else if (id == R.id.save) {
-            Toast.makeText(this, "OKOK", Toast.LENGTH_SHORT).show();
             save();
             return true;
         }
@@ -498,7 +502,6 @@ public class UserInfoActivity extends AppCompatActivity {
                 o.addProperty("assigned", true);
                 newRoles.add(o);
             }
-
         }
 
         for (Role role : roleList) {

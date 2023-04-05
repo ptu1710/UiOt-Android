@@ -12,7 +12,6 @@ import android.widget.Toast;
 public class LoginActivity extends AppCompatActivity {
     public static boolean isDefaultPage;
     public Fragment welcome, sign_in, sign_up;
-    boolean isSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +28,9 @@ public class LoginActivity extends AppCompatActivity {
     private void InitVars() {
         welcome = new WelcomeFragment(this);
         sign_in = new SignInFragment(this);
+        sign_up = new SignUpFragment(this);
 
         isDefaultPage = true;
-        isSignIn = false;
     }
 
     private void InitViews() { }

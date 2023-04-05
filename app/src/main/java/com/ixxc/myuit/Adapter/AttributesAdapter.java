@@ -2,6 +2,8 @@ package com.ixxc.myuit.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethod;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
+import com.ixxc.myuit.GlobalVars;
 import com.ixxc.myuit.Interface.AttributeListener;
 import com.google.gson.JsonPrimitive;
 import com.ixxc.myuit.Model.Attribute;
@@ -71,13 +75,16 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         String name = Utils.validateString(attr.name);
         String type = attr.type;
 
+        if(isEditMode) holder.btn_add_config.setVisibility(View.VISIBLE);
+        else holder.btn_add_config.setVisibility(View.GONE);
+
         // Add Meta Info
         JsonObject meta = attr.meta;
         if(meta != null) {
             // Add config view here
             for (String key : attr.meta.keySet()) {
                 if (holder.layout.findViewWithTag(key) == null) {
-                    holder.layout.addView(createConfigView(key, MetaItem.getMetaType(key), attr.getMetaValue(key)), 1);
+                    holder.layout.addView(createConfigView(position, key, MetaItem.getMetaType(key), attr.getMetaValue(key)), 1);
                 }
             }
         }
@@ -88,6 +95,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         if (value.equals("") && !isEditMode) {
             holder.tv_value.setText("null");
             holder.til_value.setVisibility(View.GONE);
+
         } else {
             holder.tv_value.setText(type);
             holder.et_value.setText(value);
@@ -133,12 +141,14 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         }
     }
 
-    private View createConfigView(String name, String type, String value) {
+    private View createConfigView(int pos, String name, String type, String value) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         params.setMargins(0, 0, 0, 32);
+
+        Log.d(GlobalVars.LOG_TAG, "createConfigView: " + name + " - " + type);
 
         switch (type) {
             case "boolean":
@@ -147,9 +157,13 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 cb.setChecked(value.equals("true"));
                 cb.setTag(name);
                 cb.setLayoutParams(params);
+                cb.setOnCheckedChangeListener((compoundButton, checked) -> attributes.get(pos).meta.addProperty(name, checked));
+                cb.setClickable(isEditMode);
                 return cb;
             case "text":
             case "positiveInteger":
+            case "agentLink":
+            case "attributeLink[]":
                 TextInputLayout til = new TextInputLayout(ctx);
                 til.setHint(Utils.validateString(name));
                 til.setLayoutParams(params);
@@ -157,10 +171,12 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
                 TextInputEditText et = new TextInputEditText(til.getContext());
                 et.setText(value);
+                et.setInputType(Attribute.GetType(type));
+                et.setOnFocusChangeListener((view, focused) -> attributes.get(pos).meta.addProperty(name, String.valueOf(et.getText())));
+                et.setFocusableInTouchMode(isEditMode);
                 til.addView(et);
 
                 return til;
-            case "attributeLink[]":
             case "valueConstraint[]":
             case "valueFormat":
             case "text[]":

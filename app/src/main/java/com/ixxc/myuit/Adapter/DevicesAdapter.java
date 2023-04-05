@@ -96,7 +96,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
 
             tv_name.setText(device.name);
             tv_id.setText("ID: " + device.id);
-            iv_icon.setImageResource(R.drawable.ic_vn);
+            iv_icon.setImageResource(R.drawable.ic_iot);
 
             cv_device.setOnClickListener(view -> devicesListener.onItemClicked(view, device));
             cv_device.setOnLongClickListener(view -> {

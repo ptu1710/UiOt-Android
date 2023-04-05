@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -47,7 +46,9 @@ public class AddDeviceActivity extends AppCompatActivity {
 
     List<Attribute> selectedOptional;
 
-    ArrayAdapter typeAdapter, devicesAdapter, parentAdapter;
+    ArrayAdapter<String> typeAdapter;
+    ArrayAdapter<String> devicesAdapter;
+    ArrayAdapter<String> parentAdapter;
 
     String parentId = "None";
 
@@ -61,13 +62,13 @@ public class AddDeviceActivity extends AppCompatActivity {
             models = Model.getModelList();
             modelsName = models.stream().map(model -> model.assetDescriptor.get("name").getAsString()).collect(Collectors.toList());
 
-            typeAdapter = new ArrayAdapter(this, R.layout.dropdown_item, modelsType);
+            typeAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, modelsType);
             act_type.setAdapter(typeAdapter);
 
-            devicesAdapter = new ArrayAdapter(this, R.layout.dropdown_item, modelsName);
+            devicesAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, modelsName);
             act_device.setAdapter(devicesAdapter);
 
-            parentAdapter = new ArrayAdapter(this, R.layout.dropdown_item, parentNames);
+            parentAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, parentNames);
             act_parent.setAdapter(parentAdapter);
         } else if (createDevice) {
             Intent returnIntent = new Intent();
@@ -90,6 +91,7 @@ public class AddDeviceActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("New device");
 
@@ -133,13 +135,17 @@ public class AddDeviceActivity extends AppCompatActivity {
         act_type.setOnItemClickListener((adapterView, view, i, l) -> {
             String type = modelsType.get(i);
             List<String> newList =  modelsName.stream().filter(name -> name.contains(type)).collect(Collectors.toList());
-            devicesAdapter = new ArrayAdapter(AddDeviceActivity.this, R.layout.dropdown_item, newList);
+            devicesAdapter = new ArrayAdapter<>(AddDeviceActivity.this, R.layout.dropdown_item, newList);
             act_device.setAdapter(devicesAdapter);
         });
 
         act_device.setOnItemClickListener((adapterView, view, i, l) -> selectedOptional.clear());
 
-        act_parent.setOnItemClickListener((adapterView, view, i, l) -> parentId = parentDevices.get(i).id);
+        act_parent.setOnItemClickListener((adapterView, view, i, l) -> {
+            // Different between 2 parentNames and parentDevices (parentNames has 1 more item is "None" at index 0);
+            if (i == 0) return;
+            parentId = parentDevices.get(i - 1).id;
+        });
 
         btn_add_optional.setOnClickListener(view -> {
             List<Model> result = models.stream()
