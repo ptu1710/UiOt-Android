@@ -80,7 +80,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         // Add Meta Info
         JsonObject meta = attr.meta;
-        if(meta != null) {
+        if(meta != null && isEditMode) {
             // Add config view here
             for (String key : attr.meta.keySet()) {
                 if (holder.layout.findViewWithTag(key) == null) {
@@ -147,8 +147,6 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         params.setMargins(0, 0, 0, 32);
-
-        Log.d(GlobalVars.LOG_TAG, "createConfigView: " + name + " - " + type);
 
         switch (type) {
             case "boolean":

@@ -29,7 +29,6 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
     private Context ctx;
 
      public int checkedPos = -1;
-     public int lastPosition = -1;
 
     public DevicesAdapter(List<Device> devices, DevicesListener listener, Context context) {
         this.devices = devices;

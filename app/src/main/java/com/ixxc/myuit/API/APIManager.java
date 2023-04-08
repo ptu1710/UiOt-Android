@@ -322,6 +322,18 @@ public class APIManager {
         return statusCode;
     }
 
+    public static int deleteUser(String id) {
+        Call<String> call = userAI.deleteUser(id);
+
+        int returnCode = -1;
+        try {
+            Response<String> response = call.execute();
+            returnCode = response.code();
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return returnCode;
+    }
+
     public static int updateUserInfo(JsonObject query) {
         Call<User> call = userAI.updateUserInfo(query);
 

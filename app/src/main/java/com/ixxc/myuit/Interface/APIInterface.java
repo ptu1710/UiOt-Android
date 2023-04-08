@@ -118,6 +118,10 @@ public interface APIInterface {
     @POST("api/master/asset/user/link/delete")
     Call<String> setUnlinkedDevices(@Body JsonArray body);
 
+    // Delete User
+    @DELETE("api/master/user/master/users/{userId}")
+    Call<String> deleteUser(@Path("userId") String userId);
+
     // Update user's info
     @Headers("Content-Type: application/json")
     @PUT("api/master/user/master/users")

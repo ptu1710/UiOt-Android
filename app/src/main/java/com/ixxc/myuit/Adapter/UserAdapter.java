@@ -6,32 +6,48 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ixxc.myuit.Interface.UsersListener;
 import com.ixxc.myuit.R;
 
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
-    private List<String> userList;
-    private LayoutInflater mInflater;
-    private ItemClickListener mClickListener;
+    private final List<String> userList;
+    private final LayoutInflater mInflater;
+    private final Context cxt;
 
-    public UserAdapter(Context context, List<String> users) {
+    public int checkedPos = -1;
+
+    private final UsersListener usersListener;
+
+    public UserAdapter(List<String> users, UsersListener usersListener, Context context) {
+        this.cxt = context;
         this.mInflater = LayoutInflater.from(context);
         this.userList = users;
+        this.usersListener = usersListener;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.user_layout, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        if (position == userList.size() - 1) {
-            holder.v_line.setVisibility(View.INVISIBLE);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        if (checkedPos == -1) {
+            holder.tv_user.setBackgroundColor(cxt.getColor(R.color.white));
+        } else {
+            if (checkedPos == holder.getAdapterPosition()) {
+                holder.tv_user.setBackgroundColor(cxt.getColor(R.color.bg2));
+            } else {
+                holder.tv_user.setBackgroundColor(cxt.getColor(R.color.white));
+            }
         }
 
         holder.tv_user.setText(userList.get(position));
@@ -42,7 +58,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         return userList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tv_user;
         View v_line;
 
@@ -50,24 +66,32 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             super(itemView);
             tv_user = itemView.findViewById(R.id.tv_user);
             v_line = itemView.findViewById(R.id.v_line);
-            itemView.setOnClickListener(this);
-        }
 
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            tv_user.setOnClickListener(view -> {
+                view.setBackgroundColor(cxt.getColor(R.color.white));
+
+                notifyItemChanged(checkedPos);
+                checkedPos = -1;
+
+                usersListener.onItemClicked(view, getAdapterPosition());
+            });
+
+            tv_user.setOnLongClickListener(view -> {
+                usersListener.onItemLongClicked(view, getAdapterPosition());
+
+                view.setBackgroundColor(cxt.getColor(R.color.bg2));
+
+                if (checkedPos != getAdapterPosition()) {
+                    notifyItemChanged(checkedPos);
+                    checkedPos = getAdapterPosition();
+                }
+
+                return true;
+            });
         }
     }
 
     String getItem(int id) {
         return userList.get(id);
-    }
-
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
     }
 }

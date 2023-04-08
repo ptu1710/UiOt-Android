@@ -107,7 +107,6 @@ public class RealmActivity extends AppCompatActivity {
         SwitchCompat sw_enabled = view.findViewById(R.id.sw_enabled);
 
         et_name.setText(realm.name);
-        et_name.setOnFocusChangeListener((view12, b) -> Toast.makeText(RealmActivity.this, "Cannot modify realm name!", Toast.LENGTH_LONG).show());
 
         et_f_name.setText(realm.displayName);
         et_f_name.addTextChangedListener(new TextWatcher() {
