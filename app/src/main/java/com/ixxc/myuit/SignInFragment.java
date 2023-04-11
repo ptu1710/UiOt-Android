@@ -1,5 +1,6 @@
 package com.ixxc.myuit;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
@@ -66,6 +67,8 @@ public class SignInFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         InitViews(view);
         InitEvent();
+
+        btn_sign_in.performClick();
     }
 
     private void InitViews(View v) {
@@ -91,6 +94,7 @@ public class SignInFragment extends Fragment {
         btn_back.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.welcome));
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void getToken(String usr, String pwd) {
         CookieManager cm = CookieManager.getInstance();
         cm.removeAllCookies(null);
@@ -102,7 +106,6 @@ public class SignInFragment extends Fragment {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (url.contains("&code=")) {
                     String code = url.split("&code=")[1];
-                    Log.d(GlobalVars.LOG_TAG, "onPageStarted: " + code);
                     getTokenByCode(code);
                 }
             }
@@ -119,7 +122,7 @@ public class SignInFragment extends Fragment {
 
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
+//                handler.proceed();
             }
         });
 

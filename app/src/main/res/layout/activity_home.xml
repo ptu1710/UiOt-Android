@@ -6,26 +6,41 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/navbar"
+<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--        android:id="@+id/navbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@color/white"-->
+<!--        app:itemIconTint="@drawable/nav_selector"-->
+<!--        app:labelVisibilityMode="unlabeled"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:menu="@menu/nav_menu" />-->
+
+    <nl.joery.animatedbottombar.AnimatedBottomBar
+        android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/navbar_bg"
-        app:itemIconTint="@drawable/nav_selector"
-        app:labelVisibilityMode="unlabeled"
+        android:background="@color/white"
+        app:abb_indicatorAppearance="round"
+        app:abb_indicatorHeight="3dp"
+        app:abb_indicatorMargin="16dp"
+        app:abb_selectedIndex="0"
+        app:abb_selectedTabType="text"
+        app:abb_tabs="@menu/tabs"
+        app:abb_textStyle="bold"
+        app:abb_textSize="16sp"
+        app:abb_animationDuration="280"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/nav_menu" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <FrameLayout
         android:id="@+id/main_frame"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/navbar"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

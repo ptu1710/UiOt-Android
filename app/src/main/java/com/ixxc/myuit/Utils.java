@@ -12,12 +12,12 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class Utils {
-    public static SimpleDateFormat hhFormat = new SimpleDateFormat("HH");
-    public static SimpleDateFormat hhmmFormat = new SimpleDateFormat("HH:mm");
-    public static SimpleDateFormat ddFormat = new SimpleDateFormat("dd");
-    public static SimpleDateFormat ddMMFormat = new SimpleDateFormat("dd-MM");
-    public static SimpleDateFormat ddMMyyFormat = new SimpleDateFormat("dd-MM-yyyy");
-    public static SimpleDateFormat fullDateFormat = new SimpleDateFormat("HH:mm dd-MM-yyyy");
+//    public static SimpleDateFormat hhFormat = new SimpleDateFormat("HH");
+//    public static SimpleDateFormat hhmmFormat = new SimpleDateFormat("HH:mm");
+//    public static SimpleDateFormat ddFormat = new SimpleDateFormat("dd");
+//    public static SimpleDateFormat ddMMFormat = new SimpleDateFormat("dd-MM");
+//    public static SimpleDateFormat ddMMyyFormat = new SimpleDateFormat("dd-MM-yyyy");
+//    public static SimpleDateFormat fullDateFormat = new SimpleDateFormat("HH:mm dd-MM-yyyy");
 
     public static Handler delayHandler;
 

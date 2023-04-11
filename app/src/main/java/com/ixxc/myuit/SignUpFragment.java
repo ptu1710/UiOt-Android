@@ -1,5 +1,6 @@
 package com.ixxc.myuit;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
@@ -114,6 +115,7 @@ public class SignUpFragment extends Fragment {
         });
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void getToken(String usr, String email, String pwd, String rePwd) {
         CookieManager cm = CookieManager.getInstance();
         cm.removeAllCookie();
@@ -169,7 +171,7 @@ public class SignUpFragment extends Fragment {
 
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
+//                handler.proceed();
             }
         });
 

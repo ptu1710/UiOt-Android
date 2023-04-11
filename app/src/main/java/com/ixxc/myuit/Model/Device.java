@@ -3,6 +3,7 @@ package com.ixxc.myuit.Model;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import com.mapbox.geojson.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,5 +95,11 @@ public class Device {
         }
 
         return parentId;
+    }
+
+    public Point getPoint() {
+        float lng = attributes.get("location").getAsJsonObject().get("value").getAsJsonObject().get("coordinates").getAsJsonArray().get(0).getAsFloat();
+        float lat = attributes.get("location").getAsJsonObject().get("value").getAsJsonObject().get("coordinates").getAsJsonArray().get(1).getAsFloat();
+        return Point.fromLngLat(lng, lat);
     }
 }

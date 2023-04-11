@@ -1,23 +1,32 @@
 package com.ixxc.myuit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Objects;
+
+import nl.joery.animatedbottombar.AnimatedBottomBar;
+import nl.joery.animatedbottombar.BottomBarStyle;
+
 public class HomeActivity extends AppCompatActivity {
-    public static BottomNavigationView navbar;
-    FragmentManager fm;
+    private FragmentManager fm;
+    public AnimatedBottomBar navbar;
     public HomeFragment homeFrag;
     public DevicesFragment devicesFrag;
-    public static MapsFragment mapsFrag;
+    public MapsFragment mapsFrag;
     public AdminFragment userFrag;
-    Fragment fragment = null;
+    private Fragment fragment = null;
     int selectedIndex;
 
     @Override
@@ -29,9 +38,11 @@ public class HomeActivity extends AppCompatActivity {
         InitViews();
         InitEvents();
 
+        fm.beginTransaction().add(R.id.main_frame, mapsFrag, "map").commit();
+        fm.beginTransaction().hide(mapsFrag).commit();
         fm.beginTransaction().add(R.id.main_frame, homeFrag, "home").commit();
         fragment = homeFrag;
-        navbar.setSelectedItemId(R.id.nav_home);
+        navbar.selectTabAt(0, false);
     }
 
     private void InitVars() {
@@ -41,64 +52,70 @@ public class HomeActivity extends AppCompatActivity {
 
         homeFrag = new HomeFragment();
         devicesFrag = new DevicesFragment(this);
-        mapsFrag = new MapsFragment();
+        mapsFrag = new MapsFragment(this);
         userFrag = new AdminFragment(this);
+
+        Utils.delayHandler = new Handler();
     }
 
     private void InitViews() {
-        navbar = findViewById(R.id.navbar);
+        navbar = findViewById(R.id.bottom_bar);
     }
 
     private void InitEvents() {
-        navbar.setOnItemReselectedListener(item -> { });
+        navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
+            @Override
+            public void onTabSelected(int lastIndex, @Nullable AnimatedBottomBar.Tab lastTab, int newIndex, @NonNull AnimatedBottomBar.Tab newTab) {
+                if (fragment == devicesFrag) devicesFrag.changeSelectedDevice(-1, "");
 
-        navbar.setOnItemSelectedListener(item -> {
-            if (fragment == devicesFrag) devicesFrag.changeSelectedDevice(-1, "");
+                switch (newIndex) {
+                    case 0:
+                        if (homeFrag == null) { homeFrag = new HomeFragment(); }
+                        fm.beginTransaction().hide(fragment).commit();
+                        fragment = homeFrag;
+                        break;
+                    case 1:
+                        if (fm.findFragmentByTag("devices") == null) {
+                            fm.beginTransaction().add(R.id.main_frame, devicesFrag, "devices").commit();
+                        }
+                        fm.beginTransaction().hide(fragment).commit();
+                        fragment = devicesFrag;
+                        break;
+                    case 2:
+                        if (fm.findFragmentByTag("map") == null) {
+                            fm.beginTransaction().add(R.id.main_frame, mapsFrag, "map").commit();
+                        }
 
-            switch (item.getItemId()) {
-                case (R.id.nav_home):
-                    if (homeFrag == null) { homeFrag = new HomeFragment(); }
-                    fm.beginTransaction().hide(fragment).commit();
-                    fragment = homeFrag;
-                    break;
-                case (R.id.nav_maps):
-                    if (fm.findFragmentByTag("map") == null) {
-                        fm.beginTransaction().add(R.id.main_frame, mapsFrag, "map").commit();
-                    }
-                    fm.beginTransaction().hide(fragment).commit();
-                    fragment = mapsFrag;
-                    break;
-                case (R.id.nav_devices):
-                    if (fm.findFragmentByTag("devices") == null) {
-                        fm.beginTransaction().add(R.id.main_frame, devicesFrag, "devices").commit();
-                    }
-                    fm.beginTransaction().hide(fragment).commit();
-                    fragment = devicesFrag;
-                    break;
-                case (R.id.nav_admin):
-                    if (fm.findFragmentByTag("user") == null) {
-                        fm.beginTransaction().add(R.id.main_frame, userFrag, "user").commit();
-                    }
-                    fm.beginTransaction().hide(fragment).commit();
-                    fragment = userFrag;
-                    break;
+                        fm.beginTransaction().hide(fragment).commit();
+                        fragment = mapsFrag;
+                        break;
+                    case 3:
+                        if (fm.findFragmentByTag("user") == null) {
+                            fm.beginTransaction().add(R.id.main_frame, userFrag, "user").commit();
+                        }
+                        fm.beginTransaction().hide(fragment).commit();
+                        fragment = userFrag;
+                        break;
+                }
+
+                fm.beginTransaction()
+                        .show(fragment)
+                        .commit();
             }
 
-            fm.beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .show(fragment)
-                    .commit();
+            @Override
+            public void onTabReselected(int i, @NonNull AnimatedBottomBar.Tab tab) {
 
-            return true;
+            }
         });
     }
 
     @Override
     public void onBackPressed() {
-        switch (navbar.getSelectedItemId()) {
-            case R.id.nav_home:
+        switch (navbar.getSelectedIndex()) {
+            case 0:
                 super.onBackPressed();
-            case R.id.nav_devices:
+            case 1:
                 if(!devicesFrag.selected_device_id.equals("")) {
                     devicesFrag.changeSelectedDevice(-1, "");
                     return;
@@ -108,6 +125,6 @@ public class HomeActivity extends AppCompatActivity {
                 break;
         }
 
-        navbar.setSelectedItemId(R.id.nav_home);
+        navbar.selectTabAt(0, true);
     }
 }

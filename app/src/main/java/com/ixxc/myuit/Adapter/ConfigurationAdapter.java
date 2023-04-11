@@ -22,8 +22,6 @@ import com.ixxc.myuit.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.internal.Util;
-
 public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>{
 
     Context context;

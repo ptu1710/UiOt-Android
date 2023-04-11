@@ -9,6 +9,7 @@ import com.ixxc.myuit.Interface.APIInterface;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.LinkedDevice;
+import com.ixxc.myuit.Model.Map;
 import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Model;
 import com.ixxc.myuit.Model.Realm;
@@ -23,7 +24,6 @@ import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.http.Body;
 
 public class APIManager {
     private static final APIClient apiClient = new APIClient();
@@ -35,7 +35,8 @@ public class APIManager {
             Response<Token> response = call.execute();
             if (response.isSuccessful()) {
                 Token token = response.body();
-                apiClient.UserToken = token.access_token;
+                assert token != null;
+                APIClient.UserToken = token.access_token;
             }
             else { Log.d("API LOG", "getToken: Not Successful"); }
         } catch (IOException e) {
@@ -43,30 +44,25 @@ public class APIManager {
         }
     }
 
-    public static boolean getUserInfo() {
+    public static void getUserInfo() {
         Call<User> call = userAI.getUserInfo();
 
-        boolean isSuccess = false;
         try {
             Response<User> response = call.execute();
-            isSuccess = response.isSuccessful();
             User.setMe(response.body());
         } catch (IOException e) { e.printStackTrace(); }
 
-        return isSuccess;
     }
 
-    public static boolean getUserRoles() {
+    public static void getUserRoles() {
         Call<List<Role>> call = userAI.getUserRoles();
 
-        boolean isSuccess = false;
         try {
             Response<List<Role>> response = call.execute();
-            isSuccess = response.isSuccessful();
+            assert response.body() != null;
             User.getMe().setUserRoles(response.body());
         } catch (IOException e) { e.printStackTrace(); }
 
-        return isSuccess;
     }
 
     public static void queryDevices(JsonObject body) {
@@ -408,18 +404,22 @@ public class APIManager {
         return code;
     }
 
-    public static int getMetaItem(String parentId){
+    public static void getMetaItem(String parentId){
         Call<List<MetaItem>> call = userAI.getMetaItem(parentId);
 
-        int code = -1;
         try {
             Response<List<MetaItem>> response = call.execute();
             if (response.isSuccessful()) MetaItem.setMetaItemList(response.body());
             else MetaItem.setMetaItemList(null);
-
-            code = response.code();
         } catch (IOException e) { e.printStackTrace(); }
 
-        return code;
+    }
+
+    public static void getMap() {
+        Call<Map> call = userAI.getMap();
+        try {
+            Response<Map> response = call.execute();
+            if (response.isSuccessful()) { Map.setMapObj(response.body()); }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }

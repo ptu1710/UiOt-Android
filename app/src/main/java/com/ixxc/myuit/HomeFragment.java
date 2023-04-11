@@ -55,12 +55,14 @@ public class HomeFragment extends Fragment {
                 APIManager.getUserInfo();
                 APIManager.getUserRoles();
             }
+
             if (Device.getAllDevices() == null || Device.getAllDevices().size() == 0) {
                 String queryString = "{ \"realm\": { \"name\": \"master\" }}";
-                JsonParser jsonParser = new JsonParser();
-                JsonObject query = (JsonObject)jsonParser.parse(queryString);
+                JsonObject query = JsonParser.parseString(queryString).getAsJsonObject();
                 APIManager.queryDevices(query);
             }
+
+            APIManager.getMap();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();

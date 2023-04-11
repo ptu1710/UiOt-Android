@@ -3,4 +3,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="refresh">refresh</string>
+    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoicGF0dXMiLCJhIjoiY2w5NnBtNzBxMDEyYjNucGR5ZXZtcTg1MSJ9.m3W_7Ta9A_NGKJw0fPW1Wg</string>
+    <string name="view_chart">View Chart</string>
+    <string name="more_details">More Details</string>
+    <string name="home">Home</string>
+    <string name="devices">Devices</string>
+    <string name="maps">Maps</string>
+    <string name="admin">Admin</string>
 </resources>

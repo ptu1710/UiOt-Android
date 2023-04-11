@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.ixxc.myuit.Model.CreateAssetRes;
 import com.ixxc.myuit.Model.Device;
 import com.ixxc.myuit.Model.LinkedDevice;
+import com.ixxc.myuit.Model.Map;
 import com.ixxc.myuit.Model.MetaItem;
 import com.ixxc.myuit.Model.Model;
 import com.ixxc.myuit.Model.Realm;
@@ -152,4 +153,8 @@ public interface APIInterface {
     // Get metaItemDescriptors
     @GET("api/master/model/metaItemDescriptors")
     Call<List<MetaItem>> getMetaItem(@Query("parentId") String parentId);
+
+    // Get Maps data
+    @GET("api/master/map")
+    Call<Map> getMap();
 }
