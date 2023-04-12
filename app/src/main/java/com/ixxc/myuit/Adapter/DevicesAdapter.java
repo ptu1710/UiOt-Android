@@ -1,5 +1,6 @@
 package com.ixxc.myuit.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,7 +27,7 @@ import java.util.List;
 public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceViewHolder> {
     private List<Device> devices;
     private final DevicesListener devicesListener;
-    private Context ctx;
+    private final Context ctx;
 
      public int checkedPos = -1;
 
@@ -36,11 +37,13 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
         this.ctx = context;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFilteredDevices(List<Device> filteredDevices) {
         this.devices = filteredDevices;
         notifyDataSetChanged();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setListDevices(List<Device> devices) {
         this.devices = devices;
         notifyDataSetChanged();
@@ -66,9 +69,10 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
     }
 
     class DeviceViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_name, tv_id;
-        private ImageView iv_icon;
-        private CardView cv_device;
+        private final TextView tv_name;
+        private final TextView tv_id;
+        private final ImageView iv_icon;
+        private final CardView cv_device;
 
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -83,9 +87,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
                 return;
             }
 
-            if (checkedPos == -1) {
-                cv_device.setCardBackgroundColor(cv_device.getResources().getColor(R.color.bg));
-            } else {
+            if (checkedPos == -1) cv_device.setCardBackgroundColor(cv_device.getResources().getColor(R.color.bg));
+            else {
                 if (checkedPos == getAdapterPosition()) {
                     cv_device.setCardBackgroundColor(cv_device.getResources().getColor(R.color.red));
                 } else {
@@ -95,7 +98,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceVi
 
             tv_name.setText(device.name);
             tv_id.setText("ID: " + device.id);
-            iv_icon.setImageResource(R.drawable.ic_iot);
+            iv_icon.setImageDrawable(device.getIcon(ctx, device.type));
 
             cv_device.setOnClickListener(view -> devicesListener.onItemClicked(view, device));
             cv_device.setOnLongClickListener(view -> {

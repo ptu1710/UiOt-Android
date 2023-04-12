@@ -139,7 +139,8 @@ public class MapsFragment extends Fragment {
 
             // Add click listener to the annotation manager
             pointAnnoManager.addClickListener(pointAnnotation -> {
-                Log.d(GlobalVars.LOG_TAG, "onAnnotationClick: " + pointAnnotation.getData());
+                String id = Objects.requireNonNull(pointAnnotation.getData()).getAsJsonObject().get("id").getAsString();
+                toggleBottomSheet(id);
                 return true;
             });
 
@@ -147,15 +148,17 @@ public class MapsFragment extends Fragment {
             // Add device markers to the map
             ArrayList<PointAnnotationOptions> markerList = new ArrayList<>();
 
-            Bitmap bitmap = convertDrawableToBitmap(Objects.requireNonNull(AppCompatResources.getDrawable(parentActivity, R.drawable.ic_iot)));
+            Bitmap bitmap = convertDrawableToBitmap(Objects.requireNonNull(AppCompatResources.getDrawable(parentActivity, R.drawable.ic_pin_green)));
 
             for (Device device : Device.getAllDevices()) {
+                Bitmap bitmap1 = device.getIconPin(parentActivity, device.getIcon(parentActivity, device.type));
+
                 JsonObject o = new JsonObject();
                 o.addProperty("id", device.id);
                 PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
                         .withPoint(device.getPoint())
                         .withData(o)
-                        .withIconImage(bitmap);
+                        .withIconImage(bitmap1);
                 markerList.add(pointAnnotationOptions);
             }
 
@@ -187,7 +190,6 @@ public class MapsFragment extends Fragment {
         Log.d(GlobalVars.LOG_TAG, String.valueOf(sheetBehavior.getState()));
         if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED && !id.equals("")) {
             setBottomSheet(id);
-            parentActivity.navbar.animate().translationY(260).setDuration(260);
             sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
             if (!Objects.equals(lastSelectedId, id) && !id.equals("")) {
@@ -195,7 +197,6 @@ public class MapsFragment extends Fragment {
             } else {
                 lastSelectedId = "";
                 sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                parentActivity.navbar.animate().translationY(0).setDuration(260);
             }
         }
     }
@@ -219,8 +220,8 @@ public class MapsFragment extends Fragment {
     // convert drawable to bitmap
     private Bitmap convertDrawableToBitmap(Drawable drawable) {
         Bitmap bitmap = Bitmap.createBitmap(
-                72,
-                72,
+                drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(),
                 Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
