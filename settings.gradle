@@ -26,5 +26,5 @@ dependencyResolutionManagement {
         }
     }
 }
-rootProject.name = "My UIT"
+rootProject.name = "UiOt"
 include ':app'

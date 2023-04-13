@@ -13,5 +13,6 @@
     <color name="bg">#4d9d2a</color>
     <color name="bg1">#1D5632</color>
     <color name="bg2">#4CAF50</color>
+    <color name="bg3">#BE98F49C</color>
     <color name="text">#003C82</color>
 </resources>

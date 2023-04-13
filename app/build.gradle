@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace 'com.ixxc.myuit'
+    namespace 'com.ixxc.uiot'
     compileSdk 33
     compileSdkPreview 'UpsideDownCake'
 
     defaultConfig {
-        applicationId "com.ixxc.myuit"
+        applicationId "com.ixxc.uiot"
         minSdk 26
         targetSdk 33
         versionCode 1
