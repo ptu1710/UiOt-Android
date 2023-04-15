@@ -1,128 +1,155 @@
 package com.ixxc.uiot.Adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.content.Intent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.ixxc.uiot.GlobalVars;
-import com.ixxc.uiot.Interface.DevicesListener;
+import com.amrdeveloper.treeview.TreeNode;
+import com.amrdeveloper.treeview.TreeViewAdapter;
+import com.amrdeveloper.treeview.TreeViewHolder;
+import com.amrdeveloper.treeview.TreeViewHolderFactory;
+import com.ixxc.uiot.DeviceInfoActivity;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.R;
+import com.ixxc.uiot.Utils;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
-public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.DeviceViewHolder> {
-    private List<Device> devices;
-    private final DevicesListener devicesListener;
-    private final Context ctx;
+public class DevicesAdapter extends TreeViewAdapter {
+    List<TreeNode> treeNodes = new ArrayList<>();
+    public static int selectedPosition = -1;
 
-    private final int normalColor;
-    private final int selectedColor;
+    public DevicesAdapter(TreeViewHolderFactory factory, List<Device> devices) {
+        super(factory);
 
-     public int checkedPos = -1;
-
-    public DevicesAdapter(List<Device> devices, DevicesListener listener, Context context) {
-        this.devices = devices;
-        this.devicesListener = listener;
-        this.ctx = context;
-
-        this.normalColor = ResourcesCompat.getColor(ctx.getResources(), R.color.white, null);
-        this.selectedColor = ResourcesCompat.getColor(ctx.getResources(), R.color.red, null);
+        InitNodes(devices);
+        updateTreeNodes(treeNodes);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    public void setFilteredDevices(List<Device> filteredDevices) {
-        this.devices = filteredDevices;
-        notifyDataSetChanged();
+    private void InitNodes(List<Device> devices) {
+        Deque<Device> deviceQueue = new ArrayDeque<>(devices);
+
+        List<Device> deviceSkipped = new ArrayList<>();
+
+        for (Device device : deviceQueue) {
+            deviceQueue.remove(device);
+
+            if (device.path.size() <= 1) {
+                treeNodes.add(new TreeNode(device, R.layout.device_layout));
+            } else {
+                TreeNode parentNode = getParentNode(treeNodes, device.getParent());
+
+                if (parentNode == null) deviceSkipped.add(device);
+                else parentNode.addChild(new TreeNode(device, R.layout.device_layout));
+            }
+        }
+
+        if (!deviceSkipped.isEmpty()) InitNodes(deviceSkipped);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    public void setListDevices(List<Device> devices) {
-        this.devices = devices;
-        notifyDataSetChanged();
+    private TreeNode getParentNode(List<TreeNode> roots, Device parentDevice) {
+        for (TreeNode node : roots) {
+            if (node.getValue() == parentDevice) return node;
+
+            if (node.getChildren().size() > 0) {
+                TreeNode child = getParentNode(node.getChildren(), parentDevice);
+                if (child != null) return child;
+            }
+        }
+
+        return null;
     }
 
-    @NonNull
     @Override
-    public DeviceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_layout, parent, false);
-        return new DeviceViewHolder(view);
+    public void setTreeNodeClickListener(OnTreeNodeClickListener listener) {
+        super.setTreeNodeClickListener(listener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
-        holder.bind(devices.get(holder.getAdapterPosition()));
-        Animation animation = AnimationUtils.loadAnimation(ctx, R.anim.devices_rv_anim);
-        holder.itemView.startAnimation(animation);
+    public void setTreeNodeLongClickListener(OnTreeNodeLongClickListener listener) {
+        super.setTreeNodeLongClickListener(listener);
     }
 
     @Override
-    public int getItemCount() {
-        return devices == null ? 0 : devices.size();
+    public void onBindViewHolder(@NonNull TreeViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
     }
 
-    class DeviceViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onViewDetachedFromWindow(@NonNull TreeViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.itemView.clearAnimation();
+    }
+
+    public static class MyViewHolder extends TreeViewHolder {
+        private final Context ctx;
         private final TextView tv_name;
-        private final ImageView iv_icon;
+        private final ImageView iv_expand, iv_icon, iv_go;
         private final CardView cv_device;
 
-        public DeviceViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView, Context context) {
             super(itemView);
+
+            this.ctx = context;
+
             tv_name = itemView.findViewById(R.id.tv_name);
-            iv_icon =  itemView.findViewById(R.id.iv_icon);
+            iv_expand = itemView.findViewById(R.id.iv_expand_3);
+            iv_icon = itemView.findViewById(R.id.iv_icon);
+            iv_go = itemView.findViewById(R.id.iv_go);
             cv_device = itemView.findViewById(R.id.cv_device);
         }
 
-        @SuppressLint("SetTextI18n")
-        void bind(Device device) {
-            if (device == null) {
-                return;
-            }
+        @Override
+        public void bindTreeNode(TreeNode node) {
+            super.bindTreeNode(node);
 
-            // log here
-            Log.d(GlobalVars.LOG_TAG, "bind: " + device.name + " " + device.getChildLevel());
+            Device device = (Device) node.getValue();
+            if (device == null) return;
 
-            if (checkedPos == -1) cv_device.setCardBackgroundColor(normalColor);
-            else {
-                if (checkedPos == getAbsoluteAdapterPosition()) {
-                    cv_device.setCardBackgroundColor(normalColor);
-                } else {
-                    cv_device.setCardBackgroundColor(normalColor);
-                }
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    Utils.dpToPx(ctx, 54));
+
+            int left = Utils.dpToPx(ctx, 16 * (node.getLevel() + 1));
+            int right = Utils.dpToPx(ctx, 16);
+            int others = Utils.dpToPx(ctx, 6);
+
+            params.setMargins(left, others, right, others);
+            cv_device.setLayoutParams(params);
+
+            if (node.getChildren().size() == 0) {
+                iv_expand.setVisibility(View.INVISIBLE);
+            } else {
+                iv_expand.setVisibility(View.VISIBLE);
+
+                if (node.isExpanded()) iv_expand.setRotation(90);
+                else iv_expand.setRotation(0);
             }
 
             tv_name.setText(device.name);
             iv_icon.setImageResource(device.getIconRes(device.type));
 
-            cv_device.setOnClickListener(view -> devicesListener.onItemClicked(view, device));
-            cv_device.setOnLongClickListener(view -> {
-                devicesListener.onItemLongClicked(view, device);
-                cv_device.setCardBackgroundColor(normalColor);
-                if (checkedPos != getAbsoluteAdapterPosition()) {
-                    notifyItemChanged(checkedPos);
-                    checkedPos = getAbsoluteAdapterPosition();
-                }
-
-                return true;
+            iv_go.setOnClickListener(view -> {
+                Intent toDetails = new Intent(ctx, DeviceInfoActivity.class);
+                toDetails.putExtra("DEVICE_ID", device.id);
+                ctx.startActivity(toDetails);
             });
-        }
-    }
 
-    @Override
-    public void onViewDetachedFromWindow(@NonNull DeviceViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-        holder.itemView.clearAnimation();
+
+            if (selectedPosition != -1 && getAbsoluteAdapterPosition() == selectedPosition + 1) {
+                itemView.startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.devices_rv_anim));
+                selectedPosition = -1;
+            }
+        }
     }
 }

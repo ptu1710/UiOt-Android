@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,17 +28,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.amrdeveloper.treeview.TreeNode;
+import com.amrdeveloper.treeview.TreeViewHolderFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.DevicesAdapter;
-import com.ixxc.uiot.Interface.DevicesListener;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.User;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DevicesFragment extends Fragment {
     HomeActivity parentActivity;
@@ -66,7 +66,8 @@ public class DevicesFragment extends Fragment {
         boolean refresh = bundle.getBoolean("REFRESH");
 
         if (show_devices || refresh) {
-            showDevices();
+            Utils.delayHandler.postDelayed(this::showDevices, 400);
+
             iv_cancel.performClick();
             srl_devices.setRefreshing(false);
         } else {
@@ -130,7 +131,7 @@ public class DevicesFragment extends Fragment {
 
     private void InitVars() {
         me = User.getMe();
-        devicesList = Device.getAssetDevices();
+        devicesList = Device.getDevicesList();
     }
 
     private void InitViews(View v) {
@@ -150,8 +151,20 @@ public class DevicesFragment extends Fragment {
     @SuppressLint("NonConstantResourceId")
     private void InitEvents() {
         iv_add.setOnClickListener(view -> {
-            Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
-            mLauncher.launch(intent);
+//            Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
+//            mLauncher.launch(intent);
+
+            // select node
+            TreeNode node = devicesAdapter.getTreeNodes().get(2);
+
+//            devicesAdapter.expandNode(node);
+            devicesAdapter.expandNodeBranch(node);
+//            devicesAdapter.expandNodeToLevel(node, 1);
+
+            // Child node
+//            TreeNode child = node.getChildren().get(0);
+//            Log.d(GlobalVars.LOG_TAG, "InitEvents: " + ((Device) child.getValue()).name);
+
         });
 
         iv_delete.setOnClickListener(view -> {
@@ -189,7 +202,7 @@ public class DevicesFragment extends Fragment {
                     this.onQueryTextSubmit("");
                 }
 
-                filterDevices(s);
+//                filterDevices(s);
                 return true;
             }
         });
@@ -198,18 +211,19 @@ public class DevicesFragment extends Fragment {
             PopupMenu popupMenu = new PopupMenu(parentActivity, view);
 
             popupMenu.setOnMenuItemClickListener(item -> {
-                switch (item.getItemId()) {
-                    case R.id.itemAToZ:
-                        devicesList.sort(Comparator.comparing(device -> device.name.toLowerCase()));
-                        break;
-                    case R.id.itemTimeCreated:
-                        devicesList.sort(Comparator.comparing(device -> device.createdOn));
-                        break;
-                    default:
-                        break;
+                int id = item.getItemId();
+                if (id == R.id.itemAToZ) {
+                    Log.d(GlobalVars.LOG_TAG, "InitEvents: A to Z");
+                    // devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.name.toLowerCase()));
+                } else if (id ==  R.id.itemTimeCreated) {
+                    Log.d(GlobalVars.LOG_TAG, "InitEvents: Item Time Created");
+                    // devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.createdOn));
+                } else {
+                    return false;
                 }
 
-                devicesAdapter.setListDevices(devicesList);
+                // devicesAdapter.setListDevices(devicesList);
+
                 return true;
             });
 
@@ -239,38 +253,30 @@ public class DevicesFragment extends Fragment {
     }
 
     private void showDevices() {
-        devicesAdapter = new DevicesAdapter(devicesList, new DevicesListener() {
-            @Override
-            public void onItemClicked(View v, Device device) {
-                viewDeviceInfo(device.id);
-                changeSelectedDevice(-1, "");
-            }
 
-            @Override
-            public void onItemLongClicked(View v, Device device) {
-                if (!me.canWriteDevices()) return;
-                changeSelectedDevice(0, device.id);
-            }
-        }, parentActivity);
+        TreeViewHolderFactory factory = (v, layout) -> new DevicesAdapter.MyViewHolder(v, parentActivity);
+        devicesAdapter = new DevicesAdapter(factory, devicesList);
 
-        LinearLayoutManager layoutManager =  new LinearLayoutManager(rootView.getContext());
+        devicesAdapter.setTreeNodeClickListener((treeNode, view) -> {
+            if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
+                DevicesAdapter.selectedPosition = devicesAdapter.getTreeNodes().indexOf(treeNode);
+            }
+        });
+
+        devicesAdapter.setTreeNodeLongClickListener((treeNode, view) -> {
+            if (!me.canWriteDevices()) return false;
+            changeSelectedDevice(0, ((Device) treeNode.getValue()).id);
+            return true;
+        });
+
+        LinearLayoutManager layoutManager =  new LinearLayoutManager(parentActivity);
         rv_devices.setLayoutManager(layoutManager);
-        rv_devices.setAdapter(devicesAdapter);
         rv_devices.setHasFixedSize(true);
+
+        rv_devices.setAdapter(devicesAdapter);
 
         rv_devices.setVisibility(View.VISIBLE);
         pb_loading_1.setVisibility(View.GONE);
-    }
-
-    private void filterDevices(String text) {
-        List<Device> filtered = devicesList.stream().filter(device -> device.name.toLowerCase().contains(text.toLowerCase())).collect(Collectors.toList());
-        devicesAdapter.setFilteredDevices(filtered);
-    }
-
-    private void viewDeviceInfo(String id) {
-        Intent toDetails = new Intent(getContext(), DeviceInfoActivity.class);
-        toDetails.putExtra("DEVICE_ID", id);
-        parentActivity.startActivity(toDetails);
     }
 
     public void changeSelectedDevice(int index, String id) {
@@ -285,8 +291,8 @@ public class DevicesFragment extends Fragment {
             iv_delete.setVisibility(View.GONE);
             iv_cancel.setVisibility(View.GONE);
 
-            devicesAdapter.notifyItemChanged(devicesAdapter.checkedPos);
-            devicesAdapter.checkedPos = index;
+//            devicesAdapter.notifyItemChanged(devicesAdapter.checkedPos);
+//            devicesAdapter.checkedPos = index;
         }
 
         selected_device_id = id;

@@ -1,14 +1,7 @@
 package com.ixxc.uiot;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Handler;
-import android.util.DisplayMetrics;
-
-import java.util.Locale;
 
 public class Utils {
 //    public static SimpleDateFormat hhFormat = new SimpleDateFormat("HH");
@@ -120,45 +113,9 @@ public class Utils {
 //        Utilities.doWriteDB("notiId", String.valueOf(notificationId));
 //    }
 
-    public static void setLocale(Activity activity, String langCode) {
-        Locale locale = new Locale(langCode);
-        Locale.setDefault(locale);
-        Resources res = activity.getResources();
-        Configuration conf = res.getConfiguration();
-        DisplayMetrics metrics = res.getDisplayMetrics();
-        conf.setLocale(locale);
-        res.updateConfiguration(conf, metrics);
-    }
-
-    public static void setSharedPreferences(Context ctx, String key, String value) {
-        SharedPreferences sharedPreferences = ctx.getSharedPreferences("MyUIT", Context.MODE_PRIVATE);
-        SharedPreferences.Editor myEdit = sharedPreferences.edit();
-        myEdit.putString(key, value);
-        myEdit.apply();
-    }
-
-    public static String getSharedPreferences(Context ctx, String key) {
-        SharedPreferences sh = ctx.getSharedPreferences("MyUIT", Context.MODE_PRIVATE);
-
-        String defValue;
-        switch (key) {
-            case "langCode":
-                defValue = "en";
-                break;
-            case "showMarkers":
-            case "dailyRemind":
-                defValue = "true";
-                break;
-            case "trackingMode":
-            case "darkMode":
-                defValue = "false";
-                break;
-            default:
-                defValue = "";
-                break;
-        }
-
-
-        return sh.getString(key, defValue);
+    // Convert dp to px
+    public static int dpToPx(Context context, int dp) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round((float) dp * density);
     }
 }

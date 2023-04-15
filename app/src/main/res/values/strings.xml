@@ -11,10 +11,13 @@
     <string name="maps">Maps</string>
     <string name="admin">Admin</string>
     <string name="device_icon">Device Icon</string>
+    <string name="send_icon">Send Icon</string>
     <string name="cancel_icon">Cancel Icon</string>
     <string name="community_icon">Community Icon</string>
+    <string name="expand_icon">Expand Icon</string>
     <string name="add_icon">Add Icon</string>
     <string name="sort_by">Sort by</string>
     <string name="type">Type</string>
     <string name="your_devices">Your devices</string>
+    <string name="custom">Custom</string>
 </resources>

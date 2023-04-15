@@ -15,7 +15,6 @@ import com.mapbox.geojson.Point;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Device {
@@ -38,41 +37,21 @@ public class Device {
     @SerializedName("path")
     public ArrayList<String> path;
 
-    private List<Attribute> optional;
-
-    public List<Attribute> getOptional() {
-        return optional;
-    }
-
-    public void setOptional(List<Attribute> optional) {
-        this.optional = optional;
-    }
-
     private static final List<Device> deviceList = new ArrayList<>();
-    private static final List<Device> assetDeviceList = new ArrayList<>();
 
     public static List<Device> getDevicesList() {
         return deviceList;
-    }
-
-    public static List<Device> getAssetDevices() {
-        return assetDeviceList;
     }
 
     public static void setDevicesList(List<Device> list) {
         if (list == null) return;
 
         deviceList.clear();
-        assetDeviceList.clear();
 
         if (list.get(0).type.equals("GroupAsset") && list.get(0).name.equals("Consoles")) list.remove(0);
 
         for (Device device : list) {
             if (!device.type.contains("ConsoleAsset")) {
-                if (!device.type.contains("Agent")) {
-                    assetDeviceList.add(device);
-                }
-
                 deviceList.add(device);
             }
         }
@@ -80,7 +59,7 @@ public class Device {
 
     public static Device getDeviceById(String id) {
         for (Device device : deviceList) {
-            if (Objects.equals(device.id, id)) {
+            if (device.id.equals(id)) {
                 return device;
             }
         }
@@ -190,8 +169,11 @@ public class Device {
         return pin;
     }
 
-    // Get child level (1 = parent, 2 = child, 3 = grandchild, ...)
-    public int getChildLevel() {
-        return path.size();
+    public Device getParent() {
+        if (path.size() > 1) {
+            return getDeviceById(path.get(path.size() - 2));
+        }
+
+        return null;
     }
 }

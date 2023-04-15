@@ -1,5 +1,6 @@
 package com.ixxc.uiot;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -70,6 +71,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
     boolean isEditMode = false;
 
+    @SuppressLint("NotifyDataSetChanged")
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
         boolean isOK = bundle.getBoolean("DEVICE_OK");
@@ -118,6 +120,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
@@ -173,7 +176,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
                     .map(item -> item.name)
                     .collect(Collectors.toList());
 
-            act_type.setText("Custom");
+            act_type.setText(R.string.custom);
             types.add(0, "Custom");
             ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(DeviceInfoActivity.this, R.layout.dropdown_item, types);
             act_type.setAdapter(typeAdapter);
@@ -223,7 +226,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         if (type.equals("Custom")) attribute = new Attribute(name, valueType);
         else {
             attribute = current_model.getOptional(type);
-            attribute.value = new JsonParser().parse("");
+            attribute.value = JsonParser.parseString("");
         }
 
         attributeList.add(attribute);
@@ -236,6 +239,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         return s.substring(s.indexOf("(") + 1, s.indexOf(")"));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void showAttributes() {
         attributeList = current_device.getDeviceAttribute();
 
@@ -292,21 +296,20 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.edit:
-            case R.id.save:
-                editModeEnable();
-                actionbarMenu.findItem(R.id.edit).setVisible(!isEditMode);
-                actionbarMenu.findItem(R.id.save).setVisible(isEditMode);
-                break;
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        } else if (id == R.id.edit || id == R.id.save) {
+            editModeEnable();
+            actionbarMenu.findItem(R.id.edit).setVisible(!isEditMode);
+            actionbarMenu.findItem(R.id.save).setVisible(isEditMode);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void editModeEnable() {
         isEditMode = attributesAdapter.isEditMode = !isEditMode;
 
