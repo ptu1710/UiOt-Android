@@ -20,4 +20,22 @@
     <string name="type">Type</string>
     <string name="your_devices">Your devices</string>
     <string name="custom">Custom</string>
+    <string name="celsius">°C</string>
+    <string name="degrees">°</string>
+    <string name="string_null">null</string>
+    <string name="binh_minh">Bình minh</string>
+    <string name="_06_09">06:09</string>
+    <string name="sunrise">sunrise</string>
+    <string name="hoang_hon">Hoàng hôn</string>
+    <string name="_17_39">17:39</string>
+    <string name="sunset">Sunset</string>
+    <string name="user_image">User Image</string>
+    <string name="hi">Hi,</string>
+    <string name="weather_image">Weather Image</string>
+    <string name="sample_mostly_sunny">Mostly sunny</string>
+    <string name="sample_c">- - °C</string>
+    <string name="sample_degrees">- - ° / - - °</string>
+    <string name="uv_index">UV Index</string>
+    <string name="_0">0</string>
+    <string name="low">Thấp</string>
 </resources>

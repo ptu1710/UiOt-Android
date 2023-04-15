@@ -24,7 +24,6 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
     List<MetaItem> metaItems;
     ArrayList<MetaItem> items_chosen= new ArrayList<>();
     MetaItemListener metaItemListener;
-    private ConfigurationAdapter.ItemClickListener mClickListener;
 
     public ConfigurationAdapter(Context context, List<MetaItem> metaItems,MetaItemListener metaItemListener) {
         this.context = context;
@@ -40,7 +39,7 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
 
     @Override
     public void onBindViewHolder(@NonNull ConfigurationAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        String name = Utils.validate(metaItems.get(position).name);
+        String name = Utils.formatString(metaItems.get(position).name);
         holder.cb_config_item.setText(name);
         holder.cb_config_item.setOnClickListener(v -> {
             if(holder.cb_config_item.isChecked()) items_chosen.add(metaItems.get(position));
@@ -55,29 +54,13 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
         return metaItems.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         CheckBox cb_config_item;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             cb_config_item = itemView.findViewById(R.id.cb_config_item);
-            itemView.setOnClickListener(this);
         }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) {
-                mClickListener.onItemClick(view, getAdapterPosition(), metaItems.get(getAdapterPosition()));
-            }
-        }
-    }
-
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-
-    public interface ItemClickListener {
-        void onItemClick(View view, int position, MetaItem metaItem);
     }
 }

@@ -42,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
 
         fm = getSupportFragmentManager();
 
-        homeFrag = new HomeFragment();
+        homeFrag = new HomeFragment(this);
         devicesFrag = new DevicesFragment(this);
         mapsFrag = new MapsFragment(this);
         userFrag = new AdminFragment(this);
@@ -62,7 +62,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 switch (newIndex) {
                     case 0:
-                        if (homeFrag == null) { homeFrag = new HomeFragment(); }
+                        if (homeFrag == null) { homeFrag = new HomeFragment(HomeActivity.this); }
                         fm.beginTransaction().hide(fragment).commit();
                         fragment = homeFrag;
                         break;

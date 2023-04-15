@@ -66,7 +66,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         if (position == attributes.size()) return;
 
         Attribute attr = attributes.get(position);
-        String name = Utils.validate(attr.name);
+        String name = Utils.formatString(attr.name);
         String type = attr.type;
 
         if(isEditMode) holder.btn_add_config.setVisibility(View.VISIBLE);
@@ -87,7 +87,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         String value = attr.getValueString();
         if (value.equals("") && !isEditMode) {
-            holder.tv_value.setText("null");
+            holder.tv_value.setText(R.string.string_null);
             holder.til_value.setVisibility(View.GONE);
 
         } else {
@@ -145,7 +145,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         switch (type) {
             case "boolean":
                 CheckBox cb = new CheckBox(ctx);
-                cb.setText(Utils.validate(name));
+                cb.setText(Utils.formatString(name));
                 cb.setChecked(value.equals("true"));
                 cb.setTag(name);
                 cb.setLayoutParams(params);
@@ -157,7 +157,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             case "agentLink":
             case "attributeLink[]":
                 TextInputLayout til = new TextInputLayout(ctx);
-                til.setHint(Utils.validate(name));
+                til.setHint(Utils.formatString(name));
                 til.setLayoutParams(params);
                 til.setTag(name);
 

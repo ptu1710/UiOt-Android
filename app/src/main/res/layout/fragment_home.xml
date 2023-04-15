@@ -8,7 +8,7 @@
     tools:context=".HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/topLayout"
+        android:id="@+id/layout_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_primary"
@@ -18,12 +18,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/iv_user_1"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:src="@drawable/user_image"
+            android:contentDescription="@string/user_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,20 +33,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Hi,"
+            android:text="@string/hi"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="normal"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
-            app:layout_constraintTop_toTopOf="@+id/imageView2" />
+            app:layout_constraintBottom_toBottomOf="@+id/iv_user_1"
+            app:layout_constraintStart_toEndOf="@+id/iv_user_1"
+            app:layout_constraintTop_toTopOf="@+id/iv_user_1" />
 
         <TextView
             android:id="@+id/tv_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="Pham Anh Tu"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="normal"
@@ -55,70 +55,69 @@
             app:layout_constraintTop_toTopOf="@+id/textView" />
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/iv_weather_desc"
             android:layout_width="86dp"
             android:layout_height="86dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
             android:src="@drawable/cloudy"
-            app:layout_constraintStart_toStartOf="@+id/textView5"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+            android:contentDescription="@string/weather_image"
+            app:layout_constraintStart_toStartOf="@+id/tv_weather_desc"
+            app:layout_constraintTop_toBottomOf="@+id/iv_user_1" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/tv_weather_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:text="Mostly sunny"
+            android:text="@string/sample_mostly_sunny"
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+            app:layout_constraintTop_toBottomOf="@+id/iv_weather_desc" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/tv_temper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
-            android:text="- - °C"
+            android:text="@string/sample_c"
             android:textColor="@color/black"
             android:textSize="50sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_weather_desc"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/imageView3" />
+            app:layout_constraintTop_toTopOf="@+id/iv_weather_desc" />
 
         <TextView
-            android:id="@+id/textView7"
+            android:id="@+id/tv_dow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thursday"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:textStyle="normal"
-            app:layout_constraintBottom_toTopOf="@+id/textView6"
-            app:layout_constraintEnd_toEndOf="@+id/textView6" />
+            app:layout_constraintBottom_toTopOf="@+id/tv_temper"
+            app:layout_constraintEnd_toEndOf="@+id/tv_temper" />
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/tv_max_min_temper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="- - ° / - - °"
+            android:text="@string/sample_degrees"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="@+id/textView6"
-            app:layout_constraintTop_toBottomOf="@+id/textView6" />
+            app:layout_constraintEnd_toEndOf="@+id/tv_temper"
+            app:layout_constraintTop_toBottomOf="@+id/tv_temper" />
 
         <ProgressBar
             android:id="@+id/pb_username"
             style="?android:attr/progressBarStyle"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="8dp"
             android:indeterminateTint="@color/bg"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_user_1"
             app:layout_constraintStart_toEndOf="@+id/textView"
-            app:layout_constraintTop_toTopOf="@+id/imageView2" />
+            app:layout_constraintTop_toTopOf="@+id/iv_user_1" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
@@ -128,23 +127,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topLayout">
+        app:layout_constraintTop_toBottomOf="@+id/layout_top">
 
         <LinearLayout
+            android:id="@+id/layout_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="8dp">
 
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Coming soon!"
-                android:textColor="@color/black"
-                android:textSize="24sp"
-                android:textStyle="italic" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

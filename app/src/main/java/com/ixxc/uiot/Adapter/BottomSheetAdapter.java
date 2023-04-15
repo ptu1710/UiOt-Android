@@ -50,7 +50,7 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
         if (attributeValues.get(position).isJsonNull()) value = "N/A";
         else value = attributeValues.get(position).getAsString();
 
-        holder.tvAssetAttr.setText(Utils.validate(label));
+        holder.tvAssetAttr.setText(Utils.formatString(label));
 
 //        String unit = Device.getUnit(key);
 //        if (unit.equals("")) {
