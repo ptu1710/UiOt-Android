@@ -30,6 +30,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.amrdeveloper.treeview.TreeNode;
 import com.amrdeveloper.treeview.TreeViewHolderFactory;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
@@ -37,13 +38,14 @@ import com.ixxc.uiot.Adapter.DevicesAdapter;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DevicesFragment extends Fragment {
     HomeActivity parentActivity;
+    ShimmerFrameLayout layout_shimmer;
     RecyclerView rv_devices;
     ImageView iv_add, iv_delete, iv_community, iv_cancel;
-    ProgressBar pb_loading_1;
     SwipeRefreshLayout srl_devices;
     View rootView;
     SearchView searchView;
@@ -66,7 +68,7 @@ public class DevicesFragment extends Fragment {
         boolean refresh = bundle.getBoolean("REFRESH");
 
         if (show_devices || refresh) {
-            Utils.delayHandler.postDelayed(this::showDevices, 400);
+            Utils.delayHandler.postDelayed(this::showDevices, 640);
 
             iv_cancel.performClick();
             srl_devices.setRefreshing(false);
@@ -109,13 +111,17 @@ public class DevicesFragment extends Fragment {
 
         // Wait to show all devices
         new Thread(() -> {
+            Utils.delayHandler.postDelayed(() -> layout_shimmer.startShimmer(), 280);
+
             while (Device.getDevicesList() == null) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(240);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
+
+            setDevicesAdapter();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -136,19 +142,18 @@ public class DevicesFragment extends Fragment {
 
     private void InitViews(View v) {
         rootView = v;
+        layout_shimmer = v.findViewById(R.id.layout_shimmer);
         rv_devices = v.findViewById(R.id.rv_devices);
         iv_add = v.findViewById(R.id.iv_add);
         iv_community = v.findViewById(R.id.iv_community);
         iv_delete = v.findViewById(R.id.iv_delete);
         iv_cancel = v.findViewById(R.id.iv_cancel);
-        pb_loading_1 = v.findViewById(R.id.pb_loading_1);
         srl_devices = v.findViewById(R.id.srl_devices);
         searchView = v.findViewById(R.id.searchView);
         tv_sort = v.findViewById(R.id.tv_sort);
         tv_type = v.findViewById(R.id.tv_type);
     }
 
-    @SuppressLint("NonConstantResourceId")
     private void InitEvents() {
         iv_add.setOnClickListener(view -> {
 //            Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
@@ -238,21 +243,25 @@ public class DevicesFragment extends Fragment {
         srl_devices.setRefreshing(true);
         searchView.clearFocus();
 
-        final Message msg = handler.obtainMessage();
-        final Bundle bundle = new Bundle();
-
         new Thread(() -> {
             String queryString = "{ \"realm\": { \"name\": \"master\" }}";
             JsonObject query = (JsonObject) JsonParser.parseString(queryString);
             APIManager.queryDevices(query);
 
+            setDevicesAdapter();
+
+            Message msg = handler.obtainMessage();
+            Bundle bundle = new Bundle();
             bundle.putBoolean("REFRESH", true);
             msg.setData(bundle);
             handler.sendMessage(msg);
         }).start();
     }
 
-    private void showDevices() {
+    private void setDevicesAdapter() {
+
+        devicesList = Device.getDevicesList();
+//        devicesList = new ArrayList<>();
 
         TreeViewHolderFactory factory = (v, layout) -> new DevicesAdapter.MyViewHolder(v, parentActivity);
         devicesAdapter = new DevicesAdapter(factory, devicesList);
@@ -268,15 +277,18 @@ public class DevicesFragment extends Fragment {
             changeSelectedDevice(0, ((Device) treeNode.getValue()).id);
             return true;
         });
+    }
 
-        LinearLayoutManager layoutManager =  new LinearLayoutManager(parentActivity);
-        rv_devices.setLayoutManager(layoutManager);
+    private void showDevices() {
+
+        rv_devices.setLayoutManager(new LinearLayoutManager(parentActivity));
         rv_devices.setHasFixedSize(true);
 
         rv_devices.setAdapter(devicesAdapter);
 
         rv_devices.setVisibility(View.VISIBLE);
-        pb_loading_1.setVisibility(View.GONE);
+        layout_shimmer.stopShimmer();
+        layout_shimmer.setVisibility(View.GONE);
     }
 
     public void changeSelectedDevice(int index, String id) {

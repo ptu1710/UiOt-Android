@@ -7,10 +7,10 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="164dp"
-        android:layout_marginLeft="24dp"
         android:layout_marginTop="8dp"
-        android:layout_marginRight="24dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
         android:elevation="10dp"
         app:cardCornerRadius="16dp">
 
@@ -31,24 +31,19 @@
 
                 <TextView
                     android:id="@+id/textView1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="96dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="@string/binh_minh"
-                    android:textColor="#757575"
-                    android:textSize="16sp"
+                    android:background="#DDDDDD"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/tv_humidity"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_time1"
+                    android:layout_width="48dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/_06_09"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
+                    android:background="#DDDDDD"
                     app:layout_constraintBottom_toTopOf="@+id/imageView2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -59,11 +54,11 @@
                     android:layout_width="86dp"
                     android:layout_height="86dp"
                     android:layout_marginBottom="12dp"
-                    android:src="@drawable/ic_sunrise"
-                    android:contentDescription="@string/sunrise"
+                    android:background="#DDDDDD"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:importantForAccessibility="no" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -74,24 +69,19 @@
 
                 <TextView
                     android:id="@+id/textView6"
-                    android:layout_width="wrap_content"
+                    android:layout_width="96dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="@string/hoang_hon"
-                    android:textColor="#757575"
-                    android:textSize="16sp"
+                    android:background="#DDDDDD"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/textView7"
-                    android:layout_width="wrap_content"
+                    android:layout_width="48dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/_17_39"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
+                    android:background="#DDDDDD"
                     app:layout_constraintBottom_toTopOf="@+id/imageView3"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -102,11 +92,11 @@
                     android:layout_width="86dp"
                     android:layout_height="86dp"
                     android:layout_marginBottom="12dp"
-                    android:src="@drawable/ic_sunset"
-                    android:contentDescription="@string/sunset"
+                    android:background="#DDDDDD"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:importantForAccessibility="no" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
