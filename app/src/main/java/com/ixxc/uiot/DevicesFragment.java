@@ -116,6 +116,7 @@ public class DevicesFragment extends Fragment {
             while (Device.getDevicesList() == null) {
                 try {
                     Thread.sleep(240);
+                    // test new animation branch
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
