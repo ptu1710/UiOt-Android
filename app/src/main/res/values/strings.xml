@@ -35,7 +35,9 @@
     <string name="sample_mostly_sunny">Mostly sunny</string>
     <string name="sample_c">- - °C</string>
     <string name="sample_degrees">- - ° / - - °</string>
+    <string name="sample_percent">%</string>
     <string name="uv_index">UV Index</string>
+    <string name="humidity">Humidity</string>
     <string name="_0">0</string>
     <string name="low">Thấp</string>
 </resources>

@@ -120,7 +120,7 @@ public class HomeFragment extends Fragment {
 
         // loop 3 times
         for (int i = 0; i < 2; i++) {
-            View sunWid = LayoutInflater.from(parentActivity).inflate(R.layout.sun_widget_layout, layout_main, false);
+            View sunWid = LayoutInflater.from(parentActivity).inflate(R.layout.sun_widget, layout_main, false);
             layout_main.addView(sunWid);
         }
 
@@ -138,33 +138,34 @@ public class HomeFragment extends Fragment {
         mediumLayout.setOrientation(LinearLayout.HORIZONTAL);
         mediumLayout.setWeightSum(2);
 
-        // loop 2 times
-        for (int i = 0; i < 2; i++) {
-            View uvWid = LayoutInflater.from(parentActivity).inflate(R.layout.uv_widget_layout, layout_main, false);
+        LinearLayout.LayoutParams smallWidParams = new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        smallWidParams.weight = 1;
 
-            LinearLayout.LayoutParams uvWidParams = new LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
+        GradientDrawable gradientDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{
+                        ResourcesCompat.getColor(parentActivity.getResources(), R.color.lime, null),
+                        ResourcesCompat.getColor(parentActivity.getResources(), R.color.yellow, null),
+                        ResourcesCompat.getColor(parentActivity.getResources(), R.color.red, null),
+                        ResourcesCompat.getColor(parentActivity.getResources(), R.color.purple, null)});
 
-            uvWidParams.weight = 1;
-            uvWid.setLayoutParams(uvWidParams);
+        gradientDrawable.setCornerRadius(Utils.dpToPx(parentActivity, 8));
 
-            ImageView iv_uv = uvWid.findViewById(R.id.iv_uv);
+        View uvWid = LayoutInflater.from(parentActivity).inflate(R.layout.uv_widget, layout_main, false);
+        ImageView iv_uv = uvWid.findViewById(R.id.iv_uv);
+        iv_uv.setImageDrawable(gradientDrawable);
 
-            GradientDrawable gradientDrawable = new GradientDrawable(
-                    GradientDrawable.Orientation.LEFT_RIGHT,
-                    new int[]{
-                            ResourcesCompat.getColor(parentActivity.getResources(), R.color.lime, null),
-                            ResourcesCompat.getColor(parentActivity.getResources(), R.color.yellow, null),
-                            ResourcesCompat.getColor(parentActivity.getResources(), R.color.red, null),
-                            ResourcesCompat.getColor(parentActivity.getResources(), R.color.purple, null)});
+        View humWid = LayoutInflater.from(parentActivity).inflate(R.layout.humidity_widget, layout_main, false);
+        TextView tv_hum = humWid.findViewById(R.id.tv_humidity);
+        tv_hum.setText(defaultDevice.humidity.getValueString());
 
-            gradientDrawable.setCornerRadius(Utils.dpToPx(parentActivity, 8));
+        uvWid.setLayoutParams(smallWidParams);
+        humWid.setLayoutParams(smallWidParams);
 
-            iv_uv.setImageDrawable(gradientDrawable);
-
-            mediumLayout.addView(uvWid);
-        }
+        mediumLayout.addView(uvWid);
+        mediumLayout.addView(humWid);
 
         layout_main.addView(mediumLayout);
     }
