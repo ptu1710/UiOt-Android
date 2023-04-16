@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cv_device"
+    android:layout_width="match_parent"
+    android:layout_height="54dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="6dp"
+    android:elevation="10dp"
+    app:cardCornerRadius="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/iv_expand_3"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:background="#DDDDDD"
+            android:layout_marginStart="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:importantForAccessibility="no" />
+
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="#DDDDDD"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_expand_3"
+            app:layout_constraintTop_toTopOf="parent"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="128dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textSize="18sp"
+            android:background="#DDDDDD"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_icon"
+            app:layout_constraintStart_toEndOf="@+id/iv_icon"
+            app:layout_constraintTop_toTopOf="@+id/iv_icon" />
+
+        <ImageView
+            android:id="@+id/iv_go"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="#DDDDDD"
+            android:importantForAccessibility="no" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

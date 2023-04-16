@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
@@ -29,6 +31,8 @@ import java.time.DayOfWeek;
 
 public class HomeFragment extends Fragment {
     HomeActivity parentActivity;
+    ShimmerFrameLayout shimmerFrameLayout;
+    ScrollView scrollView;
     LinearLayout layout_main;
     ConstraintLayout layout_top;
     TextView tv_username;
@@ -70,6 +74,10 @@ public class HomeFragment extends Fragment {
         layout_main = view.findViewById(R.id.layout_main);
         tv_username = view.findViewById(R.id.tv_username);
         pb_username = view.findViewById(R.id.pb_username);
+        shimmerFrameLayout = view.findViewById(R.id.layout_shimmer);
+        scrollView = view.findViewById(R.id.scroll_view);
+
+        shimmerFrameLayout.startShimmer();
 
         new Thread(() -> {
             if (User.getMe() == null) {
@@ -168,5 +176,10 @@ public class HomeFragment extends Fragment {
         mediumLayout.addView(humWid);
 
         layout_main.addView(mediumLayout);
+
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
+
+        scrollView.setVisibility(View.VISIBLE);
     }
 }

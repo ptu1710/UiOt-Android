@@ -1,13 +1,17 @@
 package com.ixxc.uiot;
 
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.window.OnBackInvokedDispatcher;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import android.os.Bundle;
-import android.os.Handler;
 
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
@@ -21,8 +25,26 @@ public class HomeActivity extends AppCompatActivity {
     private Fragment fragment = null;
     int selectedIndex;
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // New back button handler system
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                int selectedIndex = navbar.getSelectedIndex();
+                if (selectedIndex == 0) {
+                    finish();
+                } else if (selectedIndex == 1) {
+                    if (!devicesFrag.selected_device_id.isEmpty()) {
+                        devicesFrag.changeSelectedDevice(-1, "");
+                    }
+                }
+                navbar.selectTabAt(0, true);
+            }
+        });
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -32,7 +54,9 @@ public class HomeActivity extends AppCompatActivity {
 
         fm.beginTransaction().add(R.id.main_frame, mapsFrag, "map").commit();
         fm.beginTransaction().hide(mapsFrag).commit();
+
         fm.beginTransaction().add(R.id.main_frame, homeFrag, "home").commit();
+
         fragment = homeFrag;
         navbar.selectTabAt(0, false);
     }
@@ -102,21 +126,21 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        switch (navbar.getSelectedIndex()) {
-            case 0:
-                super.onBackPressed();
-            case 1:
-                if(!devicesFrag.selected_device_id.equals("")) {
-                    devicesFrag.changeSelectedDevice(-1, "");
-                    return;
-                }
-                break;
-            default:
-                break;
-        }
-
-        navbar.selectTabAt(0, true);
-    }
+//    @Override
+//    public void onBackPressed() {
+//        switch (navbar.getSelectedIndex()) {
+//            case 0:
+//                super.onBackPressed();
+//            case 1:
+//                if(!devicesFrag.selected_device_id.equals("")) {
+//                    devicesFrag.changeSelectedDevice(-1, "");
+//                    return;
+//                }
+//                break;
+//            default:
+//                break;
+//        }
+//
+//        navbar.selectTabAt(0, true);
+//    }
 }

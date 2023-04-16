@@ -14,8 +14,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.MyUIT"
-        tools:targetApi="31">
+        tools:targetApi="tiramisu">
         <activity
             android:name=".UserInfoActivity"
             android:parentActivityName=".UsersActivity"
