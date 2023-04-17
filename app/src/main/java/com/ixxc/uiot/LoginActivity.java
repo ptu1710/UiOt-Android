@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
+import com.ixxc.myuit.R;
+
 public class LoginActivity extends AppCompatActivity {
     public static boolean isDefaultPage;
     public Fragment welcome, sign_in, sign_up;

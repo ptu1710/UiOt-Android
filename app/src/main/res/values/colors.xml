@@ -20,4 +20,37 @@
     <color name="yellow">#ffff00</color>
     <color name="purple">#800080</color>
 
+    //icon color
+    <color name="Building_Asset">#4b5966 </color>
+    <color name="City_Asset">#FFFFFF</color>
+    <color name="Door_Asset">#ae2eb6</color>
+    <color name="Electric_Vehicle_Asset">#49B0D8</color>
+    <color name="Electric_Vehicle_Fleet_Group_Asset">#49B0D8</color>
+    <color name="Electricity_Battery_Asset">#1B7C89</color>
+    <color name="Electricity_Charger_Asset">#8A293D</color>
+    <color name="Electricity_Consumer_Asset">#8A293D</color>
+    <color name="Electricity_Producer_Asset">#EABB4D</color>
+    <color name="Electricity_Supplier_Asset">#9257A9</color>
+    <color name="Energy_Optimisation_Asset">#C4DB0D</color>
+    <color name="Environment_Sensor_Asset">#f18546</color>
+    <color name="Gateway_Asset">#FFFFFF</color>
+    <color name="Groundwater_Sensor_Asset">#95d0df</color>
+    <color name="Group_Asset">#B3B3B3</color>
+    <color name="Light_Asset">#e6688a</color>
+    <color name="Microphone_Asset">#47A5FF</color>
+    <color name="Parking_Asset">#0260ae</color>
+    <color name="People_Counter_Asset">#4b5966</color>
+    <color name="Plug_Asset">#e6688a</color>
+    <color name="Presence_Sensor_Asset">#5a20cc</color>
+    <color name="PV_Solar_Asset">#EABB4D</color>
+    <color name="Room_Asset">#2eaaa2</color>
+    <color name="Ship_Asset">#000080</color>
+    <color name="Thermostat_Asset">#f5b324</color>
+    <color name="Thing_Asset">#FFFFFF</color>
+    <color name="Ventilation_Asset">#0b99c3</color>
+    <color name="Weather_Asset">#49B0D8</color>
+    <color name="Wind_Turbine_Asset">#4B87EA</color>
+    <color name="Gear">#000000</color>
+
+
 </resources>
