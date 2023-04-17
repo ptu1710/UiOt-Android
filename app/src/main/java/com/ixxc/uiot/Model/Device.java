@@ -37,6 +37,8 @@ public class Device {
     @SerializedName("path")
     public ArrayList<String> path;
 
+    public static boolean devicesLoaded = false;
+
     private static final List<Device> deviceList = new ArrayList<>();
 
     public static List<Device> getDevicesList() {

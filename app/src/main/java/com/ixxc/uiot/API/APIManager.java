@@ -75,6 +75,9 @@ public class APIManager {
             } else {
                 Device.setDevicesList(null);
             }
+
+            Device.devicesLoaded = true;
+
         } catch (IOException e) { e.printStackTrace(); }
     }
 

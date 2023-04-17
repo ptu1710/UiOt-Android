@@ -2,7 +2,6 @@ package com.ixxc.uiot;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +36,6 @@ import com.ixxc.uiot.Adapter.DevicesAdapter;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DevicesFragment extends Fragment {
@@ -109,14 +106,14 @@ public class DevicesFragment extends Fragment {
         InitViews(view);
         InitEvents();
 
+        Utils.delayHandler.postDelayed(() -> layout_shimmer.setVisibility(View.VISIBLE), 320);
+
         // Wait to show all devices
         new Thread(() -> {
-            Utils.delayHandler.postDelayed(() -> layout_shimmer.startShimmer(), 280);
 
-            while (Device.getDevicesList() == null) {
+            while (!Device.devicesLoaded) {
                 try {
                     Thread.sleep(240);
-                    // test new animation branch
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -262,7 +259,6 @@ public class DevicesFragment extends Fragment {
     private void setDevicesAdapter() {
 
         devicesList = Device.getDevicesList();
-//        devicesList = new ArrayList<>();
 
         TreeViewHolderFactory factory = (v, layout) -> new DevicesAdapter.MyViewHolder(v, parentActivity);
         devicesAdapter = new DevicesAdapter(factory, devicesList);
@@ -288,7 +284,6 @@ public class DevicesFragment extends Fragment {
         rv_devices.setAdapter(devicesAdapter);
 
         rv_devices.setVisibility(View.VISIBLE);
-        layout_shimmer.stopShimmer();
         layout_shimmer.setVisibility(View.GONE);
     }
 
