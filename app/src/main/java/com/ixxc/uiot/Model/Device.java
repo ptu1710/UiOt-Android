@@ -126,16 +126,133 @@ public class Device {
     public int getIconRes(String deviceType) {
         switch (deviceType) {
             case "GroupAsset":
-                break;
+                return R.drawable.ic_folder;
+            case "PeopleCounterAsset":
+                return R.drawable.ic_account_multiple;
+            case "ElectricityBatteryAsset":
+                return R.drawable.ic_battery_charging;
+            case "ElectricVehicleAsset":
+                return R.drawable.ic_car_electric;
+            case "ElectricVehicleFleetGroupAsset":
+                return R.drawable.ic_car_multiple;
+            case "CityAsset":
+                return R.drawable.ic_city;
+            case "ThingAsset":
+                return R.drawable.ic_cube_outline;
+            case "ElectricityChargerAsset":
+                return R.drawable.ic_ev_station;
+            case "VentilationAsset":
+                return R.drawable.ic_fan;
+            case "ShipAsset":
+                return R.drawable.ic_ferry;
+            case "Electricity Producer Asset":
+                return R.drawable.ic_flash;
+            case "MicrophoneAsset":
+                return R.drawable.ic_microphone;
+            case "BuildingAsset":
+                return R.drawable.ic_office_building;
+            case "ParkingAsset":
+                return R.drawable.ic_parking;
+            case "ElectricityConsumerAsset":
+                return R.drawable.ic_power_plug;
+            case "PlugAsset":
+                return R.drawable.ic_power_socket_eu;
+            case "ThermostatAsset":
+                return R.drawable.ic_thermostat;
+            case "Gateway Asset":
+                return R.drawable.ic_router_wireless;
             case "WeatherAsset":
-                return R.drawable.ic_weather;
+                return R.drawable.ic_weather_partly_cloudy;
             case "RoomAsset":
+                return R.drawable.ic_room;
             case "DoorAsset":
                 return R.drawable.ic_door;
+            case "GroundwaterSensorAsset":
+                return R.drawable.ic_water_outline;
+            case "PVSolarAsset":
+                return R.drawable.ic_white_balance_sunny;
+            case "WindTurbineAsset":
+                return R.drawable.ic_wind_turbine;
+            case "PresenceSensorAsset":
+                return R.drawable.ic_eye_circle;
+            case "LightAsset":
+                return R.drawable.ic_lightbulb;
+            case "EnvironmentSensorAsset":
+                return R.drawable.ic_molecule_co2;
+            case "ElectricitySupplierAsset":
+                return R.drawable.ic_upload_network;
+
         }
 
         return R.drawable.ic_iot;
     }
+
+    //Get color of icon
+    public int getColorIcon(String deviceType){
+
+        switch (deviceType) {
+            case "GroupAsset":
+                return R.color.Group_Asset;
+            case "PeopleCounterAsset":
+                return R.color.People_Counter_Asset;
+            case "ElectricityBatteryAsset":
+                return R.color.Electricity_Battery_Asset;
+            case "ElectricVehicleAsset":
+                return R.color.Electric_Vehicle_Asset;
+            case "ElectricVehicleFleetGroupAsset":
+                return R.color.Electric_Vehicle_Fleet_Group_Asset;
+            case "CityAsset":
+                return R.color.City_Asset;
+            case "ThingAsset":
+                return R.color.Thing_Asset;
+            case "ElectricityChargerAsset":
+                return R.color.Electricity_Charger_Asset;
+            case "VentilationAsset":
+                return R.color.Ventilation_Asset;
+            case "ShipAsset":
+                return R.color.Ship_Asset;
+            case "ElectricityProducerAsset":
+                return R.color.Electricity_Producer_Asset;
+            case "MicrophoneAsset":
+                return R.color.Microphone_Asset;
+            case "BuildingAsset":
+                return R.color.Building_Asset;
+            case "ParkingAsset":
+                return R.color.Parking_Asset;
+            case "ElectricityConsumerAsset":
+                return R.color.Electricity_Consumer_Asset;
+            case "PlugAsset":
+                return R.color.Plug_Asset;
+            case "ThermostatAsset":
+                return R.color.Thermostat_Asset;
+            case "GatewayAsset":
+                return R.color.Gateway_Asset;
+            case "WeatherAsset":
+                return R.color.Weather_Asset;
+            case "RoomAsset":
+                return R.color.Room_Asset;
+            case "DoorAsset":
+                return R.color.Door_Asset;
+            case "GroundwaterSensorAsset":
+                return R.color.Groundwater_Sensor_Asset;
+            case "PVSolarAsset":
+                return R.color.PV_Solar_Asset;
+            case "WindTurbineAsset":
+                return R.color.Wind_Turbine_Asset;
+            case "PresenceSensorAsset":
+                return R.color.Presence_Sensor_Asset;
+            case "LightAsset":
+                return R.color.Light_Asset;
+            case "EnvironmentSensorAsset":
+                return R.color.Environment_Sensor_Asset;
+            case "ElectricitySupplierAsset":
+                return R.color.Electricity_Supplier_Asset;
+
+        }
+
+        return R.color.white;
+    }
+
 
     // Get icon drawable
     public Drawable getIconDrawable(Context context, String deviceType, int colorTint) {

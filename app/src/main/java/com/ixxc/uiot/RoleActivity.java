@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.ixxc.myuit.R;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.RoleItemAdapter;
 import com.ixxc.uiot.Model.Role;

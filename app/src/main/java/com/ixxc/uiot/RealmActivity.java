@@ -24,7 +24,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
-import com.ixxc.myuit.R;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.RealmItemAdapter;
 import com.ixxc.uiot.Model.Realm;
