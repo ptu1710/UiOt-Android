@@ -22,7 +22,7 @@
 
     //icon color
     <color name="Building_Asset">#4b5966 </color>
-    <color name="City_Asset">#FFFFFF</color>
+    <color name="City_Asset">#9E9E9E</color>
     <color name="Door_Asset">#ae2eb6</color>
     <color name="Electric_Vehicle_Asset">#49B0D8</color>
     <color name="Electric_Vehicle_Fleet_Group_Asset">#49B0D8</color>
@@ -33,7 +33,7 @@
     <color name="Electricity_Supplier_Asset">#9257A9</color>
     <color name="Energy_Optimisation_Asset">#C4DB0D</color>
     <color name="Environment_Sensor_Asset">#f18546</color>
-    <color name="Gateway_Asset">#FFFFFF</color>
+    <color name="Gateway_Asset">#9E9E9E</color>
     <color name="Groundwater_Sensor_Asset">#95d0df</color>
     <color name="Group_Asset">#B3B3B3</color>
     <color name="Light_Asset">#e6688a</color>
@@ -46,11 +46,12 @@
     <color name="Room_Asset">#2eaaa2</color>
     <color name="Ship_Asset">#000080</color>
     <color name="Thermostat_Asset">#f5b324</color>
-    <color name="Thing_Asset">#FFFFFF</color>
+    <color name="Thing_Asset">#9E9E9E</color>
     <color name="Ventilation_Asset">#0b99c3</color>
     <color name="Weather_Asset">#49B0D8</color>
     <color name="Wind_Turbine_Asset">#4B87EA</color>
     <color name="Gear">#000000</color>
+
 
 
 </resources>
