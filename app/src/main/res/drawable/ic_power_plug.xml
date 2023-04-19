@@ -4,6 +4,6 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
   <path
-      android:pathData="M8,3c-1.11,0 -2,0.89 -2,2v16h12V5c0,-1.11 -0.89,-2 -2,-2H8m0,2h8v14H8V5m5,6v2h2v-2h-2Z"
-      android:fillColor="@color/Door_Asset"/>
+      android:pathData="M16,7V3h-2v4h-4V3H8v4C7,7 6,8 6,9v5.5L9.5,18v3h5v-3l3.5,-3.5V9c0,-1 -1,-2 -2,-2Z"
+      android:fillColor="@color/Electricity_Consumer_Asset"/>
 </vector>

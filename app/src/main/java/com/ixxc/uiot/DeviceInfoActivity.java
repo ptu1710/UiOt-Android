@@ -32,6 +32,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.AttributesAdapter;
 import com.ixxc.uiot.Adapter.ConfigurationAdapter;
