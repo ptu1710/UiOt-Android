@@ -109,7 +109,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             }
         });
 
-        holder.btn_add_config.setOnClickListener(v -> attributeListener.onItemClicked(v,position));
+        holder.btn_add_config.setOnClickListener(v -> attributeListener.onItemClicked(v, position));
     }
 
     @Override

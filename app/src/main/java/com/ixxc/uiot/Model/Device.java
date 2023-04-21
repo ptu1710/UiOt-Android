@@ -4,12 +4,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.R;
 import com.mapbox.geojson.Point;
 
@@ -124,6 +126,7 @@ public class Device {
 
     // Get icon resource id
     public int getIconRes(String deviceType) {
+
         switch (deviceType) {
             case "GroupAsset":
                 return R.drawable.ic_folder;
@@ -159,7 +162,7 @@ public class Device {
                 return R.drawable.ic_power_socket_eu;
             case "ThermostatAsset":
                 return R.drawable.ic_thermostat;
-            case "Gateway Asset":
+            case "GatewayAsset":
                 return R.drawable.ic_router_wireless;
             case "WeatherAsset":
                 return R.drawable.ic_weather_partly_cloudy;
@@ -181,14 +184,13 @@ public class Device {
                 return R.drawable.ic_molecule_co2;
             case "ElectricitySupplierAsset":
                 return R.drawable.ic_upload_network;
-
         }
 
         return R.drawable.ic_iot;
     }
 
     //Get color of icon
-    public int getColorIcon(String deviceType){
+    public int getColorId(String deviceType){
 
         switch (deviceType) {
             case "GroupAsset":
@@ -255,20 +257,22 @@ public class Device {
 
 
     // Get icon drawable
-    public Drawable getIconDrawable(Context context, String deviceType, int colorTint) {
+    public Drawable getIconDrawable(Context context, String deviceType) {
         int resId = getIconRes(deviceType);
         Drawable icon = ResourcesCompat.getDrawable(context.getResources(), resId, null);
         assert icon != null;
-        icon.setTint(colorTint);
+        icon.setTint(getColorId(deviceType));
 
         return icon;
     }
 
     // Get icon bitmap (show on Maps)
-    public Bitmap getIconPinBitmap(Context context, int resId) {
+    public Bitmap getIconPinBitmap(Context context, String type) {
+
         // Get icon drawable from resId
-        Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), resId, null);
+        Drawable drawable = getIconDrawable(context, type);
         assert drawable != null;
+        drawable.setTint(getColorId(""));
 
         // Get pin drawable
         Drawable pin_drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_pin_green, null);

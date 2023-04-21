@@ -27,7 +27,6 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:contentDescription="@string/device_icon"
-            app:tint="@color/bg1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -37,6 +37,7 @@ import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.AttributesAdapter;
 import com.ixxc.uiot.Adapter.ConfigurationAdapter;
+import com.ixxc.uiot.Interface.AttributeListener;
 import com.ixxc.uiot.Interface.MetaItemListener;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
@@ -247,39 +248,39 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
         attributesAdapter = new AttributesAdapter(attributeList, (v, position) -> {
 
-                Dialog dlg = new Dialog(DeviceInfoActivity.this);
-                dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dlg.setContentView(R.layout.add_configuration_items);
-                Window window = dlg.getWindow();
-                if (window == null) return;
-                Button btn_cancel = dlg.findViewById(R.id.btn_cancel_configuration);
-                btn_cancel.setOnClickListener(v12 -> dlg.dismiss());
+            Dialog dlg = new Dialog(DeviceInfoActivity.this);
+            dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dlg.setContentView(R.layout.add_configuration_items);
+            Window window = dlg.getWindow();
+            if (window == null) return;
+            Button btn_cancel = dlg.findViewById(R.id.btn_cancel_configuration);
+            btn_cancel.setOnClickListener(v12 -> dlg.dismiss());
 
-                Button btn_add = dlg.findViewById(R.id.btn_add_configuration);
-                btn_add.setOnClickListener(v1 -> {
-                    for (MetaItem item : selectedMetaItems) {
-                        if (MetaItem.getMetaType(item.name).equals("boolean")) {
-                            attributeList.get(position).meta.addProperty(item.name, false);
-                        } else {
-                            attributeList.get(position).meta.addProperty(item.name, "");
-                        }
+            Button btn_add = dlg.findViewById(R.id.btn_add_configuration);
+            btn_add.setOnClickListener(v1 -> {
+                for (MetaItem item : selectedMetaItems) {
+                    if (MetaItem.getMetaType(item.name).equals("boolean")) {
+                        attributeList.get(position).meta.addProperty(item.name, false);
+                    } else {
+                        attributeList.get(position).meta.addProperty(item.name, "");
                     }
+                }
 
-                    attributesAdapter.notifyDataSetChanged();
-                    dlg.dismiss();
-                });
-
-                window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-                RecyclerView rv_config_item= dlg.findViewById(R.id.rv_config_item);
-                rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
-
-                JsonObject meta = attributeList.get(position).meta == null ? new JsonObject() : attributeList.get(position).meta;
-                List<MetaItem> ms = metaItems.stream().filter(metaItem -> !meta.keySet().contains(metaItem.name)).collect(Collectors.toList());
-
-                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(this, ms, DeviceInfoActivity.this);
-                rv_config_item.setAdapter(configurationAdapter);
-                dlg.show();
+                attributesAdapter.notifyDataSetChanged();
+                dlg.dismiss();
             });
+
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            RecyclerView rv_config_item = dlg.findViewById(R.id.rv_config_item);
+            rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
+
+            JsonObject meta = attributeList.get(position).meta == null ? new JsonObject() : attributeList.get(position).meta;
+            List<MetaItem> ms = metaItems.stream().filter(metaItem -> !meta.keySet().contains(metaItem.name)).collect(Collectors.toList());
+
+            ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(DeviceInfoActivity.this, ms, DeviceInfoActivity.this);
+            rv_config_item.setAdapter(configurationAdapter);
+            dlg.show();
+        });
 
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);

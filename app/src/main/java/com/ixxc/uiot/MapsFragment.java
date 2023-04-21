@@ -42,6 +42,7 @@ import com.mapbox.maps.plugin.annotation.AnnotationType;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.mapbox.maps.plugin.attribution.AttributionPlugin;
+import com.mapbox.maps.plugin.compass.CompassPlugin;
 import com.mapbox.maps.plugin.logo.LogoPlugin;
 import com.mapbox.maps.plugin.scalebar.ScaleBarPlugin;
 
@@ -121,7 +122,7 @@ public class MapsFragment extends Fragment {
         // Get the scale bar plugin instance and disable it
         ScaleBarPlugin scaleBarPlugin = mapView.getPlugin(Plugin.MAPBOX_SCALEBAR_PLUGIN_ID);
         assert scaleBarPlugin != null;
-        scaleBarPlugin.setEnabled(false);
+        scaleBarPlugin.setEnabled(true);
 
         // Get the logo plugin instance and disable it
         LogoPlugin logoPlugin = mapView.getPlugin(Plugin.MAPBOX_LOGO_PLUGIN_ID);
@@ -159,8 +160,9 @@ public class MapsFragment extends Fragment {
             ArrayList<PointAnnotationOptions> markerList = new ArrayList<>();
 
             for (Device device : Device.getDevicesList()) {
-                Bitmap bitmap = device.getIconPinBitmap(parentActivity, device.getIconRes(device.type));
                 if (device.getPoint() == null) continue;
+
+                Bitmap bitmap = device.getIconPinBitmap(parentActivity, device.type);
 
                 JsonObject o = new JsonObject();
                 o.addProperty("id", device.id);
@@ -224,8 +226,7 @@ public class MapsFragment extends Fragment {
             LinearLayoutManager layoutManager =  new LinearLayoutManager(getContext());
 
             tvAssetName.setText(device.name);
-            int colorTint = ResourcesCompat.getColor(parentActivity.getResources(), R.color.bg1, null);
-            ivIcon.setImageDrawable(device.getIconDrawable(parentActivity, device.type, colorTint));
+            ivIcon.setImageDrawable(device.getIconDrawable(parentActivity, device.type));
 
             rv_attributes.setLayoutManager(layoutManager);
             rv_attributes.setAdapter(adapter);
@@ -252,7 +253,6 @@ public class MapsFragment extends Fragment {
             RecyclerView rv_attributes = dialog.findViewById(R.id.rv_attributes);
 
             tvAssetName.setText(device.name);
-
             ivIcon.setImageResource(device.getIconRes(device.type));
 
             rv_attributes.setLayoutManager(layoutManager);
