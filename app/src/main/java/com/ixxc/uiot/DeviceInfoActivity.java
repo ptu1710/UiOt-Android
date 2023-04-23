@@ -37,6 +37,7 @@ import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.AttributesAdapter;
 import com.ixxc.uiot.Adapter.ConfigurationAdapter;
+import com.ixxc.uiot.Interface.AttributeListener;
 import com.ixxc.uiot.Interface.MetaItemListener;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
@@ -60,7 +61,6 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     CheckBox cb_public;
     AutoCompleteTextView act_parent;
     Button btn_add_attribute;
-
     String device_id, selected_id;
     Device current_device;
     Model current_model;
@@ -245,7 +245,9 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     private void showAttributes() {
         attributeList = current_device.getDeviceAttribute();
 
-        attributesAdapter = new AttributesAdapter(attributeList, (v, position) -> {
+        attributesAdapter = new AttributesAdapter(attributeList, new AttributeListener() {
+            @Override
+            public void onItemClicked(View v, int position) {
 
                 Dialog dlg = new Dialog(DeviceInfoActivity.this);
                 dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -270,16 +272,24 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
                 });
 
                 window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-                RecyclerView rv_config_item= dlg.findViewById(R.id.rv_config_item);
+                RecyclerView rv_config_item = dlg.findViewById(R.id.rv_config_item);
                 rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
 
                 JsonObject meta = attributeList.get(position).meta == null ? new JsonObject() : attributeList.get(position).meta;
                 List<MetaItem> ms = metaItems.stream().filter(metaItem -> !meta.keySet().contains(metaItem.name)).collect(Collectors.toList());
 
-                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(this, ms, DeviceInfoActivity.this);
+                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(DeviceInfoActivity.this, ms, DeviceInfoActivity.this);
                 rv_config_item.setAdapter(configurationAdapter);
                 dlg.show();
-            });
+            }
+
+            @Override
+            public void onItemClicked2(View v, int position) {
+                Intent intent = new Intent(DeviceInfoActivity.this,ChartActivity.class);
+                intent.putExtra("DEVICE_ID", device_id);
+                startActivity(intent);
+            }
+        });
 
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);

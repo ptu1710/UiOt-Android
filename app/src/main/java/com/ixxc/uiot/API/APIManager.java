@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.Interface.APIInterface;
 import com.ixxc.uiot.Model.CreateAssetRes;
+import com.ixxc.uiot.Model.DataPoint;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
@@ -421,5 +422,16 @@ public class APIManager {
             Response<Map> response = call.execute();
             if (response.isSuccessful()) { Map.setMapObj(response.body()); }
         } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static void getDatapoint(String assetId, String attributeName){
+        Call<List<DataPoint>> call = userAI.getDataPoint(assetId,attributeName,"HOUR","1681912800000","1681999200000");
+
+        try {
+            Response<List<DataPoint>> response = call.execute();
+            if (response.isSuccessful()) DataPoint.setDataPointList(response.body());
+            else MetaItem.setMetaItemList(null);
+        } catch (IOException e) { e.printStackTrace(); }
+
     }
 }

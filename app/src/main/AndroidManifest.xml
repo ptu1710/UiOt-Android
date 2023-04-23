@@ -4,35 +4,38 @@
 
     <uses-permission-sdk-23 android:name="android.permission.INTERNET" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.MyUIT"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".UserInfoActivity"
-            android:parentActivityName=".UsersActivity"
+            android:name=".ChartActivity"
             android:exported="false" />
         <activity
+            android:name=".UserInfoActivity"
+            android:exported="false"
+            android:parentActivityName=".UsersActivity" />
+        <activity
             android:name=".RoleActivity"
-            android:parentActivityName=".UsersActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".UsersActivity" />
         <activity
             android:name=".UsersActivity"
             android:exported="false" />
         <activity
             android:name=".RealmActivity"
             android:exported="false"
-            android:parentActivityName=".UsersActivity"
-             />
+            android:parentActivityName=".UsersActivity" />
         <activity
             android:name=".DeviceInfoActivity"
             android:exported="false" />

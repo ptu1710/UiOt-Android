@@ -40,4 +40,18 @@
     <string name="humidity">Humidity</string>
     <string name="_0">0</string>
     <string name="low">Thấp</string>
+
+    <string-array name="attribute_name">
+        <item>Temperature (°C)</item>
+        <item>Humidity (%)</item>
+    </string-array>
+
+    <string-array name="timeframe">
+        <item>Hour</item>
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+        <item>Year</item>
+    </string-array>
+
 </resources>

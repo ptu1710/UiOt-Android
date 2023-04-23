@@ -3,6 +3,7 @@ package com.ixxc.uiot.Interface;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.Model.CreateAssetRes;
+import com.ixxc.uiot.Model.DataPoint;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
@@ -157,4 +158,10 @@ public interface APIInterface {
     // Get Maps data
     @GET("api/master/map")
     Call<Map> getMap();
+
+    // Get Data point
+    @GET("api/master/asset/datapoint/{assetId}/attribute/{attributeName}")
+    Call<List<DataPoint>> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName,
+                                 @Query("interval") String interval, @Query("fromTimestamp") String from, @Query("toTimestamp") String to);
+
 }

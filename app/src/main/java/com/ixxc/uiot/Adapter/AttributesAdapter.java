@@ -2,6 +2,8 @@ package com.ixxc.uiot.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
+import com.ixxc.uiot.ChartActivity;
+import com.ixxc.uiot.DeviceInfoActivity;
 import com.ixxc.uiot.Interface.AttributeListener;
 import com.google.gson.JsonPrimitive;
+import com.ixxc.uiot.LoginActivity;
+import com.ixxc.uiot.MainActivity;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.R;
@@ -63,7 +69,10 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
     @Override
     public void onBindViewHolder(@NonNull AttrsViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        if (position == attributes.size()) return;
+        if (position == attributes.size()) {
+            holder.btn_show_chart.setOnClickListener(v -> attributeListener.onItemClicked2(v,position));
+            return;
+        }
 
         Attribute attr = attributes.get(position);
         String name = Utils.formatString(attr.name);
@@ -124,6 +133,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         private final Button btn_add_config;
         private final LinearLayout layout;
 
+        private Button btn_show_chart;
+
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_name = itemView.findViewById(R.id.tv_name);
@@ -132,6 +143,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             til_value = itemView.findViewById(R.id.til_value);
             btn_add_config = itemView.findViewById(R.id.btn_add_config);
             layout = itemView.findViewById(R.id.config_layout);
+            btn_show_chart = itemView.findViewById(R.id.btn_showChart);
         }
     }
 
