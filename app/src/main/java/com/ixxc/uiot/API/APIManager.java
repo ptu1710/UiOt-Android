@@ -424,8 +424,8 @@ public class APIManager {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    public static void getDatapoint(String assetId, String attributeName){
-        Call<List<DataPoint>> call = userAI.getDataPoint(assetId,attributeName,"HOUR","1681912800000","1681999200000");
+    public static void getDatapoint(String assetId, String attributeName,String interval, Long from, Long to){
+        Call<List<DataPoint>> call = userAI.getDataPoint(assetId,attributeName,interval,from,to);
 
         try {
             Response<List<DataPoint>> response = call.execute();

@@ -162,6 +162,6 @@ public interface APIInterface {
     // Get Data point
     @GET("api/master/asset/datapoint/{assetId}/attribute/{attributeName}")
     Call<List<DataPoint>> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName,
-                                 @Query("interval") String interval, @Query("fromTimestamp") String from, @Query("toTimestamp") String to);
+                                 @Query("interval") String interval, @Query("fromTimestamp") Long from, @Query("toTimestamp") Long to);
 
 }

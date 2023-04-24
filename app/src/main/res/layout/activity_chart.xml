@@ -37,10 +37,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_timeFrame"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="110dp"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginTop="5dp"
             android:hint="Timeframe">
 
@@ -50,11 +50,45 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:inputType="none"
-                android:text="Hour"
+                android:text="Day"
                 android:textStyle="bold" />
 
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_ending"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_toRightOf="@+id/til_timeFrame"
+            android:hint="Ending"
+            app:endIconMode="clear_text">
+
+            <AutoCompleteTextView
+                android:id="@+id/act_ending"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:inputType="none"
+                android:text="dd/mm/yyyy hh:mm PM"
+                android:textStyle="bold" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/btn_date"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="-60dp"
+            android:layout_marginTop="18dp"
+            android:layout_toRightOf="@+id/til_ending"
+            android:background="@color/white"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_schedule" />
 
         <Button
             android:id="@+id/btn_showChart"
