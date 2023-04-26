@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "387565764292",
+    "project_id": "test-e99bf",
+    "storage_bucket": "test-e99bf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387565764292:android:fb1607f4f7c3bb96f3d391",
+        "android_client_info": {
+          "package_name": "com.ixxc.uiot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387565764292-d0ojm9t5sfaes1lce4rht0bfg3diiasn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0f04TDxxTymKYivGpGueT88VbwqnfrEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387565764292-d0ojm9t5sfaes1lce4rht0bfg3diiasn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387565764292:android:b5b57737e598f274f3d391",
+        "android_client_info": {
+          "package_name": "io.openremote.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387565764292-d0ojm9t5sfaes1lce4rht0bfg3diiasn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0f04TDxxTymKYivGpGueT88VbwqnfrEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387565764292-d0ojm9t5sfaes1lce4rht0bfg3diiasn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -30,7 +30,7 @@ public class APIManager {
     private static final APIInterface userAI = apiClient.getClient().create(APIInterface.class);;
 
     public static void getToken(String code) {
-        Call<Token> call =  userAI.getToken(GlobalVars.authType, code, GlobalVars.client, GlobalVars.redirectUrl);
+        Call<Token> call =  userAI.getToken(GlobalVars.authType, code, GlobalVars.client, GlobalVars.oauth2Redirect);
         try {
             Response<Token> response = call.execute();
             if (response.isSuccessful()) {
