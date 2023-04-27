@@ -146,10 +146,10 @@ public class DevicesAdapter extends TreeViewAdapter {
             });
 
 
-            if (selectedPosition != -1 && getAbsoluteAdapterPosition() == selectedPosition + 1) {
-                itemView.startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.devices_rv_anim));
-                selectedPosition = -1;
-            }
+//            if (selectedPosition != -1 && (getAbsoluteAdapterPosition() >= selectedPosition + 1 && getAbsoluteAdapterPosition() <= selectedPosition + node.getChildren().size())) {
+//                itemView.startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.devices_rv_anim));
+//                selectedPosition = -1;
+//            }
         }
     }
 }
