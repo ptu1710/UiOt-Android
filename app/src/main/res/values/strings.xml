@@ -40,4 +40,10 @@
     <string name="humidity">Humidity</string>
     <string name="_0">0</string>
     <string name="low">Thấp</string>
+    <string name="uit_logo">uit_logo</string>
+    <string name="username">Username</string>
+    <string name="test">test</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="back">Back</string>
 </resources>

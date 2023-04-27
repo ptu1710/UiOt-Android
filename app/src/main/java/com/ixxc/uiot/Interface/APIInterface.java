@@ -9,6 +9,7 @@ import com.ixxc.uiot.Model.Map;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.Model.Model;
 import com.ixxc.uiot.Model.Realm;
+import com.ixxc.uiot.Model.RegisterDevice;
 import com.ixxc.uiot.Model.Role;
 import com.ixxc.uiot.Model.Token;
 import com.ixxc.uiot.Model.User;
@@ -88,10 +89,6 @@ public interface APIInterface {
     @PUT("api/master/user/master/roles")
     Call<String> updateRole(@Body JsonArray requestBody);
 
-    // Get realm roles
-    @GET("api/master/user/userRealmRoles")
-    Call<List<Role>> getRealmRoles();
-
     // Get a user by id
     @GET("api/master/user/master/userRealmRoles/{userId}")
     Call<List<Role>> getRealmRoles(@Path("userId") String userId);
@@ -157,4 +154,8 @@ public interface APIInterface {
     // Get Maps data
     @GET("api/master/map")
     Call<Map> getMap();
+
+    // Register a new device (push notification)
+    @POST("api/master/console/register")
+    Call<RegisterDevice> registerDevice(@Body JsonObject body);
 }

@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:387565764292:android:fb1607f4f7c3bb96f3d391",
+        "mobilesdk_app_id": "1:387565764292:android:cecf76cd32a22bcff3d391",
         "android_client_info": {
-          "package_name": "com.ixxc.uiot"
+          "package_name": "com.ixxc.consoleapptest"
         }
       },
       "oauth_client": [
@@ -36,9 +36,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:387565764292:android:b5b57737e598f274f3d391",
+        "mobilesdk_app_id": "1:387565764292:android:f863d3ec52288eb9f3d391",
         "android_client_info": {
-          "package_name": "io.openremote.app"
+          "package_name": "com.ixxc.uiot"
         }
       },
       "oauth_client": [

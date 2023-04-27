@@ -13,6 +13,7 @@ import com.ixxc.uiot.Model.Map;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.Model.Model;
 import com.ixxc.uiot.Model.Realm;
+import com.ixxc.uiot.Model.RegisterDevice;
 import com.ixxc.uiot.Model.Role;
 import com.ixxc.uiot.Model.Token;
 import com.ixxc.uiot.Model.User;
@@ -27,7 +28,7 @@ import retrofit2.Response;
 
 public class APIManager {
     private static final APIClient apiClient = new APIClient();
-    private static final APIInterface userAI = apiClient.getClient().create(APIInterface.class);;
+    private static final APIInterface userAI = apiClient.getClient().create(APIInterface.class);
 
     public static void getToken(String code) {
         Call<Token> call =  userAI.getToken(GlobalVars.authType, code, GlobalVars.client, GlobalVars.oauth2Redirect);
@@ -135,6 +136,7 @@ public class APIManager {
             Response<CreateAssetRes> response = call.execute();
             if (response.isSuccessful()) {
                 CreateAssetRes res = response.body();
+                assert res != null;
                 Log.d("API LOG", res.name);
             }
         } catch (IOException e) { e.printStackTrace(); }
@@ -189,7 +191,7 @@ public class APIManager {
 
         try {
             Response<List<Role>> response = call.execute();
-            if(response.isSuccessful()) Role.setRoleList(response.body(), false);
+            if(response.isSuccessful() && response.body() != null) Role.setRoleList(response.body(), false);
         } catch (IOException e) { e.printStackTrace(); }
     }
 
@@ -213,24 +215,11 @@ public class APIManager {
         Call<String> call = userAI.setRoles(userId, body);
 
         try {
-            Response<String> response = call.execute();
+            call.execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-    }
-
-    public static void getRealmRoles(){
-        Call<List<Role>> call = userAI.getRealmRoles();
-
-        try {
-            Response<List<Role>> response = call.execute();
-            if(response.isSuccessful()){
-                Role.setRoleList(response.body(), true);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static List<Role> getRealmRoles(String userId){
@@ -253,7 +242,7 @@ public class APIManager {
         Call<String> call = userAI.setRealmRoles(userId, body);
 
         try {
-            Response<String> response = call.execute();
+            call.execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -290,32 +279,25 @@ public class APIManager {
         return devices;
     }
 
-    public static int setLinkedDevices(JsonArray body){
+    public static void setLinkedDevices(JsonArray body){
         Call<String> call = userAI.setLinkedDevices(body);
 
-        int statusCode = -1;
         try {
-            Response<String> response = call.execute();
-            statusCode = response.code();
+            call.execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return statusCode;
     }
 
-    public static int setUnlinkedDevices(JsonArray body){
+    public static void setUnlinkedDevices(JsonArray body){
         Call<String> call = userAI.setUnlinkedDevices(body);
 
-        int statusCode = -1;
         try {
-            Response<String> response = call.execute();
-            statusCode = response.code();
+            call.execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return statusCode;
     }
 
     public static int deleteUser(String id) {
@@ -345,10 +327,8 @@ public class APIManager {
     public static void updatePassword(String id, JsonObject query) {
         Call<String> call = userAI.updatePassword(id, query);
 
-        int returnCode = -1;
         try {
-            Response<String> response = call.execute();
-            returnCode = response.code();
+            call.execute();
         } catch (IOException e) { e.printStackTrace(); }
 
     }
@@ -358,7 +338,7 @@ public class APIManager {
 
         try {
             Response<ResponseBody> response = call.execute();
-            if(response.code() == 200){
+            if(response.code() == 200 && response.body() != null){
                 return response.body().string();
             }
         } catch (IOException e) { e.printStackTrace(); }
@@ -420,6 +400,51 @@ public class APIManager {
         try {
             Response<Map> response = call.execute();
             if (response.isSuccessful()) { Map.setMapObj(response.body()); }
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    public static void registerDevice(String token){
+
+        // TODO: Store device id in shared preferences
+        try {
+            String id = "4HlJmMDuAasniaKDhyz0ry";
+
+            if (!id.isEmpty()) {
+                RegisterDevice register = new RegisterDevice(id, "Android Browser");
+
+                JsonObject body = register.toJson(token);
+
+                Log.d(GlobalVars.LOG_TAG, "register: " + body);
+
+                Call<RegisterDevice> call2 = userAI.registerDevice(body);
+                call2.execute();
+
+            } else {
+                RegisterDevice register1 = new RegisterDevice("Android Browser");
+
+                Call<RegisterDevice> call1 = userAI.registerDevice(register1.toJson(""));
+
+                Response<RegisterDevice> response1 = call1.execute();
+
+                if (response1.code() == 200) {
+
+                    RegisterDevice registerResponse = response1.body();
+                    assert registerResponse != null;
+
+                    RegisterDevice register2 = new RegisterDevice(registerResponse.getId(), registerResponse.getName());
+
+                    JsonObject body2 = register2.toJson(token);
+
+                    Log.d(GlobalVars.LOG_TAG, "register2: " + body2);
+
+                    Call<RegisterDevice> call2 = userAI.registerDevice(body2);
+                    call2.execute();
+
+                } else {
+                    Log.d(GlobalVars.LOG_TAG, "Error: " + response1.message());
+                }
+            }
+
         } catch (IOException e) { e.printStackTrace(); }
     }
 }

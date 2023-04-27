@@ -6,9 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
-import android.window.OnBackInvokedDispatcher;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -20,8 +17,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.ixxc.uiot.API.APIManager;
 
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
@@ -72,11 +69,12 @@ public class HomeActivity extends AppCompatActivity {
                     // Get new FCM registration token
                     String token = task.getResult();
 
+                    new Thread(() -> APIManager.registerDevice(token)).start();
+
                     Log.d(GlobalVars.LOG_TAG, token);
                 });
 
         askNotificationPermission();
-
 
         fm.beginTransaction().add(R.id.main_frame, mapsFrag, "map").commit();
         fm.beginTransaction().hide(mapsFrag).commit();

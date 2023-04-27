@@ -16,7 +16,8 @@
         app:layout_constraintBottom_toTopOf="@+id/et_pwd"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_uit" />
+        app:srcCompat="@drawable/ic_uit"
+        android:contentDescription="@string/uit_logo"/>
 
     <EditText
         android:id="@+id/et_pwd"
@@ -29,15 +30,16 @@
         android:drawableStart="@drawable/ic_person"
         android:drawablePadding="12dp"
         android:ems="10"
-        android:hint="Username"
+        android:hint="@string/username"
         android:inputType="textPersonName"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:text="admin"
+        android:text="@string/test"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/et_re_pwd"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/et_re_pwd"
@@ -50,16 +52,17 @@
         android:drawableStart="@drawable/ic_lock"
         android:drawablePadding="12dp"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/password"
         android:imeOptions="actionDone"
         android:inputType="textPassword"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:text="secret"
+        android:text="@string/test"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/btn_back"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:autofillHints="" />
 
     <ProgressBar
         android:id="@+id/pb_loading"
@@ -79,7 +82,7 @@
         android:layout_height="56dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/bg"
-        android:text="Sign in"
+        android:text="@string/sign_in"
         android:textAllCaps="true"
         app:layout_constraintBottom_toTopOf="@+id/btn_back"
         app:layout_constraintEnd_toEndOf="parent"
@@ -91,7 +94,7 @@
         android:layout_height="48dp"
         android:layout_marginBottom="48dp"
         android:backgroundTint="@color/bg"
-        android:text="Back"
+        android:text="@string/back"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
