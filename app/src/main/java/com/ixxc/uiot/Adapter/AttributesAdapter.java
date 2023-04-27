@@ -1,8 +1,6 @@
 package com.ixxc.uiot.Adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,12 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
-import com.ixxc.uiot.ChartActivity;
-import com.ixxc.uiot.DeviceInfoActivity;
+import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.Interface.AttributeListener;
 import com.google.gson.JsonPrimitive;
-import com.ixxc.uiot.LoginActivity;
-import com.ixxc.uiot.MainActivity;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.R;
@@ -40,6 +36,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     public static Dictionary<String, Attribute> changedAttributes;
     AttributeListener attributeListener;
     public boolean isEditMode = false;
+
+    private boolean isExpanded = false;
 
     public AttributesAdapter(List<Attribute> attrsObj, AttributeListener attributeListener) {
         this.attributes = attrsObj;
@@ -68,7 +66,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AttrsViewHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(@NonNull AttrsViewHolder holder, int position) {
         if (position == attributes.size()) {
             holder.btn_show_chart.setOnClickListener(v -> attributeListener.onItemClicked2(v,position));
             return;
@@ -77,8 +75,13 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         Attribute attr = attributes.get(position);
         String name = Utils.formatString(attr.name);
         String type = attr.type;
+        String validatedType = Utils.formatString(attr.type);
 
-        if(isEditMode) holder.btn_add_config.setVisibility(View.VISIBLE);
+        if(isEditMode) {
+            holder.btn_add_config.setVisibility(View.VISIBLE);
+            holder.til_value.setVisibility(View.VISIBLE);
+            holder.et_value.setFocusableInTouchMode(true);
+        }
         else holder.btn_add_config.setVisibility(View.GONE);
 
         // Add Meta Info
@@ -86,8 +89,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         if(meta != null && isEditMode) {
             // Add config view here
             for (String key : attr.meta.keySet()) {
-                if (holder.layout.findViewWithTag(key) == null) {
-                    holder.layout.addView(createConfigView(position, key, MetaItem.getMetaType(key), attr.getMetaValue(key)), 1);
+                if (holder.layout_config.findViewWithTag(key) == null) {
+                    holder.layout_config.addView(createConfigView(position, key, MetaItem.getMetaType(key), attr.getMetaValue(key)), 1);
                 }
             }
         }
@@ -95,16 +98,14 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         holder.tv_name.setText(name);
 
         String value = attr.getValueString();
-        if (value.equals("") && !isEditMode) {
-            holder.tv_value.setText(R.string.string_null);
-            holder.til_value.setVisibility(View.GONE);
-
+        if (value.equals("")) {
+            holder.tv_value.setText(R.string.no_value);
         } else {
-            holder.tv_value.setText(type);
-            holder.et_value.setText(value);
-            holder.et_value.setInputType(Attribute.GetType(type));
-            holder.et_value.setFocusableInTouchMode(isEditMode);
-            holder.til_value.setVisibility(View.VISIBLE);
+            int inputType = Attribute.GetInputType(type);
+            holder.et_value.setInputType(inputType);
+
+            if (Attribute.canShowValue) holder.tv_value.setText(value);
+            else holder.tv_value.setText(validatedType);
         }
 
         holder.et_value.setOnFocusChangeListener((view, focused) -> {
@@ -119,6 +120,48 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         });
 
         holder.btn_add_config.setOnClickListener(v -> attributeListener.onItemClicked(v,position));
+
+        holder.linear_label.setOnClickListener(view -> {
+            if (isEditMode) return;
+
+            isExpanded = !isExpanded;
+
+            Attribute.GetInputType(type);
+            setExpandedView(holder, validatedType, value, isExpanded);
+        });
+    }
+
+    private void setExpandedView(AttrsViewHolder holder, String type, String value, boolean isExpanded) {
+
+        if (isExpanded) {
+            holder.iv_expand.setRotation(90);
+
+            if (value.equals("")) {
+                holder.tv_value.setText(R.string.no_value);
+                holder.til_value.setVisibility(View.VISIBLE);
+            } else {
+                holder.tv_value.setText(type);
+                holder.et_value.setText(value);
+                holder.til_value.setVisibility(View.VISIBLE);
+            }
+
+        } else {
+            holder.iv_expand.setRotation(0);
+
+            if (value.equals("")) {
+                holder.tv_value.setText(R.string.no_value);
+                holder.til_value.setVisibility(View.GONE);
+            } else {
+
+                if (Attribute.canShowValue) {
+                    holder.tv_value.setText(value);
+                    holder.til_value.setVisibility(View.GONE);
+                } else {
+                    holder.tv_value.setText(type);
+                    holder.til_value.setVisibility(View.GONE);
+                }
+            }
+        }
     }
 
     @Override
@@ -131,9 +174,10 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         private final EditText et_value;
         private final TextInputLayout til_value;
         private final Button btn_add_config;
-        private final LinearLayout layout;
-
-        private Button btn_show_chart;
+        private final LinearLayout layout_config;
+        private final Button btn_show_chart;
+        private final ImageView iv_expand;
+        private final LinearLayout linear_label;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -142,8 +186,10 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             et_value = itemView.findViewById(R.id.et_value);
             til_value = itemView.findViewById(R.id.til_value);
             btn_add_config = itemView.findViewById(R.id.btn_add_config);
-            layout = itemView.findViewById(R.id.config_layout);
+            layout_config = itemView.findViewById(R.id.config_layout);
             btn_show_chart = itemView.findViewById(R.id.btn_showChart);
+            iv_expand = itemView.findViewById(R.id.iv_expand);
+            linear_label = itemView.findViewById(R.id.linear_label);
         }
     }
 
@@ -175,7 +221,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
                 TextInputEditText et = new TextInputEditText(til.getContext());
                 et.setText(value);
-                et.setInputType(Attribute.GetType(type));
+                et.setInputType(Attribute.GetInputType(type));
                 et.setOnFocusChangeListener((view, focused) -> attributes.get(pos).meta.addProperty(name, String.valueOf(et.getText())));
                 et.setFocusableInTouchMode(isEditMode);
                 til.addView(et);

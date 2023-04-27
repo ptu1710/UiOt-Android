@@ -12,7 +12,6 @@ import java.util.List;
 public class DataPoint {
     public Long x;
     public Float y;
-
     private static List<DataPoint> dataPointList;
 
     public static List<DataPoint> getDataPointList() { return dataPointList; }

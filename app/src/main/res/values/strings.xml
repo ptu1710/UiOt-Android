@@ -23,6 +23,7 @@
     <string name="celsius">°C</string>
     <string name="degrees">°</string>
     <string name="string_null">null</string>
+    <string name="no_value">--</string>
     <string name="binh_minh">Bình minh</string>
     <string name="_06_09">06:09</string>
     <string name="sunrise">sunrise</string>
