@@ -70,6 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="12dp"
+                android:hint="@string/value"
                 android:visibility="gone">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -78,6 +79,7 @@
                     android:layout_height="wrap_content"
                     android:focusableInTouchMode="false"
                     android:imeOptions="actionDone" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
