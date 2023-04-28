@@ -3,7 +3,6 @@ package com.ixxc.uiot.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -146,10 +145,10 @@ public class DevicesAdapter extends TreeViewAdapter {
             });
 
 
-            if (selectedPosition != -1 && getAbsoluteAdapterPosition() == selectedPosition + 1) {
-                itemView.startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.devices_rv_anim));
-                selectedPosition = -1;
-            }
+//            if (selectedPosition != -1 && getAbsoluteAdapterPosition() == selectedPosition + 1) {
+//                itemView.startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.devices_rv_anim));
+//                selectedPosition = -1;
+//            }
         }
     }
 }
