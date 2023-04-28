@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.amrdeveloper.treeview.TreeNode;
 import com.amrdeveloper.treeview.TreeViewHolderFactory;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.JsonObject;
@@ -47,15 +46,10 @@ public class DevicesFragment extends Fragment {
     View rootView;
     SearchView searchView;
     TextView tv_sort, tv_type;
-
     List<Device> devicesList;
-
     ActivityResultLauncher<Intent> mLauncher;
-
     DevicesAdapter devicesAdapter;
-
     User me;
-
     public String selected_device_id = "";
 
     Handler handler = new Handler(message -> {
@@ -154,20 +148,8 @@ public class DevicesFragment extends Fragment {
 
     private void InitEvents() {
         iv_add.setOnClickListener(view -> {
-//            Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
-//            mLauncher.launch(intent);
-
-            // select node
-            TreeNode node = devicesAdapter.getTreeNodes().get(2);
-
-//            devicesAdapter.expandNode(node);
-            devicesAdapter.expandNodeBranch(node);
-//            devicesAdapter.expandNodeToLevel(node, 1);
-
-            // Child node
-//            TreeNode child = node.getChildren().get(0);
-//            Log.d(GlobalVars.LOG_TAG, "InitEvents: " + ((Device) child.getValue()).name);
-
+            Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
+            mLauncher.launch(intent);
         });
 
         iv_delete.setOnClickListener(view -> {
@@ -264,7 +246,9 @@ public class DevicesFragment extends Fragment {
         devicesAdapter = new DevicesAdapter(factory, devicesList);
 
         devicesAdapter.setTreeNodeClickListener((treeNode, view) -> {
-            if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
+            if (treeNode.getChildren().size() == 0) {
+                view.findViewById(R.id.iv_go).performClick();
+            } else if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
                 DevicesAdapter.selectedPosition = devicesAdapter.getTreeNodes().indexOf(treeNode);
             }
         });

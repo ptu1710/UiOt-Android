@@ -1,7 +1,6 @@
 package com.ixxc.uiot.Adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
-import com.ixxc.uiot.GlobalVars;
-import com.ixxc.uiot.Interface.AttributeListener;
 import com.google.gson.JsonPrimitive;
+import com.ixxc.uiot.Interface.AttributeListener;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.R;
@@ -37,8 +35,6 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     AttributeListener attributeListener;
     public boolean isEditMode = false;
 
-    private boolean isExpanded = false;
-
     public AttributesAdapter(List<Attribute> attrsObj, AttributeListener attributeListener) {
         this.attributes = attrsObj;
         changedAttributes = new Hashtable<>();
@@ -47,7 +43,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
     @Override
     public int getItemViewType(int position) {
-        return (position == attributes.size()) ? R.layout.end_device_details : R.layout.attribute_layout;
+        return position == attributes.size() ? R.layout.end_device_details : R.layout.attribute_layout;
     }
 
     @NonNull
@@ -68,44 +64,58 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     @Override
     public void onBindViewHolder(@NonNull AttrsViewHolder holder, int position) {
         if (position == attributes.size()) {
-            holder.btn_show_chart.setOnClickListener(v -> attributeListener.onItemClicked2(v,position));
+            holder.btn_show_chart.setOnClickListener(v -> attributeListener.viewChartClicked());
             return;
         }
 
         Attribute attr = attributes.get(position);
         String name = Utils.formatString(attr.name);
+        String value = attr.getValueString();
         String type = attr.type;
         String validatedType = Utils.formatString(attr.type);
+
+        holder.tv_name.setText(name);
+        holder.et_value.setInputType(Attribute.GetInputType(type));
 
         if(isEditMode) {
             holder.btn_add_config.setVisibility(View.VISIBLE);
             holder.til_value.setVisibility(View.VISIBLE);
             holder.et_value.setFocusableInTouchMode(true);
-        }
-        else holder.btn_add_config.setVisibility(View.GONE);
 
-        // Add Meta Info
-        JsonObject meta = attr.meta;
-        if(meta != null && isEditMode) {
-            // Add config view here
-            for (String key : attr.meta.keySet()) {
-                if (holder.layout_config.findViewWithTag(key) == null) {
-                    holder.layout_config.addView(createConfigView(position, key, MetaItem.getMetaType(key), attr.getMetaValue(key)), 1);
+            // Add Meta Info
+            JsonObject meta = attr.meta;
+            int viewCount = 0;
+            // Clear old views first
+            holder.meta_layout.removeAllViews();
+            if(meta != null) {
+                // Add config view here
+                for (String key : attr.meta.keySet()) {
+                    if (holder.meta_layout.findViewWithTag(key) == null) {
+                        View view = createConfigView(position, key, MetaItem.getMetaType(key), attr.getMetaValue(key));
+                        if (view instanceof CheckBox) holder.meta_layout.addView(view, viewCount++);
+                        else holder.meta_layout.addView(view, 0);
+                    }
                 }
             }
         }
+        else {
+            holder.btn_add_config.setVisibility(View.GONE);
+            setExpandedView(holder, validatedType, value, true);
+        }
 
-        holder.tv_name.setText(name);
-
-        String value = attr.getValueString();
         if (value.equals("")) {
             holder.tv_value.setText(R.string.no_value);
+            holder.et_value.setText("");
         } else {
-            int inputType = Attribute.GetInputType(type);
-            holder.et_value.setInputType(inputType);
 
-            if (Attribute.canShowValue) holder.tv_value.setText(value);
-            else holder.tv_value.setText(validatedType);
+            if (isEditMode) {
+                holder.et_value.setText(value);
+                holder.tv_value.setText(validatedType);
+            } else {
+
+                if (Attribute.canShowValue) holder.tv_value.setText(value);
+                else holder.tv_value.setText(validatedType);
+            }
         }
 
         holder.et_value.setOnFocusChangeListener((view, focused) -> {
@@ -119,33 +129,22 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             }
         });
 
-        holder.btn_add_config.setOnClickListener(v -> attributeListener.onItemClicked(v,position));
+        holder.btn_add_config.setOnClickListener(v -> attributeListener.addConfigClicked(position));
 
         holder.linear_label.setOnClickListener(view -> {
             if (isEditMode) return;
 
-            isExpanded = !isExpanded;
+            boolean isExpanded = view.getTag() != null && (boolean) view.getTag();
 
             Attribute.GetInputType(type);
             setExpandedView(holder, validatedType, value, isExpanded);
+            view.setTag(!isExpanded);
         });
     }
 
     private void setExpandedView(AttrsViewHolder holder, String type, String value, boolean isExpanded) {
 
         if (isExpanded) {
-            holder.iv_expand.setRotation(90);
-
-            if (value.equals("")) {
-                holder.tv_value.setText(R.string.no_value);
-                holder.til_value.setVisibility(View.VISIBLE);
-            } else {
-                holder.tv_value.setText(type);
-                holder.et_value.setText(value);
-                holder.til_value.setVisibility(View.VISIBLE);
-            }
-
-        } else {
             holder.iv_expand.setRotation(0);
 
             if (value.equals("")) {
@@ -161,6 +160,19 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                     holder.til_value.setVisibility(View.GONE);
                 }
             }
+        } else {
+            holder.iv_expand.setRotation(90);
+
+            if (value.equals("")) {
+                holder.tv_value.setText(R.string.no_value);
+                holder.til_value.setVisibility(View.VISIBLE);
+            } else {
+                holder.tv_value.setText(type);
+                holder.et_value.setText(value);
+                holder.til_value.setVisibility(View.VISIBLE);
+            }
+
+            attributeListener.onAttributeClicked(holder.getBindingAdapterPosition());
         }
     }
 
@@ -174,7 +186,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         private final EditText et_value;
         private final TextInputLayout til_value;
         private final Button btn_add_config;
-        private final LinearLayout layout_config;
+        private final LinearLayout meta_layout;
         private final Button btn_show_chart;
         private final ImageView iv_expand;
         private final LinearLayout linear_label;
@@ -186,7 +198,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             et_value = itemView.findViewById(R.id.et_value);
             til_value = itemView.findViewById(R.id.til_value);
             btn_add_config = itemView.findViewById(R.id.btn_add_config);
-            layout_config = itemView.findViewById(R.id.config_layout);
+            meta_layout = itemView.findViewById(R.id.meta_layout);
             btn_show_chart = itemView.findViewById(R.id.btn_showChart);
             iv_expand = itemView.findViewById(R.id.iv_expand);
             linear_label = itemView.findViewById(R.id.linear_label);
@@ -208,22 +220,21 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 cb.setTag(name);
                 cb.setLayoutParams(params);
                 cb.setOnCheckedChangeListener((compoundButton, checked) -> attributes.get(pos).meta.addProperty(name, checked));
-                cb.setClickable(isEditMode);
                 return cb;
             case "text":
             case "positiveInteger":
             case "agentLink":
             case "attributeLink[]":
+
                 TextInputLayout til = new TextInputLayout(ctx);
                 til.setHint(Utils.formatString(name));
                 til.setLayoutParams(params);
                 til.setTag(name);
 
                 TextInputEditText et = new TextInputEditText(til.getContext());
-                et.setText(value);
                 et.setInputType(Attribute.GetInputType(type));
+                et.setText(value);
                 et.setOnFocusChangeListener((view, focused) -> attributes.get(pos).meta.addProperty(name, String.valueOf(et.getText())));
-                et.setFocusableInTouchMode(isEditMode);
                 til.addView(et);
 
                 return til;

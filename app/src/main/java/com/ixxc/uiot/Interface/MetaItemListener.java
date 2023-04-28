@@ -5,5 +5,5 @@ import com.ixxc.uiot.Model.MetaItem;
 import java.util.ArrayList;
 
 public interface MetaItemListener {
-    void onMetaItemListener(ArrayList<MetaItem> metaItems);
+    void metaItemListener(ArrayList<MetaItem> metaItems);
 }

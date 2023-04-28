@@ -2,6 +2,9 @@ package com.ixxc.uiot;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -247,7 +250,12 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
         attributesAdapter = new AttributesAdapter(attributeList, new AttributeListener() {
             @Override
-            public void onItemClicked(View v, int position) {
+            public void onAttributeClicked(int position) {
+                rv_attribute.scrollToPosition(position);
+            }
+
+            @Override
+            public void addConfigClicked(int position) {
 
                 Dialog dlg = new Dialog(DeviceInfoActivity.this);
                 dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -284,8 +292,8 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             }
 
             @Override
-            public void onItemClicked2(View v, int position) {
-                Intent intent = new Intent(DeviceInfoActivity.this,ChartActivity.class);
+            public void viewChartClicked() {
+                Intent intent = new Intent(DeviceInfoActivity.this, ChartActivity.class);
                 intent.putExtra("DEVICE_ID", device_id);
                 startActivity(intent);
             }
@@ -312,81 +320,97 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         if (id == android.R.id.home) {
             finish();
             return true;
-        } else if (id == R.id.edit || id == R.id.save) {
-            editModeEnable();
+        } else if (id == R.id.copy) {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Device ID", device_id);
+            clipboard.setPrimaryClip(clip);
+
+            Toast.makeText(this, "Device ID copied to clipboard", Toast.LENGTH_SHORT).show();
+
+        } else if (id == R.id.edit || id == R.id.save || id == R.id.cancel) {
+            editModeEnable(id == R.id.cancel);
             actionbarMenu.findItem(R.id.edit).setVisible(!isEditMode);
+            actionbarMenu.findItem(R.id.copy).setVisible(!isEditMode);
             actionbarMenu.findItem(R.id.save).setVisible(isEditMode);
+            actionbarMenu.findItem(R.id.cancel).setVisible(isEditMode);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void editModeEnable() {
+    private void editModeEnable(boolean isCancel) {
         isEditMode = attributesAdapter.isEditMode = !isEditMode;
 
-        if (isEditMode) {
+        if (isEditMode && !isCancel) {
             til_name.setVisibility(View.VISIBLE);
             til_parent.setVisibility(View.VISIBLE);
             iv_clear_parent.setVisibility(View.VISIBLE);
             cb_public.setVisibility(View.VISIBLE);
             btn_add_attribute.setVisibility(View.VISIBLE);
-
             et_name.setText(current_device.name);
             attributesAdapter.notifyDataSetChanged();
         } else {
-            rv_attribute.clearFocus();
+            if (!isCancel) {
+                rv_attribute.clearFocus();
 
-            JsonObject body = new JsonObject();
+                JsonObject body = new JsonObject();
 
-            current_device.path.clear();
-            current_device.path.add(current_device.id);
+                current_device.path.clear();
+                current_device.path.add(current_device.id);
 
-            if (!selected_id.equals("")) {
-                current_device.path.add(selected_id);
-                body.addProperty("parentId", selected_id);
-            }
+                if (!selected_id.equals("")) {
+                    current_device.path.add(selected_id);
+                    body.addProperty("parentId", selected_id);
+                }
 
-            JsonElement path = new Gson().toJsonTree(current_device.path);
-            body.add("path", path);
+                JsonElement path = new Gson().toJsonTree(current_device.path);
+                body.add("path", path);
 
-            Enumeration<String> keys = AttributesAdapter.changedAttributes.keys();
-            while (keys.hasMoreElements()) {
-                String key = keys.nextElement();
-                attributeList.add(AttributesAdapter.changedAttributes.get(key));
-            }
+                Enumeration<String> keys = AttributesAdapter.changedAttributes.keys();
+                while (keys.hasMoreElements()) {
+                    String key = keys.nextElement();
+                    attributeList.add(AttributesAdapter.changedAttributes.get(key));
+                }
 
-            body.addProperty("id", current_device.id);
-            body.addProperty("version",  current_device.version);
-            body.addProperty("createdOn", current_device.createdOn);
-            // Change name
-            body.addProperty("name", String.valueOf(et_name.getText()));
+                body.addProperty("id", current_device.id);
+                body.addProperty("version",  current_device.version);
+                body.addProperty("createdOn", current_device.createdOn);
+                // Change name
+                body.addProperty("name", String.valueOf(et_name.getText()));
 
-            body.addProperty("accessPublicRead", cb_public.isChecked());
-            body.addProperty("realm", current_device.realm);
-            body.addProperty("type", current_device.type);
+                body.addProperty("accessPublicRead", cb_public.isChecked());
+                body.addProperty("realm", current_device.realm);
+                body.addProperty("type", current_device.type);
 
-            // Change attributes
-            for (Attribute a : attributeList) {
-                current_device.attributes.add(a.name, a.toJson());
-            }
+                // Change attributes
+                for (Attribute a : attributeList) {
+                    current_device.attributes.add(a.name, a.toJson());
+                }
 
-            body.add("attributes", current_device.attributes);
+                body.add("attributes", current_device.attributes);
 
-            Log.d(GlobalVars.LOG_TAG, body.toString());
+                Log.d(GlobalVars.LOG_TAG, body.toString());
 
-            // Commit device changes here
-            new Thread(() -> {
-                boolean updated = APIManager.updateDeviceInfo(device_id, body);
-                current_device = APIManager.getDevice(device_id);
+                // Commit device changes here
+                new Thread(() -> {
+                    boolean updated = APIManager.updateDeviceInfo(device_id, body);
+                    current_device = APIManager.getDevice(device_id);
 
+                    Message message = handler.obtainMessage();
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("UPDATE_DEVICE", true);
+                    bundle.putBoolean("UPDATE_OK", updated);
+                    message.setData(bundle);
+                    handler.sendMessage(message);
+                }).start();
+            } else {
                 Message message = handler.obtainMessage();
                 Bundle bundle = new Bundle();
-                bundle.putBoolean("UPDATE_DEVICE", true);
-                bundle.putBoolean("UPDATE_OK", updated);
+                bundle.putBoolean("DEVICE_OK", true);
                 message.setData(bundle);
                 handler.sendMessage(message);
-            }).start();
+            }
 
             til_name.setVisibility(View.GONE);
             til_parent.setVisibility(View.GONE);
@@ -397,7 +421,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     }
 
     @Override
-    public void onMetaItemListener(ArrayList<MetaItem> metaItems) {
+    public void metaItemListener(ArrayList<MetaItem> metaItems) {
         selectedMetaItems = metaItems;
     }
 }
