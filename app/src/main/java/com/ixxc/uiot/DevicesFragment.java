@@ -2,7 +2,6 @@ package com.ixxc.uiot;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.amrdeveloper.treeview.TreeNode;
 import com.amrdeveloper.treeview.TreeViewHolderFactory;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.JsonObject;
@@ -38,7 +35,6 @@ import com.ixxc.uiot.Adapter.DevicesAdapter;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DevicesFragment extends Fragment {
@@ -50,15 +46,10 @@ public class DevicesFragment extends Fragment {
     View rootView;
     SearchView searchView;
     TextView tv_sort, tv_type;
-
     List<Device> devicesList;
-
     ActivityResultLauncher<Intent> mLauncher;
-
     DevicesAdapter devicesAdapter;
-
     User me;
-
     public String selected_device_id = "";
 
     Handler handler = new Handler(message -> {
@@ -109,14 +100,14 @@ public class DevicesFragment extends Fragment {
         InitViews(view);
         InitEvents();
 
+        Utils.delayHandler.postDelayed(() -> layout_shimmer.setVisibility(View.VISIBLE), 320);
+
         // Wait to show all devices
         new Thread(() -> {
-            Utils.delayHandler.postDelayed(() -> layout_shimmer.startShimmer(), 280);
 
-            while (Device.getDevicesList() == null) {
+            while (!Device.devicesLoaded) {
                 try {
                     Thread.sleep(240);
-                    // test new animation branch
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -157,20 +148,8 @@ public class DevicesFragment extends Fragment {
 
     private void InitEvents() {
         iv_add.setOnClickListener(view -> {
-//            Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
-//            mLauncher.launch(intent);
-
-            // select node
-            TreeNode node = devicesAdapter.getTreeNodes().get(2);
-
-//            devicesAdapter.expandNode(node);
-            devicesAdapter.expandNodeBranch(node);
-//            devicesAdapter.expandNodeToLevel(node, 1);
-
-            // Child node
-//            TreeNode child = node.getChildren().get(0);
-//            Log.d(GlobalVars.LOG_TAG, "InitEvents: " + ((Device) child.getValue()).name);
-
+            Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
+            mLauncher.launch(intent);
         });
 
         iv_delete.setOnClickListener(view -> {
@@ -262,13 +241,14 @@ public class DevicesFragment extends Fragment {
     private void setDevicesAdapter() {
 
         devicesList = Device.getDevicesList();
-//        devicesList = new ArrayList<>();
 
         TreeViewHolderFactory factory = (v, layout) -> new DevicesAdapter.MyViewHolder(v, parentActivity);
         devicesAdapter = new DevicesAdapter(factory, devicesList);
 
         devicesAdapter.setTreeNodeClickListener((treeNode, view) -> {
-            if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
+            if (treeNode.getChildren().size() == 0) {
+                view.findViewById(R.id.iv_go).performClick();
+            } else if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
                 DevicesAdapter.selectedPosition = devicesAdapter.getTreeNodes().indexOf(treeNode);
             }
         });
@@ -288,7 +268,6 @@ public class DevicesFragment extends Fragment {
         rv_devices.setAdapter(devicesAdapter);
 
         rv_devices.setVisibility(View.VISIBLE);
-        layout_shimmer.stopShimmer();
         layout_shimmer.setVisibility(View.GONE);
     }
 

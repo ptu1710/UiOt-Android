@@ -39,6 +39,8 @@ public class Device {
     @SerializedName("path")
     public ArrayList<String> path;
 
+    public static boolean devicesLoaded = false;
+
     private static final List<Device> deviceList = new ArrayList<>();
 
     public static List<Device> getDevicesList() {
@@ -111,6 +113,15 @@ public class Device {
         }
 
         return parentId;
+    }
+
+    // Get device parent device
+    public Device getParent() {
+        if (path.size() > 1) {
+            return getDeviceById(path.get(path.size() - 2));
+        }
+
+        return null;
     }
 
     // Get device location
@@ -288,13 +299,5 @@ public class Device {
         drawable.draw(canvas);
 
         return pin;
-    }
-
-    public Device getParent() {
-        if (path.size() > 1) {
-            return getDeviceById(path.get(path.size() - 2));
-        }
-
-        return null;
     }
 }

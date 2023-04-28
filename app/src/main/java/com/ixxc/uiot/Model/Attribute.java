@@ -26,6 +26,8 @@ public class Attribute {
     @SerializedName("value")
     public JsonElement value = new JsonParser().parse("");;
 
+    public static boolean canShowValue;
+
     public Attribute(String name, String type) {
         this.name = name;
         this.type = type;
@@ -53,7 +55,9 @@ public class Attribute {
         else return value.getAsString();
     }
 
-    public static int GetType(String type){
+    public static int GetInputType(String type){
+        canShowValue = false;
+
         switch (type.trim()){
             case "JSONObject":
             case "JSONArray":
@@ -84,6 +88,7 @@ public class Attribute {
             case "negativeNumber":
             case "integerByte":
             case "byte":
+                canShowValue = true;
                 return InputType.TYPE_CLASS_NUMBER;
             case "attributeLink":
             case "HTTP_URL":

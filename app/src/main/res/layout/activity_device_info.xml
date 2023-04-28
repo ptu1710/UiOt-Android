@@ -20,7 +20,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:hint="New name"
+        android:hint="@string/new_name"
         android:visibility="gone"
         app:boxBackgroundColor="#FFFFFF"
         app:boxBackgroundMode="outline"
@@ -45,7 +45,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:hint="Parent"
+        android:hint="@string/parent"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/iv_clear_parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +57,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:inputType="none"
-            android:singleLine="true" />
+            android:singleLine="true"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Public read"
+        android:text="@string/public_read"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_parent" />
@@ -82,7 +83,9 @@
         app:layout_constraintBottom_toBottomOf="@+id/til_parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/til_parent"
-        app:srcCompat="@drawable/ic_cancel" />
+        app:srcCompat="@drawable/ic_cancel"
+        app:tint="@color/black"
+        android:contentDescription="@string/cancel" />
 
     <Button
         android:id="@+id/btn_add_attribute"
@@ -90,7 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:text="Add attribute"
+        android:text="@string/add_attribute"
         android:textColor="@color/bg"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"

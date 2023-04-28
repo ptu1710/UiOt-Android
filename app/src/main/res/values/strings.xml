@@ -23,6 +23,7 @@
     <string name="celsius">°C</string>
     <string name="degrees">°</string>
     <string name="string_null">null</string>
+    <string name="no_value">--</string>
     <string name="binh_minh">Bình minh</string>
     <string name="_06_09">06:09</string>
     <string name="sunrise">sunrise</string>
@@ -40,6 +41,29 @@
     <string name="humidity">Humidity</string>
     <string name="_0">0</string>
     <string name="low">Thấp</string>
+    <string name="copy_id">Copy ID</string>
+    <string name="edit">Edit</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="new_name">New name</string>
+    <string name="parent">Parent</string>
+    <string name="public_read">Public read</string>
+    <string name="add_attribute">Add attribute</string>
+    <string name="add_configuration_item">+ Add configuration item</string>
+
+    <string-array name="attribute_name">
+        <item>Temperature (°C)</item>
+        <item>Humidity (%)</item>
+    </string-array>
+
+    <string-array name="timeframe">
+        <item>Hour</item>
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+        <item>Year</item>
+    </string-array>
+
     <string name="uit_logo">uit_logo</string>
     <string name="username">Username</string>
     <string name="test">test</string>

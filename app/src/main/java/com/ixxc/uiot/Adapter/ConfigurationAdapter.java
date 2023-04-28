@@ -45,7 +45,7 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
             if(holder.cb_config_item.isChecked()) items_chosen.add(metaItems.get(position));
             else items_chosen.remove(metaItems.get(position));
 
-            metaItemListener.onMetaItemListener(items_chosen);
+            metaItemListener.metaItemListener(items_chosen);
         });
     }
 

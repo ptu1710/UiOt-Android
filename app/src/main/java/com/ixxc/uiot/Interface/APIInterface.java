@@ -3,6 +3,7 @@ package com.ixxc.uiot.Interface;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.Model.CreateAssetRes;
+import com.ixxc.uiot.Model.DataPoint;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
@@ -158,4 +159,10 @@ public interface APIInterface {
     // Register a new device (push notification)
     @POST("api/master/console/register")
     Call<RegisterDevice> registerDevice(@Body JsonObject body);
+
+    // Get Data point
+    @GET("api/master/asset/datapoint/{assetId}/attribute/{attributeName}")
+    Call<List<DataPoint>> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName,
+                                 @Query("interval") String interval, @Query("fromTimestamp") Long from, @Query("toTimestamp") Long to);
+
 }
