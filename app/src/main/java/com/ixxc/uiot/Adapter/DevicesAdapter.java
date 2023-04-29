@@ -18,7 +18,6 @@ import com.ixxc.uiot.DeviceInfoActivity;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.R;
 import com.ixxc.uiot.Utils;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;

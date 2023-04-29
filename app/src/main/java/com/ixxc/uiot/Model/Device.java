@@ -4,14 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.R;
 import com.mapbox.geojson.Point;
 
@@ -201,69 +199,68 @@ public class Device {
     }
 
     //Get color of icon
-    public int getColorId(String deviceType){
+    public int getColorId(Context ctx, String deviceType){
 
         switch (deviceType) {
             case "GroupAsset":
-                return R.color.Group_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Group_Asset, null);
             case "PeopleCounterAsset":
-                return R.color.People_Counter_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.People_Counter_Asset, null);
             case "ElectricityBatteryAsset":
-                return R.color.Electricity_Battery_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Electricity_Battery_Asset, null);
             case "ElectricVehicleAsset":
-                return R.color.Electric_Vehicle_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Electric_Vehicle_Asset, null);
             case "ElectricVehicleFleetGroupAsset":
-                return R.color.Electric_Vehicle_Fleet_Group_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Electric_Vehicle_Fleet_Group_Asset, null);
             case "CityAsset":
-                return R.color.City_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.City_Asset, null);
             case "ThingAsset":
-                return R.color.Thing_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Thing_Asset, null);
             case "ElectricityChargerAsset":
-                return R.color.Electricity_Charger_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Electricity_Charger_Asset, null);
             case "VentilationAsset":
-                return R.color.Ventilation_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Ventilation_Asset, null);
             case "ShipAsset":
-                return R.color.Ship_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Ship_Asset, null);
             case "ElectricityProducerAsset":
-                return R.color.Electricity_Producer_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Electricity_Producer_Asset, null);
             case "MicrophoneAsset":
-                return R.color.Microphone_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Microphone_Asset, null);
             case "BuildingAsset":
-                return R.color.Building_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Building_Asset, null);
             case "ParkingAsset":
-                return R.color.Parking_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Parking_Asset, null);
             case "ElectricityConsumerAsset":
-                return R.color.Electricity_Consumer_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Electricity_Consumer_Asset, null);
             case "PlugAsset":
-                return R.color.Plug_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Plug_Asset, null);
             case "ThermostatAsset":
-                return R.color.Thermostat_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Thermostat_Asset, null);
             case "GatewayAsset":
-                return R.color.Gateway_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Gateway_Asset, null);
             case "WeatherAsset":
-                return R.color.Weather_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Weather_Asset, null);
             case "RoomAsset":
-                return R.color.Room_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Room_Asset, null);
             case "DoorAsset":
-                return R.color.Door_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Door_Asset, null);
             case "GroundwaterSensorAsset":
-                return R.color.Groundwater_Sensor_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Groundwater_Sensor_Asset, null);
             case "PVSolarAsset":
-                return R.color.PV_Solar_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.PV_Solar_Asset, null);
             case "WindTurbineAsset":
-                return R.color.Wind_Turbine_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Wind_Turbine_Asset, null);
             case "PresenceSensorAsset":
-                return R.color.Presence_Sensor_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Presence_Sensor_Asset, null);
             case "LightAsset":
-                return R.color.Light_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Light_Asset, null);
             case "EnvironmentSensorAsset":
-                return R.color.Environment_Sensor_Asset;
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Environment_Sensor_Asset, null);
             case "ElectricitySupplierAsset":
-                return R.color.Electricity_Supplier_Asset;
-
+                return ResourcesCompat.getColor(ctx.getResources(), R.color.Electricity_Supplier_Asset, null);
         }
 
-        return R.color.white;
+        return ResourcesCompat.getColor(ctx.getResources(), R.color.white, null);
     }
 
 
@@ -272,7 +269,7 @@ public class Device {
         int resId = getIconRes(deviceType);
         Drawable icon = ResourcesCompat.getDrawable(context.getResources(), resId, null);
         assert icon != null;
-        icon.setTint(getColorId(deviceType));
+        icon.setTint(getColorId(context, deviceType));
 
         return icon;
     }
@@ -283,11 +280,12 @@ public class Device {
         // Get icon drawable from resId
         Drawable drawable = getIconDrawable(context, type);
         assert drawable != null;
-        drawable.setTint(getColorId(""));
+        drawable.setTint(getColorId(context, ""));
 
         // Get pin drawable
         Drawable pin_drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_pin_green, null);
         assert pin_drawable != null;
+        pin_drawable.setTint(getColorId(context, type));
 
         // Draw icon into pin
         Bitmap pin = Bitmap.createBitmap(pin_drawable.getIntrinsicWidth(), pin_drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -295,7 +293,11 @@ public class Device {
         pin_drawable.setBounds(0, 0, pin_drawable.getIntrinsicWidth(), pin_drawable.getIntrinsicHeight());
         pin_drawable.draw(canvas);
 
-        drawable.setBounds(6, 6, drawable.getIntrinsicWidth() - 18, drawable.getIntrinsicHeight() - 18);
+        int start = pin_drawable.getIntrinsicWidth() * 10 / 100;
+        int end1 = pin_drawable.getIntrinsicWidth() * 90 / 100;
+        int end2 = pin_drawable.getIntrinsicHeight() * 40 / 100;
+
+        drawable.setBounds(start, start, end1, end2);
         drawable.draw(canvas);
 
         return pin;

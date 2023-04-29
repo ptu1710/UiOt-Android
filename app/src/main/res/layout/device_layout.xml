@@ -62,6 +62,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_send_circle"
+            android:background="?android:selectableItemBackgroundBorderless"
             app:tint="@color/bg1" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

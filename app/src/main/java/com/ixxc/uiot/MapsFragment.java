@@ -1,6 +1,7 @@
 package com.ixxc.uiot;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,25 +11,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.Adapter.BottomSheetAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.Map;
-import com.mapbox.geojson.Point;
 import com.mapbox.maps.CameraBoundsOptions;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.MapView;
@@ -42,7 +40,6 @@ import com.mapbox.maps.plugin.annotation.AnnotationType;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.mapbox.maps.plugin.attribution.AttributionPlugin;
-import com.mapbox.maps.plugin.compass.CompassPlugin;
 import com.mapbox.maps.plugin.logo.LogoPlugin;
 import com.mapbox.maps.plugin.scalebar.ScaleBarPlugin;
 
@@ -53,13 +50,7 @@ import java.util.Objects;
 public class MapsFragment extends Fragment {
     HomeActivity parentActivity;
     private MapView mapView;
-    private Map mapData;
-    private static MapboxMap mapboxMap;
-    private TextView tvAssetName;
-    private ImageView ivIcon;
-    private LinearLayout bs_device;
     RecyclerView rv_attributes;
-    private BottomSheetBehavior<LinearLayout> sheetBehavior;
     private ProgressBar pbLoading;
 
     public String lastSelectedId = "";
@@ -106,18 +97,14 @@ public class MapsFragment extends Fragment {
 
     private void InitViews(View view) {
         mapView = view.findViewById(R.id.mapView);
-        bs_device = view.findViewById(R.id.bs_device);
         rv_attributes = view.findViewById(R.id.rv_attributes);
-        tvAssetName = view.findViewById(R.id.tv_assetName);
-        ivIcon = view.findViewById(R.id.iv_assetIcon);
         pbLoading = view.findViewById(R.id.pb_loading_4);
-        sheetBehavior = BottomSheetBehavior.from(bs_device);
     }
 
     private void InitEvents() { }
 
     private void setMapView() {
-        mapData = Map.getMapObj();
+        Map mapData = Map.getMapObj();
 
         // Get the scale bar plugin instance and disable it
         ScaleBarPlugin scaleBarPlugin = mapView.getPlugin(Plugin.MAPBOX_SCALEBAR_PLUGIN_ID);
@@ -134,7 +121,7 @@ public class MapsFragment extends Fragment {
         assert attributionPlugin != null;
         attributionPlugin.setEnabled(false);
 
-        mapboxMap = mapView.getMapboxMap();
+        MapboxMap mapboxMap = mapView.getMapboxMap();
 
         // Load style and map data
         mapboxMap.loadStyleJson(Objects.requireNonNull(new Gson().toJson(mapData)), style -> {
@@ -150,8 +137,7 @@ public class MapsFragment extends Fragment {
             // Add click listener to the annotation manager
             pointAnnoManager.addClickListener(pointAnnotation -> {
                 String id = Objects.requireNonNull(pointAnnotation.getData()).getAsJsonObject().get("id").getAsString();
-//                toggleBottomSheet(id);
-                setBottomSheet1(id);
+                setBottomSheet(id);
 
                 return true;
             });
@@ -201,42 +187,7 @@ public class MapsFragment extends Fragment {
         if (!isHidden()) onHiddenChanged(false);
     }
 
-    public void toggleBottomSheet(@NonNull String id) {
-        setBottomSheet(id);
-
-        if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED && !id.equals("")) {
-            setBottomSheet(id);
-            sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } else {
-            if (!Objects.equals(lastSelectedId, id) && !id.equals("")) {
-                setBottomSheet(id);
-            } else {
-                lastSelectedId = "";
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
-        }
-    }
-
     private void setBottomSheet(@NonNull String assetId) {
-        Device device = Device.getDeviceById(assetId);
-
-        if (device != null) {
-            List<Attribute> attributes = device.getRequiredAttributes();
-            BottomSheetAdapter adapter = new BottomSheetAdapter(attributes);
-            LinearLayoutManager layoutManager =  new LinearLayoutManager(getContext());
-
-            tvAssetName.setText(device.name);
-            ivIcon.setImageDrawable(device.getIconDrawable(parentActivity, device.type));
-
-            rv_attributes.setLayoutManager(layoutManager);
-            rv_attributes.setAdapter(adapter);
-
-        }
-
-        lastSelectedId = assetId;
-    }
-
-    private void setBottomSheet1(@NonNull String assetId) {
         Device device = Device.getDeviceById(assetId);
 
         if (device != null) {
@@ -246,23 +197,47 @@ public class MapsFragment extends Fragment {
 
             List<Attribute> attributes = device.getRequiredAttributes();
             BottomSheetAdapter adapter = new BottomSheetAdapter(attributes);
-            LinearLayoutManager layoutManager =  new LinearLayoutManager(getContext());
+            LinearLayoutManager layoutManager =  new LinearLayoutManager(parentActivity);
 
             TextView tvAssetName = dialog.findViewById(R.id.tv_assetName);
             ImageView ivIcon = dialog.findViewById(R.id.iv_assetIcon);
+            ImageView iv_go = dialog.findViewById(R.id.iv_go_1);
+            Button btn_chart = dialog.findViewById(R.id.btn_chart);
             RecyclerView rv_attributes = dialog.findViewById(R.id.rv_attributes);
+
+            iv_go.setOnClickListener(view -> {
+                // TODO: Change start activity animation
+                Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
+                intent.putExtra("DEVICE_ID", assetId);
+                parentActivity.startActivity(intent);
+                dialog.dismiss();
+            });
+
+            btn_chart.setOnClickListener(view -> {
+                // TODO: Change start activity animation
+                Intent intent = new Intent(parentActivity, ChartActivity.class);
+                intent.putExtra("DEVICE_ID", assetId);
+                startActivity(intent);
+                dialog.dismiss();
+            });
 
             tvAssetName.setText(device.name);
             ivIcon.setImageResource(device.getIconRes(device.type));
 
+            rv_attributes.setHasFixedSize(true);
             rv_attributes.setLayoutManager(layoutManager);
             rv_attributes.setAdapter(adapter);
 
-            dialog.show();
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (attributes.size() > 8) {
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dpToPx(parentActivity, 480));
+            } else {
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
             dialog.getWindow().setGravity(Gravity.BOTTOM);
+            dialog.show();
         }
 
         lastSelectedId = assetId;

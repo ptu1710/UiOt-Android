@@ -71,4 +71,6 @@
     <string name="sign_in">Sign in</string>
     <string name="back">Back</string>
     <string name="value">Value</string>
+    <string name="view">View</string>
+    <string name="chart">Chart</string>
 </resources>
