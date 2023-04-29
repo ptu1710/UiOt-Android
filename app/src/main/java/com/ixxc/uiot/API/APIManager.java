@@ -452,14 +452,13 @@ public class APIManager {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    public static void getDatapoint(String assetId, String attributeName,String interval, Long from, Long to){
-        Call<List<DataPoint>> call = userAI.getDataPoint(assetId,attributeName,interval,from,to);
+    public static void getDatapoint(String id, String attributeName, String interval, Long from, Long to){
+        Call<List<DataPoint>> call = userAI.getDataPoint(id, attributeName, interval, from, to);
 
         try {
             Response<List<DataPoint>> response = call.execute();
             if (response.isSuccessful()) DataPoint.setDataPointList(response.body());
-            else MetaItem.setMetaItemList(null);
+            else DataPoint.setDataPointList(null);
         } catch (IOException e) { e.printStackTrace(); }
-
     }
 }

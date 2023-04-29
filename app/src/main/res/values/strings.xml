@@ -50,20 +50,6 @@
     <string name="public_read">Public read</string>
     <string name="add_attribute">Add attribute</string>
     <string name="add_configuration_item">+ Add configuration item</string>
-
-    <string-array name="attribute_name">
-        <item>Temperature (°C)</item>
-        <item>Humidity (%)</item>
-    </string-array>
-
-    <string-array name="timeframe">
-        <item>Hour</item>
-        <item>Day</item>
-        <item>Week</item>
-        <item>Month</item>
-        <item>Year</item>
-    </string-array>
-
     <string name="uit_logo">uit_logo</string>
     <string name="username">Username</string>
     <string name="test">test</string>
@@ -73,4 +59,18 @@
     <string name="value">Value</string>
     <string name="view">View</string>
     <string name="chart">Chart</string>
+    <string name="select_attribute">Select Attribute</string>
+    <string name="timeframe">Timeframe</string>
+    <string name="day">Day</string>
+    <string name="ending">Ending</string>
+    <string name="dd_mm_yyyy_hh_mm">dd/mm/yyyy hh:mm</string>
+    <string name="show">Show</string>
+
+    <string-array name="timeframe">
+        <item>Hour</item>
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+        <item>Year</item>
+    </string-array>
 </resources>

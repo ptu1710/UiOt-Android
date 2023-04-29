@@ -14,9 +14,6 @@ public class Attribute {
     @SerializedName("type")
     public String type;
 
-    @SerializedName("format")
-    public JsonObject format;
-
     @SerializedName("meta")
     public JsonObject meta;
 
@@ -24,7 +21,7 @@ public class Attribute {
     public boolean optional;
 
     @SerializedName("value")
-    public JsonElement value = new JsonParser().parse("");;
+    public JsonElement value = JsonParser.parseString("");
 
     public static boolean canShowValue;
 
@@ -39,7 +36,7 @@ public class Attribute {
     public String getMetaValue(String name) {
         JsonElement element = this.meta.get(name);
 
-        if (element.isJsonNull()) return "";
+        if (element == null || element.isJsonNull()) return "";
         else if (element.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonObject()));
         else if (element.isJsonArray()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonArray()));
         else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) return String.valueOf(element.getAsInt());

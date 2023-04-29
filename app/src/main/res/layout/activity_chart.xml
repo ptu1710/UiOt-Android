@@ -1,119 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChartActivity">
 
+    <include
+        android:id="@+id/actionbar"
+        layout="@layout/actionbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_attributeName"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="15dp"
-        android:hint="Attribute">
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/select_attribute"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/actionbar">
 
         <AutoCompleteTextView
             android:id="@+id/act_attributeName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:inputType="none"
-            android:textStyle="bold" />
-
+            android:textStyle="bold"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <RelativeLayout
-        android:id="@+id/layout_chart"
-        android:visibility="gone"
+    <LinearLayout
+        android:id="@+id/layout_timeframe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/til_attributeName">
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        android:weightSum="10"
+        android:baselineAligned="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_attributeName">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_timeFrame"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="5dp"
-            android:hint="Timeframe">
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="12dp"
+            android:layout_weight="3"
+            android:hint="@string/timeframe">
 
             <AutoCompleteTextView
                 android:id="@+id/act_timeFrame"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:inputType="none"
-                android:text="Day"
-                android:textStyle="bold" />
-
+                android:text="@string/day"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                tools:ignore="LabelFor" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_ending"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="15dp"
-            android:layout_toRightOf="@+id/til_timeFrame"
-            android:hint="Ending"
-            app:endIconMode="clear_text">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_weight="7"
+            android:hint="@string/ending">
 
             <AutoCompleteTextView
                 android:id="@+id/act_ending"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:inputType="none"
-                android:text="dd/mm/yyyy hh:mm PM"
-                android:textStyle="bold" />
+                android:textAlignment="center"
+                android:textStyle="bold"
+                tools:ignore="LabelFor" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ImageButton
-            android:id="@+id/btn_date"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="-60dp"
-            android:layout_marginTop="18dp"
-            android:layout_toRightOf="@+id/til_ending"
-            android:background="@color/white"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_schedule" />
+    </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_showChart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show"
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="15dp"
-            android:layout_below="@+id/til_timeFrame"/>
+    <Button
+        android:id="@+id/btn_showChart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/show"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_timeframe" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/lineChart"
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:layout_below="@+id/btn_showChart"/>
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_showChart" />
 
-
-    </RelativeLayout>
-
-
-
-
-
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

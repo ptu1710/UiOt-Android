@@ -263,7 +263,6 @@ public class Device {
         return ResourcesCompat.getColor(ctx.getResources(), R.color.white, null);
     }
 
-
     // Get icon drawable
     public Drawable getIconDrawable(Context context, String deviceType) {
         int resId = getIconRes(deviceType);
@@ -301,5 +300,19 @@ public class Device {
         drawable.draw(canvas);
 
         return pin;
+    }
+
+    public List<String> getStoredAttributes() {
+        List<String> attributeList = new ArrayList<>();
+
+        for (String key : attributes.keySet()) {
+            JsonObject o = attributes.get(key).getAsJsonObject();
+            Attribute attribute = new Gson().fromJson(o, Attribute.class);
+            if (attribute.meta != null && attribute.getMetaValue("storeDataPoints").equals("true")) {
+                attributeList.add(key);
+            }
+        }
+
+        return attributeList;
     }
 }
