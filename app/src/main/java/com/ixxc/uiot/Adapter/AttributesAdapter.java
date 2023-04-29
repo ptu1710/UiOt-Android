@@ -1,6 +1,7 @@
 package com.ixxc.uiot.Adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,29 +17,49 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.ixxc.uiot.Interface.AttributeListener;
 import com.ixxc.uiot.Model.Attribute;
+import com.ixxc.uiot.Model.Device;
+import com.ixxc.uiot.Model.Map;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.R;
 import com.ixxc.uiot.Utils;
+import com.mapbox.maps.CameraOptions;
+import com.mapbox.maps.MapView;
+import com.mapbox.maps.MapboxMap;
+import com.mapbox.maps.plugin.Plugin;
+import com.mapbox.maps.plugin.annotation.AnnotationConfig;
+import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
+import com.mapbox.maps.plugin.annotation.AnnotationPluginImplKt;
+import com.mapbox.maps.plugin.annotation.AnnotationType;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
+import com.mapbox.maps.plugin.gestures.GesturesPlugin;
+import com.mapbox.maps.plugin.gestures.GesturesUtils;
+import com.mapbox.maps.plugin.scalebar.ScaleBarPlugin;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.AttrsViewHolder> {
     Context ctx;
     private final List<Attribute> attributes;
+    private final String deviceId;
     public static Dictionary<String, Attribute> changedAttributes;
     AttributeListener attributeListener;
     public boolean isEditMode = false;
+    private boolean hasMap = false;
 
-    public AttributesAdapter(List<Attribute> attrsObj, AttributeListener attributeListener) {
+    public AttributesAdapter(String deviceId, List<Attribute> attrsObj, AttributeListener attributeListener) {
         this.attributes = attrsObj;
         changedAttributes = new Hashtable<>();
         this.attributeListener = attributeListener;
+        this.deviceId = deviceId;
     }
 
     @Override
@@ -64,7 +85,9 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     @Override
     public void onBindViewHolder(@NonNull AttrsViewHolder holder, int position) {
         if (position == attributes.size()) {
-            holder.btn_show_chart.setOnClickListener(v -> attributeListener.viewChartClicked());
+            if (!hasMap) {
+                setMapView(holder);
+            }
             return;
         }
 
@@ -176,6 +199,56 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         }
     }
 
+    private void setMapView(AttrsViewHolder holder) {
+
+        Device device = Device.getDeviceById(deviceId);
+
+        if (device != null && device.getPoint() != null) {
+            Map mapData = Map.getMapObj();
+
+            MapboxMap mapboxMap = holder.mapView.getMapboxMap();
+
+            // Load style and map data
+            mapboxMap.loadStyleJson(Objects.requireNonNull(new Gson().toJson(mapData)), style -> {
+
+                // Get the scale bar plugin instance and disable it
+                ScaleBarPlugin scaleBarPlugin = holder.mapView.getPlugin(Plugin.MAPBOX_SCALEBAR_PLUGIN_ID);
+                assert scaleBarPlugin != null;
+                scaleBarPlugin.setEnabled(true);
+
+                // Disable map scroll gestures
+                GesturesPlugin gesturesPlugin = GesturesUtils.getGestures((holder.mapView));
+                gesturesPlugin.setScrollEnabled(false);
+
+                // Get the annotation plugin instance
+                AnnotationPlugin annoPlugin = AnnotationPluginImplKt.getAnnotations(holder.mapView);
+                AnnotationConfig annoConfig = new AnnotationConfig("map_annotation");
+                PointAnnotationManager pointAnnoManager = (PointAnnotationManager) annoPlugin.createAnnotationManager(AnnotationType.PointAnnotation, annoConfig);
+
+                // Add device marker to the map
+                Bitmap bitmap = device.getIconPinBitmap(ctx, device.type);
+
+                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+                        .withPoint(device.getPoint())
+                        .withIconImage(bitmap);
+
+                pointAnnoManager.create(pointAnnotationOptions);
+            });
+
+            // Set camera position
+            mapboxMap.setCamera(
+                    new CameraOptions.Builder()
+                            .center(device.getPoint())
+                            .zoom(mapData.getZoom())
+                            .build()
+            );
+        } else {
+            holder.mapView.setVisibility(View.GONE);
+        }
+
+        hasMap = true;
+    }
+
     @Override
     public int getItemCount() {
         return attributes == null ? 0 : attributes.size() + 1;
@@ -187,9 +260,9 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         private final TextInputLayout til_value;
         private final Button btn_add_config;
         private final LinearLayout meta_layout;
-        private final Button btn_show_chart;
         private final ImageView iv_expand;
         private final LinearLayout linear_label;
+        private final MapView mapView;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -199,9 +272,9 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             til_value = itemView.findViewById(R.id.til_value);
             btn_add_config = itemView.findViewById(R.id.btn_add_config);
             meta_layout = itemView.findViewById(R.id.meta_layout);
-            btn_show_chart = itemView.findViewById(R.id.btn_showChart);
             iv_expand = itemView.findViewById(R.id.iv_expand);
             linear_label = itemView.findViewById(R.id.linear_label);
+            mapView = itemView.findViewById(R.id.mapView);
         }
     }
 

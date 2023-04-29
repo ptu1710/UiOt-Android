@@ -248,7 +248,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     private void showAttributes() {
         attributeList = current_device.getDeviceAttribute();
 
-        attributesAdapter = new AttributesAdapter(attributeList, new AttributeListener() {
+        attributesAdapter = new AttributesAdapter(device_id, attributeList, new AttributeListener() {
             @Override
             public void onAttributeClicked(int position) {
                 rv_attribute.scrollToPosition(position);
@@ -289,13 +289,6 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
                 ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(DeviceInfoActivity.this, ms, DeviceInfoActivity.this);
                 rv_config_item.setAdapter(configurationAdapter);
                 dlg.show();
-            }
-
-            @Override
-            public void viewChartClicked() {
-                Intent intent = new Intent(DeviceInfoActivity.this, ChartActivity.class);
-                intent.putExtra("DEVICE_ID", device_id);
-                startActivity(intent);
             }
         });
 

@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -51,8 +50,6 @@ public class MapsFragment extends Fragment {
     HomeActivity parentActivity;
     private MapView mapView;
     RecyclerView rv_attributes;
-    private ProgressBar pbLoading;
-
     public String lastSelectedId = "";
     private boolean firstTime = true;
 
@@ -98,7 +95,6 @@ public class MapsFragment extends Fragment {
     private void InitViews(View view) {
         mapView = view.findViewById(R.id.mapView);
         rv_attributes = view.findViewById(R.id.rv_attributes);
-        pbLoading = view.findViewById(R.id.pb_loading_4);
     }
 
     private void InitEvents() { }
@@ -183,7 +179,6 @@ public class MapsFragment extends Fragment {
         CameraAnimationsPlugin cameraAnimationsPlugin = mapView.getPlugin(Plugin.MAPBOX_CAMERA_PLUGIN_ID);
         assert cameraAnimationsPlugin != null;
 
-        pbLoading.setVisibility(View.GONE);
         if (!isHidden()) onHiddenChanged(false);
     }
 
