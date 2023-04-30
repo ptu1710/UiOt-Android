@@ -3,7 +3,6 @@ package com.ixxc.uiot.Interface;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.Model.CreateAssetRes;
-import com.ixxc.uiot.Model.DataPoint;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
@@ -19,8 +18,8 @@ import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.DELETE;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -162,6 +161,6 @@ public interface APIInterface {
 
     // Get Data point
     @GET("api/master/asset/datapoint/{assetId}/attribute/{attributeName}")
-    Call<List<DataPoint>> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName,
+    Call<JsonArray> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName,
                                  @Query("interval") String interval, @Query("fromTimestamp") Long from, @Query("toTimestamp") Long to);
 }

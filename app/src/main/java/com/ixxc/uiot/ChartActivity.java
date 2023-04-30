@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -21,13 +20,17 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.ixxc.uiot.API.APIManager;
-import com.ixxc.uiot.Model.DataPoint;
 import com.ixxc.uiot.Model.Device;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class ChartActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -49,6 +53,7 @@ public class ChartActivity extends AppCompatActivity {
     List<String> attributes;
     Calendar calendar;
     SimpleDateFormat sdf;
+    JsonArray dataPoints;
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -89,7 +94,7 @@ public class ChartActivity extends AppCompatActivity {
         device_id = getIntent().getStringExtra("DEVICE_ID");
         Device device = Device.getDeviceById(device_id);
         assert device != null;
-        attributes = device.getStoredAttributes();
+        attributes = device.getStoredAttributes().stream().map(Utils::formatString).collect(Collectors.toList());
 
         calendar = Calendar.getInstance();
         sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault(Locale.Category.FORMAT));
@@ -143,8 +148,7 @@ public class ChartActivity extends AppCompatActivity {
         });
 
         btn_show_chart.setOnClickListener(view -> new Thread(()->{
-            Log.d(GlobalVars.LOG_TAG, "initEvent: " + selectedAttribute + " " + interval + " " + timestampMillis + " " + (timestampMillis - dis));
-            APIManager.getDatapoint(device_id, selectedAttribute, interval, timestampMillis - dis, timestampMillis);
+            dataPoints = APIManager.getDatapoint(device_id, selectedAttribute, interval, timestampMillis - dis, timestampMillis);
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -199,25 +203,47 @@ public class ChartActivity extends AppCompatActivity {
     // date format: dd/MM/yyyy HH:mm to timestamp (millis): 1625097600000
     public static long dateToMillisTimestamp(String dateString) {
         LocalDateTime localDateTime = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        ZoneOffset zoneOffset = ZoneOffset.UTC;
-        Date date = Date.from(localDateTime.atZone(zoneOffset).toInstant());
-
-        Log.d(GlobalVars.LOG_TAG, "dateTime: " + dateString);
-        Log.d(GlobalVars.LOG_TAG, "TimestampMillis: " + date.getTime());
+        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         return date.getTime();
     }
 
-    private void showChart() {
-        List<Entry> lineValues = new ArrayList<>();
+    private String xValueConvert(long x, String type) {
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(x), ZoneId.systemDefault());
 
-        for (DataPoint data : DataPoint.getDataPointList()) {
-            if(data.x != null && data.y != null){
-                lineValues.add(new Entry(data.x,data.y));
+        switch (type) {
+            case "MINUTE":
+                return dateTime.getHour() + ":" + (dateTime.getMinute() < 10 ? "0" + dateTime.getMinute() : dateTime.getMinute());
+            case "HOUR":
+                return String.valueOf(dateTime.getHour());
+            case "DAY":
+                return String.valueOf(dateTime.getDayOfMonth());
+            case "MONTH":
+                return String.valueOf(dateTime.getMonthValue());
+        }
+
+        return "";
+    }
+
+    private void showChart() {
+        if (lineChart.getVisibility() == View.VISIBLE) lineChart.setVisibility(View.GONE);
+
+        float maxYValue = 0f;
+
+        List<Entry> lineValues = new ArrayList<>();
+        List<String> xAxisValues = new ArrayList<>();
+
+        for (JsonElement dataPoint : dataPoints) {
+            JsonObject data = dataPoint.getAsJsonObject();
+            if (data.get("y") != null) {
+                float y = data.get("y").getAsFloat();
+                lineValues.add(new Entry(lineValues.size(), y));
+                if (y > maxYValue) maxYValue = y;
+                xAxisValues.add(xValueConvert(data.get("x").getAsLong(), interval));
             }
         }
 
-        LineDataSet linedataset = new LineDataSet(lineValues, selectedAttribute);
+        LineDataSet linedataset = new LineDataSet(lineValues, Utils.formatString(selectedAttribute));
         linedataset.setDrawValues(false);
         linedataset.setLineWidth(3f);
         linedataset.setDrawFilled(true);
@@ -229,18 +255,23 @@ public class ChartActivity extends AppCompatActivity {
         linedataset.setFillColor(getApplicationContext().getColor(R.color.lightBlue_20));
 
         LineData data = new LineData(linedataset);
-        lineChart.zoom(0, 0, 0, 0);
         lineChart.setData(data);
         lineChart.setNoDataText("NO DATA");
         lineChart.getDescription().setText(interval);
-        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        lineChart.getXAxis().setGranularity(1f);
         lineChart.getAxisRight().setEnabled(false);
-        lineChart.getAxisLeft().setGranularity(1f);
         lineChart.getAxisLeft().setAxisMinimum(0f);
+        lineChart.getAxisLeft().setAxisMaximum(maxYValue + 5f);
+        lineChart.getAxisLeft().setGranularity(maxYValue / 10f);
+        lineChart.getAxisLeft().setLabelCount(10, true);
+
+        lineChart.getXAxis().setGranularity(1f);
+        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        lineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisValues));
+
+        lineChart.zoom(0, 0, 0, 0);
         lineChart.setDoubleTapToZoomEnabled(false);
         lineChart.animateXY(800, 1000);
-        lineChart.setVisibility(View.VISIBLE);
         lineChart.invalidate();
+        lineChart.setVisibility(View.VISIBLE);
     }
 }
