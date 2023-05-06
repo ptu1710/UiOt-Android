@@ -22,12 +22,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Model.Attribute;
-import com.ixxc.uiot.Model.CreateAssetReq;
+import com.ixxc.uiot.Model.CreateDeviceReq;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -213,8 +214,8 @@ public class AddDeviceActivity extends AppCompatActivity {
             }
 
             new Thread(() -> {
-                CreateAssetReq req = new CreateAssetReq();
-                req.setName(ti_name.getText().toString());
+                CreateDeviceReq req = new CreateDeviceReq();
+                req.setName(Objects.requireNonNull(ti_name.getText()).toString());
                 req.setType(act_device.getText().toString());
                 req.setParentId(parentId);
                 req.setAttributes(attributes);

@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ixxc.uiot.Interface.UsersListener;
+import com.ixxc.uiot.Interface.RecyclerViewItemListener;
 import com.ixxc.uiot.R;
 
 import java.util.List;
@@ -21,9 +21,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     public int checkedPos = -1;
 
-    private final UsersListener usersListener;
+    private final RecyclerViewItemListener usersListener;
 
-    public UserAdapter(List<String> users, UsersListener usersListener, Context context) {
+    public UserAdapter(List<String> users, RecyclerViewItemListener usersListener, Context context) {
         this.cxt = context;
         this.mInflater = LayoutInflater.from(context);
         this.userList = users;
@@ -43,7 +43,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         if (checkedPos == -1) {
             holder.tv_user.setBackgroundColor(cxt.getColor(R.color.white));
         } else {
-            if (checkedPos == holder.getAdapterPosition()) {
+            if (checkedPos == holder.getAbsoluteAdapterPosition()) {
                 holder.tv_user.setBackgroundColor(cxt.getColor(R.color.bg2));
             } else {
                 holder.tv_user.setBackgroundColor(cxt.getColor(R.color.white));
@@ -73,25 +73,21 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 notifyItemChanged(checkedPos);
                 checkedPos = -1;
 
-                usersListener.onItemClicked(view, getAdapterPosition());
+                usersListener.onItemClicked(view, getAbsoluteAdapterPosition());
             });
 
             tv_user.setOnLongClickListener(view -> {
-                usersListener.onItemLongClicked(view, getAdapterPosition());
+                usersListener.onItemLongClicked(view, getAbsoluteAdapterPosition());
 
                 view.setBackgroundColor(cxt.getColor(R.color.bg2));
 
-                if (checkedPos != getAdapterPosition()) {
+                if (checkedPos != getAbsoluteAdapterPosition()) {
                     notifyItemChanged(checkedPos);
-                    checkedPos = getAdapterPosition();
+                    checkedPos = getAbsoluteAdapterPosition();
                 }
 
                 return true;
             });
         }
-    }
-
-    String getItem(int id) {
-        return userList.get(id);
     }
 }

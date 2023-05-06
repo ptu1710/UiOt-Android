@@ -144,7 +144,7 @@ public class MapsFragment extends Fragment {
             for (Device device : Device.getDevicesList()) {
                 if (device.getPoint() == null) continue;
 
-                Bitmap bitmap = device.getIconPinBitmap(parentActivity, device.type);
+                Bitmap bitmap = device.getIconPinBitmap(parentActivity);
 
                 JsonObject o = new JsonObject();
                 o.addProperty("id", device.id);
@@ -182,8 +182,8 @@ public class MapsFragment extends Fragment {
         if (!isHidden()) onHiddenChanged(false);
     }
 
-    private void setBottomSheet(@NonNull String assetId) {
-        Device device = Device.getDeviceById(assetId);
+    private void setBottomSheet(@NonNull String deviceId) {
+        Device device = Device.getDeviceById(deviceId);
 
         if (device != null) {
             Dialog dialog = new Dialog(parentActivity);
@@ -203,7 +203,7 @@ public class MapsFragment extends Fragment {
             iv_go.setOnClickListener(view -> {
                 // TODO: Change start activity animation
                 Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
-                intent.putExtra("DEVICE_ID", assetId);
+                intent.putExtra("DEVICE_ID", deviceId);
                 parentActivity.startActivity(intent);
                 dialog.dismiss();
             });
@@ -211,13 +211,13 @@ public class MapsFragment extends Fragment {
             btn_chart.setOnClickListener(view -> {
                 // TODO: Change start activity animation
                 Intent intent = new Intent(parentActivity, ChartActivity.class);
-                intent.putExtra("DEVICE_ID", assetId);
+                intent.putExtra("DEVICE_ID", deviceId);
                 startActivity(intent);
                 dialog.dismiss();
             });
 
             tvAssetName.setText(device.name);
-            ivIcon.setImageResource(device.getIconRes(device.type));
+            ivIcon.setImageResource(device.getIconRes());
 
             rv_attributes.setHasFixedSize(true);
             rv_attributes.setLayoutManager(layoutManager);
@@ -235,7 +235,7 @@ public class MapsFragment extends Fragment {
             dialog.show();
         }
 
-        lastSelectedId = assetId;
+        lastSelectedId = deviceId;
     }
 
     @Override

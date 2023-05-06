@@ -2,8 +2,8 @@ package com.ixxc.uiot.Model;
 
 import com.google.gson.JsonObject;
 
-public class CreateAssetReq {
-    String name, type, realm, parentId = "";
+public class CreateDeviceReq {
+    String name, type, realm, parentId;
     JsonObject attributes;
 
     public void setName(String name) {
@@ -26,7 +26,7 @@ public class CreateAssetReq {
         this.attributes = attributes;
     }
 
-    public CreateAssetReq() {
+    public CreateDeviceReq() {
         this.name = "";
         this.type = "";
         this.realm = "master";

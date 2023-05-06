@@ -6,7 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.Interface.APIInterface;
-import com.ixxc.uiot.Model.CreateAssetRes;
+import com.ixxc.uiot.Model.CreateDeviceRes;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
@@ -15,6 +15,7 @@ import com.ixxc.uiot.Model.Model;
 import com.ixxc.uiot.Model.Realm;
 import com.ixxc.uiot.Model.RegisterDevice;
 import com.ixxc.uiot.Model.Role;
+import com.ixxc.uiot.Model.Rule;
 import com.ixxc.uiot.Model.Token;
 import com.ixxc.uiot.Model.User;
 
@@ -129,16 +130,17 @@ public class APIManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return device;
     }
 
     public static void createDevice(JsonObject reqBody) {
-        Call<CreateAssetRes> call = userAI.createDevice(reqBody);
+        Call<CreateDeviceRes> call = userAI.createDevice(reqBody);
 
         try {
-            Response<CreateAssetRes> response = call.execute();
+            Response<CreateDeviceRes> response = call.execute();
             if (response.isSuccessful()) {
-                CreateAssetRes res = response.body();
+                CreateDeviceRes res = response.body();
                 assert res != null;
                 Log.d("API LOG", res.name);
             }
@@ -460,5 +462,31 @@ public class APIManager {
         } catch (IOException e) { e.printStackTrace(); }
 
         return null;
+    }
+
+    public static int createRule(JsonObject body){
+        Call<Integer> call = userAI.createRule(body);
+
+        try {
+            Response<Integer> response = call.execute();
+            if (response.isSuccessful() && response.body() != null) {
+                return response.body();
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return -1;
+    }
+
+    public static List<Rule> queryRules() {
+        Call<List<Rule>> call = userAI.queryRules();
+        try {
+            Response<List<Rule>> response = call.execute();
+            if (response.isSuccessful() && response.code() == 200) {
+                return response.body();
+            }
+
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return new ArrayList<>();
     }
 }

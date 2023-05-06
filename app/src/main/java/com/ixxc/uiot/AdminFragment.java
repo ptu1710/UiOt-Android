@@ -60,7 +60,7 @@ public class AdminFragment extends Fragment {
         tv_username.setText(me.getDisplayName());
 
         List<String> items = new ArrayList<>();
-        items.add("Account");
+        items.add("Rules");
         if (me.canWriteAdmin()) {
             items.add("Users");
             items.add("Realm");
@@ -72,7 +72,8 @@ public class AdminFragment extends Fragment {
         adapter.setClickListener((view1, position) -> {
             switch (position) {
                 case 0:
-                    Toast.makeText(ctx, "Feature under development!", Toast.LENGTH_SHORT).show();
+                    // start rules activity
+                    ctx.startActivity(new Intent(ctx, RulesActivity.class));
                     break;
                 case 1:
                     if (me.canWriteAdmin()) {

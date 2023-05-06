@@ -37,6 +37,12 @@ public class Device {
     @SerializedName("path")
     public ArrayList<String> path;
 
+    public Device() { }
+
+    public Device(String type) {
+        this.type = type;
+    }
+
     public static boolean devicesLoaded = false;
 
     private static final List<Device> deviceList = new ArrayList<>();
@@ -134,9 +140,9 @@ public class Device {
     }
 
     // Get icon resource id
-    public int getIconRes(String deviceType) {
+    public int getIconRes() {
 
-        switch (deviceType) {
+        switch (type) {
             case "GroupAsset":
                 return R.drawable.ic_folder;
             case "PeopleCounterAsset":
@@ -199,9 +205,9 @@ public class Device {
     }
 
     //Get color of icon
-    public int getColorId(Context ctx, String deviceType){
+    public int getColorId(Context ctx){
 
-        switch (deviceType) {
+        switch (type) {
             case "GroupAsset":
                 return ResourcesCompat.getColor(ctx.getResources(), R.color.Group_Asset, null);
             case "PeopleCounterAsset":
@@ -264,27 +270,27 @@ public class Device {
     }
 
     // Get icon drawable
-    public Drawable getIconDrawable(Context context, String deviceType) {
-        int resId = getIconRes(deviceType);
+    public Drawable getIconDrawable(Context context) {
+        int resId = getIconRes();
         Drawable icon = ResourcesCompat.getDrawable(context.getResources(), resId, null);
         assert icon != null;
-        icon.setTint(getColorId(context, deviceType));
+        icon.setTint(getColorId(context));
 
         return icon;
     }
 
     // Get icon bitmap (show on Maps)
-    public Bitmap getIconPinBitmap(Context context, String type) {
+    public Bitmap getIconPinBitmap(Context context) {
 
         // Get icon drawable from resId
-        Drawable drawable = getIconDrawable(context, type);
+        Drawable drawable = getIconDrawable(context);
         assert drawable != null;
-        drawable.setTint(getColorId(context, ""));
+        drawable.setTint(getColorId(context));
 
         // Get pin drawable
         Drawable pin_drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_pin_green, null);
         assert pin_drawable != null;
-        pin_drawable.setTint(getColorId(context, type));
+        pin_drawable.setTint(getColorId(context));
 
         // Draw icon into pin
         Bitmap pin = Bitmap.createBitmap(pin_drawable.getIntrinsicWidth(), pin_drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);

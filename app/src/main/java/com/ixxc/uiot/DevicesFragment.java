@@ -31,7 +31,7 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
-import com.ixxc.uiot.Adapter.DevicesAdapter;
+import com.ixxc.uiot.Adapter.DevicesTreeViewAdapter;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.User;
 
@@ -48,7 +48,7 @@ public class DevicesFragment extends Fragment {
     TextView tv_sort, tv_type;
     List<Device> devicesList;
     ActivityResultLauncher<Intent> mLauncher;
-    DevicesAdapter devicesAdapter;
+    DevicesTreeViewAdapter devicesAdapter;
     User me;
     public String selected_device_id = "";
 
@@ -242,14 +242,14 @@ public class DevicesFragment extends Fragment {
 
         devicesList = Device.getDevicesList();
 
-        TreeViewHolderFactory factory = (v, layout) -> new DevicesAdapter.MyViewHolder(v, parentActivity);
-        devicesAdapter = new DevicesAdapter(factory, devicesList);
+        TreeViewHolderFactory factory = (v, layout) -> new DevicesTreeViewAdapter.MyViewHolder(v, parentActivity);
+        devicesAdapter = new DevicesTreeViewAdapter(factory, devicesList);
 
         devicesAdapter.setTreeNodeClickListener((treeNode, view) -> {
             if (treeNode.getChildren().size() == 0) {
                 view.findViewById(R.id.iv_go).performClick();
             } else if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
-                DevicesAdapter.selectedPosition = devicesAdapter.getTreeNodes().indexOf(treeNode);
+                DevicesTreeViewAdapter.selectedPosition = devicesAdapter.getTreeNodes().indexOf(treeNode);
             }
         });
 

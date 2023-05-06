@@ -2,7 +2,7 @@ package com.ixxc.uiot.Interface;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.ixxc.uiot.Model.CreateAssetRes;
+import com.ixxc.uiot.Model.CreateDeviceRes;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
@@ -11,6 +11,7 @@ import com.ixxc.uiot.Model.Model;
 import com.ixxc.uiot.Model.Realm;
 import com.ixxc.uiot.Model.RegisterDevice;
 import com.ixxc.uiot.Model.Role;
+import com.ixxc.uiot.Model.Rule;
 import com.ixxc.uiot.Model.Token;
 import com.ixxc.uiot.Model.User;
 
@@ -54,7 +55,7 @@ public interface APIInterface {
 
     // Create device
     @POST("api/master/asset")
-    Call<CreateAssetRes> createDevice(@Body JsonObject body);
+    Call<CreateDeviceRes> createDevice(@Body JsonObject body);
 
     // Delete device
     @DELETE("api/master/asset")
@@ -163,4 +164,13 @@ public interface APIInterface {
     @GET("api/master/asset/datapoint/{assetId}/attribute/{attributeName}")
     Call<JsonArray> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName,
                                  @Query("interval") String interval, @Query("fromTimestamp") Long from, @Query("toTimestamp") Long to);
+
+    // Create a new rule
+    @POST("api/master/rules/realm")
+    Call<Integer> createRule(@Body JsonObject body);
+
+    // Get all rules
+    @Headers("Content-Type: application/json")
+    @GET("api/master/rules/realm/for/master?fullyPopulate=true&language=JSON")
+    Call<List<Rule>> queryRules();
 }

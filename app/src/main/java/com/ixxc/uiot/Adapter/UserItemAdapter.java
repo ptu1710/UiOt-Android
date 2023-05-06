@@ -6,16 +6,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ixxc.uiot.R;
 
 import java.util.List;
 
+// TODO: Change ClickListener to a more generic one
 public class UserItemAdapter extends RecyclerView.Adapter<UserItemAdapter.ViewHolder> {
 
-    private List<String> itemList;
-    private LayoutInflater mInflater;
+    private final List<String> itemList;
+    private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     public UserItemAdapter(Context context, List<String> data) {
@@ -24,9 +26,10 @@ public class UserItemAdapter extends RecyclerView.Adapter<UserItemAdapter.ViewHo
     }
 
     // inflates the row layout from xml when needed
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.admin_item, parent, false);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = mInflater.inflate(R.layout.recycler_cardview_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -34,7 +37,7 @@ public class UserItemAdapter extends RecyclerView.Adapter<UserItemAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String animal = itemList.get(position);
-        holder.tv_item.setText(animal);
+        holder.tv_name.setText(animal);
     }
 
     // total number of rows
@@ -43,25 +46,19 @@ public class UserItemAdapter extends RecyclerView.Adapter<UserItemAdapter.ViewHo
         return itemList.size();
     }
 
-
-    // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tv_item;
+        TextView tv_name;
 
         ViewHolder(View itemView) {
             super(itemView);
-            tv_item = itemView.findViewById(R.id.tv_item);
+            tv_name = itemView.findViewById(R.id.tv_name);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener != null) mClickListener.onItemClick(view, getAbsoluteAdapterPosition());
         }
-    }
-
-    String getItem(int id) {
-        return itemList.get(id);
     }
 
     public void setClickListener(ItemClickListener itemClickListener) {

@@ -34,6 +34,8 @@ public class Attribute {
     public long timestamp;
 
     public String getMetaValue(String name) {
+        if (meta == null) return "";
+
         JsonElement element = this.meta.get(name);
 
         if (element == null || element.isJsonNull()) return "";

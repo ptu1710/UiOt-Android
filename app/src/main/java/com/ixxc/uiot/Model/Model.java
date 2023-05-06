@@ -2,7 +2,6 @@ package com.ixxc.uiot.Model;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import com.ixxc.uiot.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ public class Model {
     @SerializedName("valueDescriptors")
     public ArrayList<String> valueDescriptors;
 
-    private static List<Model> modelList;
+    private static List<Model> modelList = new ArrayList<>();
 
     public static List<Model> getModelList() {
         return modelList;

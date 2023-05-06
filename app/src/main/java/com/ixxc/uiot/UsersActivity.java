@@ -22,7 +22,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.UserAdapter;
-import com.ixxc.uiot.Interface.UsersListener;
+import com.ixxc.uiot.Interface.RecyclerViewItemListener;
 import com.ixxc.uiot.Model.User;
 
 import java.util.ArrayList;
@@ -70,13 +70,13 @@ public class UsersActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Users");
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         new Thread(() -> {
             String queryString = "{\"realmPredicate\": {\"name\": \"master\"}}";
-            JsonParser jsonParser = new JsonParser();
-            JsonObject query = (JsonObject)jsonParser.parse(queryString);
+            JsonObject query = (JsonObject) JsonParser.parseString(queryString);
 
             int code = APIManager.queryUsers(query);
 
@@ -102,7 +102,7 @@ public class UsersActivity extends AppCompatActivity {
         userList = User.getUsersList();
         for (User user : userList) userNameList.add(user.getDisplayName());
 
-        userAdapter = new UserAdapter(userNameList, new UsersListener() {
+        userAdapter = new UserAdapter(userNameList, new RecyclerViewItemListener() {
             final MenuItem item = actionbarMenu.findItem(R.id.delete);
             final MenuItem item1 = actionbarMenu.findItem(R.id.cancel);
             @Override

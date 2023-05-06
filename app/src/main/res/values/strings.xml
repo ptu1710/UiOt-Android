@@ -65,6 +65,30 @@
     <string name="ending">Ending</string>
     <string name="dd_mm_yyyy_hh_mm">dd/mm/yyyy hh:mm</string>
     <string name="show">Show</string>
+    <string name="rule_name">Rule name</string>
+    <string name="repetition_ends">Repetition ends</string>
+    <string name="su">SU</string>
+    <string name="sa">SA</string>
+    <string name="fr">FR</string>
+    <string name="th">TH</string>
+    <string name="we">WE</string>
+    <string name="tu">TU</string>
+    <string name="mo">MO</string>
+    <string name="when_then_rules">When - then rules</string>
+    <string name="next">Next</string>
+    <string name="enabled">Enabled</string>
+    <string name="attribute">Attribute</string>
+    <string name="any_of_this_type">Any of this type</string>
+    <string name="select">Select</string>
+    <string name="operator">Operator</string>
+    <string name="choose_device">Choose a device</string>
+    <string name="choose_action">Choose an action</string>
+    <string name="when">When…</string>
+    <string name="then">Then…</string>
+    <string name="always_active">Always active</string>
+    <string name="plan_an_occurrence">Plan an occurrence</string>
+    <string name="plan_a_repeating_occurrence">Plan a repeating occurrence</string>
+    <string name="all_day">All day</string>
 
     <string-array name="timeframe">
         <item>Hour</item>
@@ -72,5 +96,56 @@
         <item>Week</item>
         <item>Month</item>
         <item>Year</item>
+    </string-array>
+
+    <string-array name="number">
+        <item>Equals</item>
+        <item>Not equals</item>
+        <item>Greater than</item>
+        <item>Greater than or equal to</item>
+        <item>Less than</item>
+        <item>Less than or equal to</item>
+        <item>Between</item>
+        <item>Is not between</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
+    </string-array>
+
+    <string-array name="text">
+        <item>Equals</item>
+        <item>Not equals</item>
+        <item>Contains</item>
+        <item>Does not contain</item>
+        <item>Starts with</item>
+        <item>Does not start with</item>
+        <item>Ends with</item>
+        <item>Does not end with</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
+    </string-array>
+
+    <string-array name="geo_point">
+        <item>Equals</item>
+        <item>Not equals</item>
+        <item>Inside circle</item>
+        <item>Outside circle</item>
+        <item>Inside rectangle</item>
+        <item>Outside rectangle</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
+    </string-array>
+
+    <string-array name="Boolean">
+        <item>Is true</item>
+        <item>Is false</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
+    </string-array>
+
+    <string-array name="others">
+        <item>Contains key</item>
+        <item>Does not contain key</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
     </string-array>
 </resources>

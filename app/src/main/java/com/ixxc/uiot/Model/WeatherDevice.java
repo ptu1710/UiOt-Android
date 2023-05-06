@@ -14,6 +14,8 @@ public class WeatherDevice extends Device {
     public Attribute uVIndex;
 
     public WeatherDevice() {
+        super();
+
         this.id = "";
         this.name = "";
 
@@ -26,6 +28,8 @@ public class WeatherDevice extends Device {
     }
 
     public WeatherDevice(Device device) {
+        super(device.type);
+
         if (!device.type.equals("WeatherAsset")) {
             throw new IllegalArgumentException("Device type is not WeatherAsset");
         }

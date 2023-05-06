@@ -226,7 +226,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 PointAnnotationManager pointAnnoManager = (PointAnnotationManager) annoPlugin.createAnnotationManager(AnnotationType.PointAnnotation, annoConfig);
 
                 // Add device marker to the map
-                Bitmap bitmap = device.getIconPinBitmap(ctx, device.type);
+                Bitmap bitmap = device.getIconPinBitmap(ctx);
 
                 PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
                         .withPoint(device.getPoint())

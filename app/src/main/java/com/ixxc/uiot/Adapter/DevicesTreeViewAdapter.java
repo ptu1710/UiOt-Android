@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class DevicesAdapter extends TreeViewAdapter {
+public class DevicesTreeViewAdapter extends TreeViewAdapter {
     List<TreeNode> treeNodes = new ArrayList<>();
     public static int selectedPosition = -1;
 
-    public DevicesAdapter(TreeViewHolderFactory factory, List<Device> devices) {
+    public DevicesTreeViewAdapter(TreeViewHolderFactory factory, List<Device> devices) {
         super(factory);
 
         InitNodes(devices);
@@ -135,7 +135,7 @@ public class DevicesAdapter extends TreeViewAdapter {
             }
 
             tv_name.setText(device.name);
-            iv_icon.setImageResource(device.getIconRes(device.type));
+            iv_icon.setImageResource(device.getIconRes());
 
             iv_go.setOnClickListener(view -> {
                 Intent toDetails = new Intent(ctx, DeviceInfoActivity.class);

@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         ft.commit();
     }
 
+    // TODO: Change this to new Overrides
     @Override
     public void onBackPressed() {
         if (isDefaultPage) {

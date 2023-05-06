@@ -2,7 +2,7 @@ package com.ixxc.uiot.Model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class CreateAssetRes {
+public class CreateDeviceRes {
     @SerializedName("id")
     public String id;
 
