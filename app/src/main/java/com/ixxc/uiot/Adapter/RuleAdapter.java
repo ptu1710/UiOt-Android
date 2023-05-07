@@ -1,10 +1,12 @@
 package com.ixxc.uiot.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +21,6 @@ import java.util.List;
 public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.ViewHolder> {
     private final List<Rule> ruleList;
     private final Context cxt;
-    public int checkedPos = -1;
     private final RecyclerViewItemListener ruleListener;
 
     public RuleAdapter(Context context, List<Rule> rules, RecyclerViewItemListener ruleListener) {
@@ -36,17 +37,6 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        if (checkedPos == -1) {
-            holder.tv_name.setBackgroundColor(cxt.getColor(R.color.white));
-        } else {
-            if (checkedPos == holder.getAbsoluteAdapterPosition()) {
-                holder.tv_name.setBackgroundColor(cxt.getColor(R.color.bg2));
-            } else {
-                holder.tv_name.setBackgroundColor(cxt.getColor(R.color.white));
-            }
-        }
-
         holder.tv_name.setText(ruleList.get(position).getName());
     }
 
@@ -55,7 +45,15 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.ViewHolder> {
         return ruleList.size();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    public void setRuleList(List<Rule> rules) {
+        ruleList.clear();
+        ruleList.addAll(rules);
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout layout;
         ImageView iv_icon;
         TextView tv_name;
 
@@ -64,15 +62,9 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.ViewHolder> {
 
             iv_icon = itemView.findViewById(R.id.iv_icon);
             tv_name = itemView.findViewById(R.id.tv_name);
+            layout = itemView.findViewById(R.id.layout);
 
-            tv_name.setOnClickListener(view -> {
-                view.setBackgroundColor(cxt.getColor(R.color.white));
-
-                notifyItemChanged(checkedPos);
-                checkedPos = -1;
-
-                ruleListener.onItemClicked(view, getAbsoluteAdapterPosition());
-            });
+            layout.setOnClickListener(view -> ruleListener.onItemClicked(view, getAbsoluteAdapterPosition()));
         }
     }
 }

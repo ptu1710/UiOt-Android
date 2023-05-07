@@ -13,12 +13,14 @@
     app:cardCornerRadius="6dp">
 
     <LinearLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
         android:layout_gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:gravity="center_vertical"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView

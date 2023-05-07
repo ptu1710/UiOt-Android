@@ -285,7 +285,7 @@ public class Device {
         // Get icon drawable from resId
         Drawable drawable = getIconDrawable(context);
         assert drawable != null;
-        drawable.setTint(getColorId(context));
+        drawable.setTint(ResourcesCompat.getColor(context.getResources(), R.color.white, null));
 
         // Get pin drawable
         Drawable pin_drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_pin_green, null);

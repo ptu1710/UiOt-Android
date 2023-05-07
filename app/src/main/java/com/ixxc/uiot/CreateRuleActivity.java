@@ -32,6 +32,7 @@ public class CreateRuleActivity extends AppCompatActivity {
     Handler handler = new Handler(msg -> {
         if (msg.getData().getInt("CREATED") > -1) {
             Toast.makeText(this, "Rule created successfully", Toast.LENGTH_LONG).show();
+            setResult(RESULT_OK);
             finish();
         }
 
@@ -59,7 +60,7 @@ public class CreateRuleActivity extends AppCompatActivity {
 
                 if (currentTabIndex >= 2) btn_next.setText(R.string.save);
             } else {
-                createRule(rule);
+                createRule();
             }
         });
 
@@ -88,14 +89,14 @@ public class CreateRuleActivity extends AppCompatActivity {
         }
     }
 
-    private void createRule(CreateRuleReq rule) {
+    private void createRule() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", 0);
         jsonObject.addProperty("type", "realm");
         jsonObject.addProperty("name", rule.getRuleName());
         jsonObject.addProperty("lang", "JSON");
         jsonObject.addProperty("realm", "master");
-        jsonObject.addProperty("rules", new Gson().toJson(rule));
+        jsonObject.addProperty("rules", new Gson().toJson(rule.toJson()));
 
         new Thread(() -> {
             int ruleId = APIManager.createRule(jsonObject);
