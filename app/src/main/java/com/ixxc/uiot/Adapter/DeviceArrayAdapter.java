@@ -14,15 +14,16 @@ import androidx.annotation.NonNull;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.Model;
 import com.ixxc.uiot.R;
+import com.ixxc.uiot.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceArrayAdapter extends ArrayAdapter<Model> {
-    private final List<Model> itemsAll;
-    private final List<Model> suggestions;
+public class DeviceArrayAdapter extends ArrayAdapter<String> {
+    private final List<String> itemsAll;
+    private final List<String> suggestions;
 
-    public DeviceArrayAdapter(@NonNull Context context, int resource, @NonNull List<Model> list) {
+    public DeviceArrayAdapter(@NonNull Context context, int resource, @NonNull List<String> list) {
         super(context, resource, list);
 
         this.itemsAll = new ArrayList<>(list);
@@ -33,13 +34,12 @@ public class DeviceArrayAdapter extends ArrayAdapter<Model> {
     public View getView(int position, View view, ViewGroup parent) {
         if (view == null) view = LayoutInflater.from(getContext()).inflate(R.layout.dropdown_item_1, parent, false);
 
-        Model model = getItem(position);
-        String type = model.assetDescriptor.get("name").getAsString();
+        String name = itemsAll.get(position);
 
         TextView tv_name = view.findViewById(R.id.tv_name);
         ImageView iv_icon = view.findViewById(R.id.iv_icon);
-        tv_name.setText(type);
-        Device device = new Device(type);
+        tv_name.setText(Utils.formatString(name));
+        Device device = new Device(name);
         iv_icon.setImageResource(device.getIconRes());
 
         return view;
@@ -53,7 +53,8 @@ public class DeviceArrayAdapter extends ArrayAdapter<Model> {
 
     Filter nameFilter = new Filter() {
         public String convertResultToString(Object resultValue) {
-            return ((Model) (resultValue)).assetDescriptor.get("name").getAsString();
+            //return ((Model) (resultValue)).assetDescriptor.get("name").getAsString();
+            return resultValue.toString();
         }
 
         @Override
@@ -72,10 +73,10 @@ public class DeviceArrayAdapter extends ArrayAdapter<Model> {
         @Override
         @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            List<Model> filteredList = (List<Model>) results.values;
+            List<String> filteredList = (List<String>) results.values;
             if (results.count > 0) {
                 clear();
-                for (Model c : filteredList) { add(c); }
+                for (String c : filteredList) { add(c); }
                 notifyDataSetChanged();
             }
         }

@@ -163,7 +163,7 @@ public class Device {
                 return R.drawable.ic_fan;
             case "ShipAsset":
                 return R.drawable.ic_ferry;
-            case "Electricity Producer Asset":
+            case "ElectricityProducerAsset":
                 return R.drawable.ic_flash;
             case "MicrophoneAsset":
                 return R.drawable.ic_microphone;
