@@ -23,23 +23,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_add"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginTop="28dp"
-            android:importantForAccessibility="no"
-            android:src="@drawable/ic_add"
-            app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
-            app:layout_constraintHorizontal_bias="0.8"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView14" />
+
 
         <LinearLayout
             android:id="@+id/linearLayout2"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:gravity="center_vertical"
@@ -47,6 +37,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView14">
+
+            <ImageView
+                android:id="@+id/iv_add"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="15dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_add" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -59,7 +57,58 @@
                     android:layout_height="match_parent"
                     android:inputType="none"
                     tools:ignore="LabelFor"
-                    android:hint="@string/choose_action"/>
+                    android:hint="@string/choose_device"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_4_1"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1">
+
+                <AutoCompleteTextView
+                    android:id="@+id/act_revcipients"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    tools:ignore="LabelFor" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1">
+
+                <AutoCompleteTextView
+                    android:id="@+id/act_assets"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    tools:ignore="LabelFor" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -124,6 +173,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
+
+
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="180dp"
@@ -132,7 +183,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tie_value"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Value"
@@ -140,7 +191,31 @@
                     android:textStyle="bold"/>
             </com.google.android.material.textfield.TextInputLayout>
 
+            <CheckBox
+                android:id="@+id/cb_locked"
+                android:visibility="gone"
+                android:backgroundTint="@color/bg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"/>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_unlock"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="wrap_content"
+                android:visibility="gone"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true">
+
+                <AutoCompleteTextView
+                    android:id="@+id/act_unlock"
+                    android:layout_width="180dp"
+                    android:layout_height="match_parent"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    tools:ignore="LabelFor" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </RelativeLayout>
 

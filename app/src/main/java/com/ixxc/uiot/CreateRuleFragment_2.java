@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -14,12 +15,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.ixxc.uiot.Adapter.DeviceArrayAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.Model;
 import com.ixxc.uiot.Model.User;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +30,7 @@ import java.util.stream.Collectors;
 
 public class CreateRuleFragment_2 extends Fragment {
     CreateRuleActivity parentActivity;
-    AutoCompleteTextView act_actions, act_attribute, act_devices;
+    AutoCompleteTextView act_actions, act_attribute, act_devices, act_unlock;
     List<String> models;
     String selectedModel, selectedValueType;
     ImageView iv_add;
@@ -35,7 +38,20 @@ public class CreateRuleFragment_2 extends Fragment {
     List<Attribute> attributes;
     List<Device> devices;
 
+    List<String> list_unlock = Arrays.asList("REQUEST START","REQUEST REPEATING","REQUEST CANCEL","READY","COMPLETED","RUNNING","CANCELLED");
+    List<String> list_connector_type = Arrays.asList("YAZAKI","MENNEKES","LE GRAND","CHADEMO","COMBO","SCHUKO","ENERGYLOCK");
+    List<String> list_orientation = Arrays.asList("SOUTH","EAST WEST");
+    List<String> list_child_asset_type = Arrays.asList("Plug asset","Tradfri light asset","People counter asset","Bluetooth mesh agent","Velbus serial agent"
+            ,"Electric vehicle fleet group asset","Velbus TCP agent","Gateway asset","Group asset", "Microphone asset","Presence sensor asset","Serial agent"
+            ,"Electricity producer wind asset","Tradfri plug asset","Electricity producer asset","UDP agent","Electricity battery asset","Websocket agent"
+            ,"Electric","vehicle asset","Electricity charger asset","Room asset","Storage simulator agent","Simulator agent","Console asset"
+            ,"Thermostat asset","Light asset","HTTP agent","TCP agent","Parking asset","Artnet light asset","Ventilation asset","Weather asset","Building asset"
+            ,"Z wave agent","Energy optimisation asset","SNMP agent","Door asset","Ship asset","MQTT agent","Environment sensor asset","KNX agent"
+            ,"Electricity consumer asset","Electricity supplier asset","Groundwater sensor asset","City asset","Electricity producer solar asset","Thing asset" );
+
+    TextInputLayout til_unlock;
     TextInputEditText tie_value;
+    CheckBox cb;
 
     public CreateRuleFragment_2() { }
 
@@ -68,6 +84,9 @@ public class CreateRuleFragment_2 extends Fragment {
         act_attribute = view.findViewById(R.id.act_attribute);
         act_devices = view.findViewById(R.id.act_devices);
         tie_value = view.findViewById(R.id.tie_value);
+        til_unlock = view.findViewById(R.id.til_unlock);
+        act_unlock = view.findViewById(R.id.act_unlock);
+        cb = view.findViewById(R.id.cb_locked);
     }
 
     private void InitVars() {
@@ -78,6 +97,7 @@ public class CreateRuleFragment_2 extends Fragment {
         models = Model.getModelList().stream().filter(model -> !model.assetDescriptor.get("name").getAsString().contains("Agent"))
                 .map(model -> (model.assetDescriptor.get("name").getAsString()))
                 .collect(Collectors.toList());
+        //models.add("PVSolarAsset");
         models.add("Email");
         models.add("Push Notification");
         models.add("Wait");
@@ -88,7 +108,7 @@ public class CreateRuleFragment_2 extends Fragment {
 
         act_actions.setOnItemClickListener((adapterView, view, i, l) -> {
             if (i == 0) {
-                Log.d("AAA", selectedModel);
+
                 attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
@@ -114,6 +134,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 ArrayAdapter<String> adapter2 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
                 act_attribute.setHint(R.string.attribute);
                 act_attribute.setAdapter(adapter2);
+                act_attribute.setAdapter(adapter2);
 
                 parentActivity.rule.setDeviceIds(Collections.singletonList(device.id));
                 Log.d(GlobalVars.LOG_TAG, "setDeviceIds: " + device.id);
@@ -134,6 +155,7 @@ public class CreateRuleFragment_2 extends Fragment {
             iv_add.setImageResource(device.getIconRes());
 
         });
+
         setDeviceAdapter(selectedModel);
         act_devices.setOnItemClickListener((adapterView, view, i, l) -> {
             if (i == 0) {
@@ -173,6 +195,8 @@ public class CreateRuleFragment_2 extends Fragment {
             act_attribute.setSelection(0);
 
             selectedValueType = attributes.get(i).type;
+            setValueLayout(act_attribute.getText().toString());
+
 
             List<String> operators = parentActivity.getRuleOperator(parentActivity, selectedValueType);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, operators);
@@ -182,13 +206,72 @@ public class CreateRuleFragment_2 extends Fragment {
         });
     }
 
+    private void setValueLayout(String s) {
+        switch (s){
+            case "Locked":
+            case "Position":
+            case "Supports Export":
+            case "Supports Import":
+            case "Vehicle Connected":
+            case "Include Forecast Solar Service":
+            case "Include Forecast Wind Service":
+            case "Set Actual Solar Value With Forecast":
+            case "Set Wind Actual Value With Forecast":
+            case "Optimisation Disabled":
+            case "Disabled":
+            case "On Off":
+            case "Presence":
+            case "Cooling":
+                cb.setVisibility(View.VISIBLE);
+                tie_value.setVisibility(View.GONE);
+                til_unlock.setVisibility(View.GONE);
+                break;
+            case "Unlock":
+            case "Force Charge":
+                til_unlock.setVisibility(View.VISIBLE);
+                ArrayAdapter<String> adapter2 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_unlock);
+                act_unlock.setAdapter(adapter2);
+                cb.setVisibility(View.GONE);
+                tie_value.setVisibility(View.GONE);
+                break;
+            case "Connector Type":
+                til_unlock.setVisibility(View.VISIBLE);
+                ArrayAdapter<String> adapter3 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_connector_type);
+                act_unlock.setAdapter(adapter3);
+                cb.setVisibility(View.GONE);
+                tie_value.setVisibility(View.GONE);
+                break;
+            case "Panel Orientation":
+                til_unlock.setVisibility(View.VISIBLE);
+                ArrayAdapter<String> adapter4 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_orientation);
+                act_unlock.setAdapter(adapter4);
+                cb.setVisibility(View.GONE);
+                tie_value.setVisibility(View.GONE);
+                break;
+            case "Child Asset Type":
+                til_unlock.setVisibility(View.VISIBLE);
+                ArrayAdapter<String> adapter5 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_child_asset_type);
+                act_unlock.setAdapter(adapter5);
+                cb.setVisibility(View.GONE);
+                tie_value.setVisibility(View.GONE);
+                break;
+            default:
+                tie_value.setVisibility(View.VISIBLE);
+                til_unlock.setVisibility(View.GONE);
+                cb.setVisibility(View.GONE);
+
+                break;
+
+        }
+    }
+
     private void setDeviceAdapter(String deviceType) {
         devices = Device.getDevicesList().stream()
                 .filter(device -> device.type.equals(deviceType)).collect(Collectors.toList());
 
         List<String> deviceNames = devices.stream().map(device -> device.name).collect(Collectors.toList());
 
-        deviceNames.add(0, getText(R.string.any_of_this_type).toString());
+        deviceNames.add(0,"Matched");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, deviceNames);
         act_devices.setHint(R.string.select);

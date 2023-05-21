@@ -71,6 +71,7 @@ public class CreateRuleFragment_1 extends Fragment {
 
     private void InitVars() {
         models = Model.getModelList().stream().map(model -> (model.assetDescriptor.get("name").getAsString())).collect(Collectors.toList());
+        //models.add("PVSolarAsset");
         models.add("Time");
         //models.sort(Comparator.comparing(o -> o.assetDescriptor.get("name").getAsString()));
 
@@ -140,8 +141,20 @@ public class CreateRuleFragment_1 extends Fragment {
         });
 
         act_operator.setOnItemClickListener((adapterView, view, i, l) -> {
-            tie_value.setVisibility(View.VISIBLE);
             parentActivity.rule.setAttributeValue(selectedValueType, act_operator.getText().toString());
+
+            switch (act_operator.getText().toString()){
+                case "Is true":
+                case "Is false":
+                case "Has no value":
+                case "Has a value":
+                    tie_value.setVisibility(View.GONE);
+                    break;
+                default:
+                    tie_value.setVisibility(View.VISIBLE);
+                    break;
+
+            }
             Log.d(GlobalVars.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
         });
 
