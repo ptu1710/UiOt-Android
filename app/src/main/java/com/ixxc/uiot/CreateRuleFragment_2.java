@@ -7,8 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,13 +33,18 @@ import java.util.stream.Collectors;
 
 public class CreateRuleFragment_2 extends Fragment {
     CreateRuleActivity parentActivity;
-    AutoCompleteTextView act_actions, act_attribute, act_devices, act_unlock;
+    AutoCompleteTextView act_actions, act_attribute, act_devices, act_unlock,act_recipients, act_assets;
     List<String> models;
     String selectedModel, selectedValueType;
     ImageView iv_add;
 
     List<Attribute> attributes;
     List<Device> devices;
+
+    LinearLayout layout_4,layout_4_1;
+    RelativeLayout layout_value;
+
+    Button btn_message;
 
     List<String> list_unlock = Arrays.asList("REQUEST START","REQUEST REPEATING","REQUEST CANCEL","READY","COMPLETED","RUNNING","CANCELLED");
     List<String> list_connector_type = Arrays.asList("YAZAKI","MENNEKES","LE GRAND","CHADEMO","COMBO","SCHUKO","ENERGYLOCK");
@@ -87,6 +95,14 @@ public class CreateRuleFragment_2 extends Fragment {
         til_unlock = view.findViewById(R.id.til_unlock);
         act_unlock = view.findViewById(R.id.act_unlock);
         cb = view.findViewById(R.id.cb_locked);
+
+        act_recipients = view.findViewById(R.id.act_recipients);
+        act_assets = view.findViewById(R.id.act_assets);
+        btn_message = view.findViewById(R.id.btn_message);
+
+        layout_4_1 = view.findViewById(R.id.layout_4_1);
+        layout_4 = view.findViewById(R.id.layout_4);
+        layout_value =view.findViewById(R.id.layout_value);
     }
 
     private void InitVars() {
@@ -154,7 +170,52 @@ public class CreateRuleFragment_2 extends Fragment {
             Device device = new Device(selectedModel.replaceAll(" ",""));
             iv_add.setImageResource(device.getIconRes());
 
+            switch (selectedModel){
+                case "Webhook":
+                    btn_message.setVisibility(View.VISIBLE);
+                    layout_4.setVisibility(View.GONE);
+                    layout_value.setVisibility(View.GONE);
+                    tie_value.setVisibility(View.GONE);
+                    cb.setVisibility(View.GONE);
+                    layout_4_1.setVisibility(View.GONE);
+                    break;
+                case "Wait":
+                    btn_message.setVisibility(View.GONE);
+                    layout_4.setVisibility(View.GONE);
+                    layout_value.setVisibility(View.GONE);
+                    tie_value.setVisibility(View.GONE);
+                    cb.setVisibility(View.GONE);
+                    layout_4_1.setVisibility(View.GONE);
+                    break;
+                case "Email":
+                case "Push Notification":
+                    layout_4_1.setVisibility(View.VISIBLE);
+                    btn_message.setVisibility(View.VISIBLE);
+                    layout_4.setVisibility(View.GONE);
+                    layout_value.setVisibility(View.GONE);
+                    break;
+                default:
+                    layout_4.setVisibility(View.VISIBLE);
+                    layout_value.setVisibility(View.VISIBLE);
+                    tie_value.setVisibility(View.GONE);
+                    btn_message.setVisibility(View.GONE);
+                    cb.setVisibility(View.GONE);
+                    layout_4_1.setVisibility(View.GONE);
+
+
+            }
+
         });
+
+        List<String> recipientsList = Arrays.asList("Users","Assets");
+        ArrayAdapter<String> adapter_recipients = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, recipientsList);
+        act_recipients.setAdapter(adapter_recipients);
+
+        List<String> assetsList = new ArrayList<>();
+        assetsList.add("Matched");
+        ArrayAdapter<String> adapter_assets = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, assetsList);
+        act_assets.setAdapter(adapter_assets);
+
 
         setDeviceAdapter(selectedModel);
         act_devices.setOnItemClickListener((adapterView, view, i, l) -> {
