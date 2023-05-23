@@ -1,7 +1,9 @@
 package com.ixxc.uiot.Model;
 
+import com.google.errorprone.annotations.Var;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mapbox.bindgen.Value;
 
 import java.util.List;
 
@@ -39,19 +41,40 @@ public class CreateRuleReq {
         this.attributeName = attributeName;
     }
 
-    public void setAttributeValue(String predicateType, Object valueObject) {
+    public void setAttributeValue(Integer predicateType, String valueObject, String value) {
         JsonObject attributeValue = new JsonObject();
-        attributeValue.addProperty("predicateType", predicateType);
 
         switch (predicateType) {
-            case "string":
-                attributeValue.addProperty("value", (String) valueObject);
+            case 2:
+                attributeValue.addProperty("predicateType", "number");
+                attributeValue.addProperty("value",Float.valueOf(value));
                 break;
-            case "boolean":
-                boolean value = ((String) valueObject).contains("true");
-                attributeValue.addProperty("value", value);
-                break;
+            default:
+                attributeValue.addProperty("predicateType", "text");
+                attributeValue.addProperty("value", valueObject);
+
         }
+
+        switch (valueObject){
+            case "Is true":
+            case "Is false":
+                boolean bool = ((String) valueObject).contains("true");
+                attributeValue.addProperty("value", bool);
+                break;
+            case "Has no value":
+            case "Has a value":
+                attributeValue.remove("value");
+
+        }
+
+        attributeValue.addProperty("negate", false);
+        attributeValue.addProperty("operator", valueObject.toUpperCase());
+
+        if(value.equals("null")){
+            attributeValue.remove("value");
+        }
+
+
 
         this.attributeValue = attributeValue;
     }
@@ -135,8 +158,19 @@ public class CreateRuleReq {
         JsonArray then = new JsonArray();
         JsonObject thenObject = new JsonObject();
         thenObject.addProperty("action", ruleAction);
+
         thenObject.add("target", target);
-        thenObject.add("notification", notification);
+
+//        switch (ruleAction){
+//            case "target":
+//                thenObject.add("target", target);
+//                break;
+//            case "notification":
+//                thenObject.add("notification", notification);
+//                break;
+//        }
+
+
 
         then.add(thenObject);
 

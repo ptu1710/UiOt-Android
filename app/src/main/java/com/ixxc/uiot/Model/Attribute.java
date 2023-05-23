@@ -97,6 +97,7 @@ public class Attribute {
                 return InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
             default:
                 return InputType.TYPE_CLASS_TEXT;
+
         }
     }
 

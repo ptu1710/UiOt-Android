@@ -60,7 +60,7 @@ public class CreateRuleActivity extends AppCompatActivity {
 
                 if (currentTabIndex >= 2) btn_next.setText(R.string.save);
             } else {
-                createRule();
+                createRule(rule);
             }
         });
 
@@ -89,14 +89,14 @@ public class CreateRuleActivity extends AppCompatActivity {
         }
     }
 
-    private void createRule() {
+    private void createRule(CreateRuleReq rule) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", 0);
         jsonObject.addProperty("type", "realm");
         jsonObject.addProperty("name", rule.getRuleName());
         jsonObject.addProperty("lang", "JSON");
         jsonObject.addProperty("realm", "master");
-        jsonObject.addProperty("rules", new Gson().toJson(rule.toJson()));
+        jsonObject.add("rules", rule.toJson());
 
         new Thread(() -> {
             int ruleId = APIManager.createRule(jsonObject);

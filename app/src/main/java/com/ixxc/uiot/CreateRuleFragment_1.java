@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.ixxc.uiot.Adapter.DeviceArrayAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
@@ -27,10 +28,13 @@ public class CreateRuleFragment_1 extends Fragment {
     CreateRuleActivity parentActivity;
     ImageView iv_add;
     AutoCompleteTextView act_devices, act_attribute, act_operator, act_models;
-    List<Model> models;
+
+    List<String> models;
     List<Attribute> attributes;
     List<Device> devices;
     String selectedModel, selectedValueType;
+
+    TextInputEditText tie_value;
 
     public CreateRuleFragment_1() { }
 
@@ -62,11 +66,15 @@ public class CreateRuleFragment_1 extends Fragment {
         act_attribute = view.findViewById(R.id.act_attribute);
         act_operator = view.findViewById(R.id.act_operator);
         act_models = view.findViewById(R.id.act_models);
+        tie_value = view.findViewById(R.id.tie_value);
     }
 
     private void InitVars() {
-        models = Model.getModelList();
-        models.sort(Comparator.comparing(o -> o.assetDescriptor.get("name").getAsString()));
+        models = Model.getModelList().stream().map(model -> (model.assetDescriptor.get("name").getAsString())).collect(Collectors.toList());
+        //models.add("PVSolarAsset");
+        models.add("Time");
+        //models.sort(Comparator.comparing(o -> o.assetDescriptor.get("name").getAsString()));
+
         DeviceArrayAdapter adapter = new DeviceArrayAdapter(parentActivity, R.layout.dropdown_item_1, models);
         act_models.setHint(R.string.choose_device);
         act_models.setAdapter(adapter);
@@ -74,7 +82,7 @@ public class CreateRuleFragment_1 extends Fragment {
 
     private void InitEvents() {
         act_models.setOnItemClickListener((adapterView, view, i, l) -> {
-            selectedModel = models.get(i).assetDescriptor.get("name").getAsString();
+            selectedModel = models.get(i);
             setDeviceAdapter(selectedModel);
 
             Device device = new Device(selectedModel);
@@ -86,6 +94,7 @@ public class CreateRuleFragment_1 extends Fragment {
 
         act_devices.setOnItemClickListener((adapterView, view, i, l) -> {
             if (i == 0) {
+                Log.d("AAA", selectedModel);
                 attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
@@ -120,7 +129,7 @@ public class CreateRuleFragment_1 extends Fragment {
         act_attribute.setOnItemClickListener((adapterView, view, i, l) -> {
             act_attribute.setSelection(0);
 
-            selectedValueType = attributes.get(i).type;
+            selectedValueType =  attributes.get(i).type;
 
             List<String> operators = parentActivity.getRuleOperator(parentActivity, selectedValueType);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, operators);
@@ -132,11 +141,36 @@ public class CreateRuleFragment_1 extends Fragment {
         });
 
         act_operator.setOnItemClickListener((adapterView, view, i, l) -> {
-            parentActivity.rule.setAttributeValue(selectedValueType, act_operator.getText().toString());
+
+            switch (act_operator.getText().toString()){
+                case "Is true":
+                case "Is false":
+                case "Has no value":
+                case "Has a value":
+                    tie_value.setVisibility(View.GONE);
+                    break;
+                default:
+                    tie_value.setVisibility(View.VISIBLE);
+                    break;
+
+            }
+            parentActivity.rule.setAttributeValue(Attribute.GetInputType(selectedValueType), act_operator.getText().toString(),"null");
+            tie_value.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean focused) {
+                    if(!focused){
+                        parentActivity.rule.setAttributeValue(Attribute.GetInputType(selectedValueType), act_operator.getText().toString(),tie_value.getText().toString());
+                    }
+                }
+            });
+
             Log.d(GlobalVars.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
         });
-    }
 
+
+        Log.d("AAA", tie_value.getText().toString());
+    }
+    // TODO: remove asset
     private void setDeviceAdapter(String deviceType) {
         devices = Device.getDevicesList().stream()
                 .filter(device -> device.type.equals(deviceType)).collect(Collectors.toList());
