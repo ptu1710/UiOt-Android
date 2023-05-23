@@ -129,7 +129,7 @@ public class CreateRuleFragment_1 extends Fragment {
         act_attribute.setOnItemClickListener((adapterView, view, i, l) -> {
             act_attribute.setSelection(0);
 
-            selectedValueType = attributes.get(i).type;
+            selectedValueType =  attributes.get(i).type;
 
             List<String> operators = parentActivity.getRuleOperator(parentActivity, selectedValueType);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, operators);
@@ -141,7 +141,6 @@ public class CreateRuleFragment_1 extends Fragment {
         });
 
         act_operator.setOnItemClickListener((adapterView, view, i, l) -> {
-            parentActivity.rule.setAttributeValue(selectedValueType, act_operator.getText().toString());
 
             switch (act_operator.getText().toString()){
                 case "Is true":
@@ -155,8 +154,19 @@ public class CreateRuleFragment_1 extends Fragment {
                     break;
 
             }
+            parentActivity.rule.setAttributeValue(Attribute.GetInputType(selectedValueType), act_operator.getText().toString(),"null");
+            tie_value.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean focused) {
+                    if(!focused){
+                        parentActivity.rule.setAttributeValue(Attribute.GetInputType(selectedValueType), act_operator.getText().toString(),tie_value.getText().toString());
+                    }
+                }
+            });
+
             Log.d(GlobalVars.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
         });
+
 
         Log.d("AAA", tie_value.getText().toString());
     }
