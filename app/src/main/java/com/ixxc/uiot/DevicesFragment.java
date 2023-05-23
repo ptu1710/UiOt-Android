@@ -31,7 +31,8 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
-import com.ixxc.uiot.Adapter.DevicesTreeViewAdapter;
+import com.ixxc.uiot.Adapter.DeviceRecyclerAdapter;
+import com.ixxc.uiot.Adapter.DeviceTreeViewAdapter;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.User;
 
@@ -48,7 +49,8 @@ public class DevicesFragment extends Fragment {
     TextView tv_sort, tv_type;
     List<Device> devicesList;
     ActivityResultLauncher<Intent> mLauncher;
-    DevicesTreeViewAdapter devicesAdapter;
+    DeviceTreeViewAdapter deviceTreeViewAdapter;
+    DeviceRecyclerAdapter deviceRecyclerAdapter;
     User me;
     public String selected_device_id = "";
 
@@ -174,6 +176,14 @@ public class DevicesFragment extends Fragment {
 
         srl_devices.setOnRefreshListener(this::refreshDevices);
 
+        searchView.setOnFocusChangeListener((view, focused) -> {
+            if (focused) {
+                rv_devices.setAdapter(deviceRecyclerAdapter);
+            } else {
+                rv_devices.setAdapter(deviceTreeViewAdapter);
+            }
+        });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -187,8 +197,8 @@ public class DevicesFragment extends Fragment {
                     this.onQueryTextSubmit("");
                 }
 
-//                filterDevices(s);
-                return true;
+                deviceRecyclerAdapter.getFilter().filter(s);
+                return false;
             }
         });
 
@@ -199,15 +209,15 @@ public class DevicesFragment extends Fragment {
                 int id = item.getItemId();
                 if (id == R.id.itemAToZ) {
                     Log.d(GlobalVars.LOG_TAG, "InitEvents: A to Z");
-                    // devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.name.toLowerCase()));
+//                    devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.name.toLowerCase()));
                 } else if (id ==  R.id.itemTimeCreated) {
                     Log.d(GlobalVars.LOG_TAG, "InitEvents: Item Time Created");
-                    // devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.createdOn));
+//                     devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.createdOn));
                 } else {
                     return false;
                 }
 
-                // devicesAdapter.setListDevices(devicesList);
+//                 devicesAdapter.setListDevices(devicesList);
 
                 return true;
             });
@@ -242,18 +252,20 @@ public class DevicesFragment extends Fragment {
 
         devicesList = Device.getDevicesList();
 
-        TreeViewHolderFactory factory = (v, layout) -> new DevicesTreeViewAdapter.MyViewHolder(v, parentActivity);
-        devicesAdapter = new DevicesTreeViewAdapter(factory, devicesList);
+        deviceRecyclerAdapter = new DeviceRecyclerAdapter(parentActivity, devicesList);
 
-        devicesAdapter.setTreeNodeClickListener((treeNode, view) -> {
+        TreeViewHolderFactory factory = (v, layout) -> new DeviceTreeViewAdapter.MyViewHolder(v, parentActivity);
+        deviceTreeViewAdapter = new DeviceTreeViewAdapter(factory, devicesList);
+
+        deviceTreeViewAdapter.setTreeNodeClickListener((treeNode, view) -> {
             if (treeNode.getChildren().size() == 0) {
                 view.findViewById(R.id.iv_go).performClick();
             } else if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
-                DevicesTreeViewAdapter.selectedPosition = devicesAdapter.getTreeNodes().indexOf(treeNode);
+                DeviceTreeViewAdapter.selectedPosition = deviceTreeViewAdapter.getTreeNodes().indexOf(treeNode);
             }
         });
 
-        devicesAdapter.setTreeNodeLongClickListener((treeNode, view) -> {
+        deviceTreeViewAdapter.setTreeNodeLongClickListener((treeNode, view) -> {
             if (!me.canWriteDevices()) return false;
             changeSelectedDevice(0, ((Device) treeNode.getValue()).id);
             return true;
@@ -261,11 +273,10 @@ public class DevicesFragment extends Fragment {
     }
 
     private void showDevices() {
-
         rv_devices.setLayoutManager(new LinearLayoutManager(parentActivity));
         rv_devices.setHasFixedSize(true);
 
-        rv_devices.setAdapter(devicesAdapter);
+        rv_devices.setAdapter(deviceTreeViewAdapter);
 
         rv_devices.setVisibility(View.VISIBLE);
         layout_shimmer.setVisibility(View.GONE);

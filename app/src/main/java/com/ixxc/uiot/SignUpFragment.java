@@ -72,7 +72,7 @@ public class SignUpFragment extends Fragment {
     }
 
     private void InitViews(View v) {
-        btn_sign_up = v.findViewById(R.id.btn_sign_up_2);
+        btn_sign_up = v.findViewById(R.id.btn_sign_in);
         btn_back = v.findViewById(R.id.btn_back);
         et_usr = v.findViewById(R.id.et_usr);
         et_email = v.findViewById(R.id.et_email);

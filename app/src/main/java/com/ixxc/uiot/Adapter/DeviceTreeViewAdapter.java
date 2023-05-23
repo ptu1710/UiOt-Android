@@ -1,8 +1,11 @@
 package com.ixxc.uiot.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,13 +26,15 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class DevicesTreeViewAdapter extends TreeViewAdapter {
+public class DeviceTreeViewAdapter extends TreeViewAdapter implements Filterable {
     List<TreeNode> treeNodes = new ArrayList<>();
+    List<Device> deviceList;
+    List<TreeNode> filteredDeviceList = new ArrayList<>();
     public static int selectedPosition = -1;
 
-    public DevicesTreeViewAdapter(TreeViewHolderFactory factory, List<Device> devices) {
+    public DeviceTreeViewAdapter(TreeViewHolderFactory factory, List<Device> devices) {
         super(factory);
-
+        deviceList = devices;
         InitNodes(devices);
         updateTreeNodes(treeNodes);
     }
@@ -87,6 +92,39 @@ public class DevicesTreeViewAdapter extends TreeViewAdapter {
     public void onViewDetachedFromWindow(@NonNull TreeViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         holder.itemView.clearAnimation();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                List<TreeNode> filteredList = new ArrayList<>();
+                if (constraint == null || constraint.length() == 0) {
+                    filteredList.addAll(treeNodes);
+                } else {
+                    String filterPattern = constraint.toString().toLowerCase().trim();
+                    for (TreeNode item : treeNodes) {
+                        if (((Device) item.getValue()).name.toLowerCase().contains(filterPattern)) {
+                            filteredList.add(item);
+                        }
+                    }
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = filteredList;
+                return results;
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredDeviceList.clear();
+                filteredDeviceList.addAll((List<TreeNode>) results.values);
+                notifyDataSetChanged();
+            }
+        };
     }
 
     public static class MyViewHolder extends TreeViewHolder {

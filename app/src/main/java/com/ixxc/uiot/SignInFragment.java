@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,11 +68,11 @@ public class SignInFragment extends Fragment {
         InitViews(view);
         InitEvent();
 
-        btn_sign_in.performClick();
+//        btn_sign_in.performClick();
     }
 
     private void InitViews(View v) {
-        btn_sign_in = v.findViewById(R.id.btn_sign_up_2);
+        btn_sign_in = v.findViewById(R.id.btn_sign_in);
         btn_back = v.findViewById(R.id.btn_back);
         et_usr = v.findViewById(R.id.et_pwd);
         et_pwd = v.findViewById(R.id.et_re_pwd);
@@ -84,7 +85,7 @@ public class SignInFragment extends Fragment {
             et_pwd.clearFocus();
 
             pb_loading.setVisibility(View.VISIBLE);
-            btn_sign_in.setVisibility(View.GONE);
+            view.setVisibility(View.GONE);
             String usr = String.valueOf(et_usr.getText());
             String pwd = String.valueOf(et_pwd.getText());
             getToken(usr, pwd);
@@ -125,6 +126,7 @@ public class SignInFragment extends Fragment {
             }
         });
 
+        Log.d(GlobalVars.LOG_TAG, "getToken: " + GlobalVars.getCodeUrl);
         webView.loadUrl(GlobalVars.getCodeUrl);
     }
 

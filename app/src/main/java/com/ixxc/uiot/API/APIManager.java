@@ -28,8 +28,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class APIManager {
-    private static final APIClient apiClient = new APIClient();
-    private static final APIInterface userAI = apiClient.getClient().create(APIInterface.class);
+    public static APIInterface userAI = new APIClient().getClient().create(APIInterface.class);
 
     public static void getToken(String code) {
         Call<Token> call =  userAI.getToken(GlobalVars.authType, code, GlobalVars.client, GlobalVars.oauth2Redirect);
@@ -61,8 +60,9 @@ public class APIManager {
 
         try {
             Response<List<Role>> response = call.execute();
-            assert response.body() != null;
-            User.getMe().setUserRoles(response.body());
+            if (response.body() != null && response.isSuccessful()) {
+                User.getMe().setUserRoles(response.body());
+            }
         } catch (IOException e) { e.printStackTrace(); }
 
     }
