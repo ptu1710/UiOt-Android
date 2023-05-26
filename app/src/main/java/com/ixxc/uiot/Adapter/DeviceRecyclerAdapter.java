@@ -5,8 +5,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -21,23 +19,21 @@ import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.R;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAdapter.DeviceViewHolder> implements Filterable {
     private final List<Device> devices;
+    private final List<Device> filteredDevices;
     private final Context ctx;
     private final int normalColor;
     public int checkedPos = -1;
 
-    private final List<Device> itemsAll;
-    private final List<Device> suggestions;
-
     public DeviceRecyclerAdapter(Context context, List<Device> devices) {
-        this.devices = devices;
         this.ctx = context;
-
-        this.itemsAll = new ArrayList<>(devices);
-        this.suggestions = new ArrayList<>();
+        this.devices = new ArrayList<>(devices);
+        this.filteredDevices = new ArrayList<>();
 
         this.normalColor = ResourcesCompat.getColor(ctx.getResources(), R.color.white, null);
     }
@@ -51,31 +47,26 @@ public class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAd
 
     @Override
     public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
-        holder.bind(devices.get(holder.getAbsoluteAdapterPosition()));
-        Animation animation = AnimationUtils.loadAnimation(ctx, R.anim.devices_rv_anim);
-        holder.itemView.startAnimation(animation);
+        holder.bind(filteredDevices.get(holder.getAbsoluteAdapterPosition()));
     }
 
     @Override
     public int getItemCount() {
-        return devices == null ? 0 : devices.size();
+        return filteredDevices.size();
     }
 
     @Override
     public Filter getFilter() {
         return new Filter() {
             @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                List<Device> filteredList = new ArrayList<>();
-                if (constraint == null || constraint.length() == 0) {
-                    filteredList.addAll(devices);
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                List<Device> filteredList;
+                if (charSequence == null || charSequence.length() == 0) {
+                    filteredList = new ArrayList<>();
                 } else {
-                    String filterPattern = constraint.toString().toLowerCase().trim();
-                    for (Device item : devices) {
-                        if (item.name.toLowerCase().contains(filterPattern)) {
-                            filteredList.add(item);
-                        }
-                    }
+                    filteredList = devices.stream()
+                            .filter(device -> device.name.toLowerCase().contains(charSequence.toString().toLowerCase().trim()))
+                            .collect(Collectors.toList());
                 }
 
                 FilterResults results = new FilterResults();
@@ -84,35 +75,31 @@ public class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAd
             }
 
             @SuppressLint("NotifyDataSetChanged")
-            @Override
             @SuppressWarnings("unchecked")
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                if (results.count > 0) {
-                    devices.clear();
-                    devices.addAll((List<Device>) results.values);
-                    notifyDataSetChanged();
-                }
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                filteredDevices.clear();
+                filteredDevices.addAll((Collection<? extends Device>) filterResults.values);
+                notifyDataSetChanged();
             }
         };
     }
 
     class DeviceViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_name;
-        private final ImageView iv_icon;
+        private final ImageView iv_icon, iv_expand;
         private final CardView cv_device;
 
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_name = itemView.findViewById(R.id.tv_name);
             iv_icon =  itemView.findViewById(R.id.iv_icon);
+            iv_expand =  itemView.findViewById(R.id.iv_expand_3);
             cv_device = itemView.findViewById(R.id.cv_device);
         }
 
-        @SuppressLint("SetTextI18n")
         void bind(Device device) {
-            if (device == null) {
-                return;
-            }
+            if (device == null) return;
 
             if (checkedPos == -1) cv_device.setCardBackgroundColor(normalColor);
             else {
@@ -124,7 +111,8 @@ public class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAd
             }
 
             tv_name.setText(device.name);
-            iv_icon.setImageResource(device.getIconRes());
+            iv_icon.setImageDrawable(device.getIconDrawable(ctx));
+            iv_expand.setVisibility(View.GONE);
         }
     }
 

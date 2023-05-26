@@ -168,7 +168,7 @@ public class CreateRuleFragment_2 extends Fragment {
             selectedModel = models.get(i);
 
             Device device = new Device(selectedModel.replaceAll(" ",""));
-            iv_add.setImageResource(device.getIconRes());
+            iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
 
             switch (selectedModel){
                 case "Webhook":
@@ -260,7 +260,6 @@ public class CreateRuleFragment_2 extends Fragment {
 
 
             List<String> operators = parentActivity.getRuleOperator(parentActivity, selectedValueType);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, operators);
 
             parentActivity.rule.setAttributeName(attributes.get(i).name);
             Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).name);

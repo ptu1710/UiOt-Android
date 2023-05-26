@@ -61,7 +61,9 @@ public class DevicesFragment extends Fragment {
         boolean refresh = bundle.getBoolean("REFRESH");
 
         if (show_devices || refresh) {
-            Utils.delayHandler.postDelayed(this::showDevices, 640);
+            InitDevicesAdapter();
+
+            Utils.delayHandler.postDelayed(this::showDevices, 320);
 
             iv_cancel.performClick();
             srl_devices.setRefreshing(false);
@@ -114,8 +116,6 @@ public class DevicesFragment extends Fragment {
                     throw new RuntimeException(e);
                 }
             }
-
-            setDevicesAdapter();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -176,14 +176,6 @@ public class DevicesFragment extends Fragment {
 
         srl_devices.setOnRefreshListener(this::refreshDevices);
 
-        searchView.setOnFocusChangeListener((view, focused) -> {
-            if (focused) {
-                rv_devices.setAdapter(deviceRecyclerAdapter);
-            } else {
-                rv_devices.setAdapter(deviceTreeViewAdapter);
-            }
-        });
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -193,11 +185,18 @@ public class DevicesFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String s) {
+                deviceRecyclerAdapter.getFilter().filter(s);
+
                 if (s.equals("")) {
-                    this.onQueryTextSubmit("");
+                    if (rv_devices.getAdapter() != deviceTreeViewAdapter) {
+                        rv_devices.swapAdapter(deviceTreeViewAdapter, true);
+                    }
+                } else {
+                    if (rv_devices.getAdapter() != deviceRecyclerAdapter) {
+                        rv_devices.swapAdapter(deviceRecyclerAdapter, true);
+                    }
                 }
 
-                deviceRecyclerAdapter.getFilter().filter(s);
                 return false;
             }
         });
@@ -238,7 +237,7 @@ public class DevicesFragment extends Fragment {
             JsonObject query = (JsonObject) JsonParser.parseString(queryString);
             APIManager.queryDevices(query);
 
-            setDevicesAdapter();
+            InitDevicesAdapter();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -248,7 +247,7 @@ public class DevicesFragment extends Fragment {
         }).start();
     }
 
-    private void setDevicesAdapter() {
+    private void InitDevicesAdapter() {
 
         devicesList = Device.getDevicesList();
 
@@ -258,6 +257,8 @@ public class DevicesFragment extends Fragment {
         deviceTreeViewAdapter = new DeviceTreeViewAdapter(factory, devicesList);
 
         deviceTreeViewAdapter.setTreeNodeClickListener((treeNode, view) -> {
+            searchView.clearFocus();
+
             if (treeNode.getChildren().size() == 0) {
                 view.findViewById(R.id.iv_go).performClick();
             } else if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
@@ -266,6 +267,8 @@ public class DevicesFragment extends Fragment {
         });
 
         deviceTreeViewAdapter.setTreeNodeLongClickListener((treeNode, view) -> {
+            searchView.clearFocus();
+
             if (!me.canWriteDevices()) return false;
             changeSelectedDevice(0, ((Device) treeNode.getValue()).id);
             return true;

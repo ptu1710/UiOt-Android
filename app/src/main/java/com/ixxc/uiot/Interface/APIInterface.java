@@ -161,9 +161,9 @@ public interface APIInterface {
     Call<RegisterDevice> registerDevice(@Body JsonObject body);
 
     // Get Data point
-    @GET("api/master/asset/datapoint/{assetId}/attribute/{attributeName}")
-    Call<JsonArray> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName,
-                                 @Query("interval") String interval, @Query("fromTimestamp") Long from, @Query("toTimestamp") Long to);
+    @POST("api/master/asset/datapoint/{assetId}/attribute/{attributeName}")
+    @Headers("Content-Type: application/json")
+    Call<JsonArray> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName, @Body JsonObject body);
 
     // Create a new rule
     @POST("api/master/rules/realm")

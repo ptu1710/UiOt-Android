@@ -1,11 +1,8 @@
 package com.ixxc.uiot.Adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,15 +18,15 @@ import com.ixxc.uiot.DeviceInfoActivity;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.R;
 import com.ixxc.uiot.Utils;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class DeviceTreeViewAdapter extends TreeViewAdapter implements Filterable {
+public class DeviceTreeViewAdapter extends TreeViewAdapter {
     List<TreeNode> treeNodes = new ArrayList<>();
     List<Device> deviceList;
-    List<TreeNode> filteredDeviceList = new ArrayList<>();
     public static int selectedPosition = -1;
 
     public DeviceTreeViewAdapter(TreeViewHolderFactory factory, List<Device> devices) {
@@ -94,39 +91,6 @@ public class DeviceTreeViewAdapter extends TreeViewAdapter implements Filterable
         holder.itemView.clearAnimation();
     }
 
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                List<TreeNode> filteredList = new ArrayList<>();
-                if (constraint == null || constraint.length() == 0) {
-                    filteredList.addAll(treeNodes);
-                } else {
-                    String filterPattern = constraint.toString().toLowerCase().trim();
-                    for (TreeNode item : treeNodes) {
-                        if (((Device) item.getValue()).name.toLowerCase().contains(filterPattern)) {
-                            filteredList.add(item);
-                        }
-                    }
-                }
-
-                FilterResults results = new FilterResults();
-                results.values = filteredList;
-                return results;
-            }
-
-            @SuppressLint("NotifyDataSetChanged")
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                filteredDeviceList.clear();
-                filteredDeviceList.addAll((List<TreeNode>) results.values);
-                notifyDataSetChanged();
-            }
-        };
-    }
-
     public static class MyViewHolder extends TreeViewHolder {
         private final Context ctx;
         private final TextView tv_name;
@@ -173,7 +137,7 @@ public class DeviceTreeViewAdapter extends TreeViewAdapter implements Filterable
             }
 
             tv_name.setText(device.name);
-            iv_icon.setImageResource(device.getIconRes());
+            iv_icon.setImageDrawable(device.getIconDrawable(ctx));
 
             iv_go.setOnClickListener(view -> {
                 Intent toDetails = new Intent(ctx, DeviceInfoActivity.class);

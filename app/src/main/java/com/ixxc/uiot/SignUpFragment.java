@@ -113,7 +113,8 @@ public class SignUpFragment extends Fragment {
     @SuppressLint("SetJavaScriptEnabled")
     private void getToken(String usr, String email, String pwd, String rePwd) {
         CookieManager cm = CookieManager.getInstance();
-        cm.removeAllCookie();
+        cm.removeAllCookies(null);
+        // TODO: removeAllCookie() is deprecated
 
         webView = new WebView(getContext());
         webView.getSettings().setJavaScriptEnabled(true);

@@ -25,7 +25,7 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
     ArrayList<MetaItem> items_chosen= new ArrayList<>();
     MetaItemListener metaItemListener;
 
-    public ConfigurationAdapter(Context context, List<MetaItem> metaItems,MetaItemListener metaItemListener) {
+    public ConfigurationAdapter(Context context, List<MetaItem> metaItems, MetaItemListener metaItemListener) {
         this.context = context;
         this.metaItems = metaItems;
         this.metaItemListener = metaItemListener;
@@ -39,7 +39,7 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
 
     @Override
     public void onBindViewHolder(@NonNull ConfigurationAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        String name = Utils.formatString(metaItems.get(position).name);
+        String name = Utils.formatString(metaItems.get(position).getName());
         holder.cb_config_item.setText(name);
         holder.cb_config_item.setOnClickListener(v -> {
             if(holder.cb_config_item.isChecked()) items_chosen.add(metaItems.get(position));

@@ -107,6 +107,7 @@ public class APIManager {
     }
 
     public static boolean updateDeviceInfo(String deviceId, JsonObject requestBody){
+
         Call<String> call = userAI.updateDeviceInfo(deviceId, requestBody);
         try {
             Response<String> response = call.execute();
@@ -395,7 +396,6 @@ public class APIManager {
         try {
             Response<List<MetaItem>> response = call.execute();
             if (response.isSuccessful()) MetaItem.setMetaItemList(response.body());
-            else MetaItem.setMetaItemList(null);
         } catch (IOException e) { e.printStackTrace(); }
 
     }
@@ -453,8 +453,8 @@ public class APIManager {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    public static JsonArray getDatapoint(String id, String attributeName, String interval, Long from, Long to){
-        Call<JsonArray> call = userAI.getDataPoint(id, attributeName, interval, from, to);
+    public static JsonArray getDatapoint(String assetId, String attributeName, JsonObject body){
+        Call<JsonArray> call = userAI.getDataPoint(assetId, attributeName, body);
 
         try {
             Response<JsonArray> response = call.execute();

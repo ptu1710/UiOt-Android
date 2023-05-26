@@ -8,19 +8,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 
 public class Attribute {
-    @SerializedName("name")
     public String name;
-
-    @SerializedName("type")
     public String type;
-
-    @SerializedName("meta")
     public JsonObject meta;
-
-    @SerializedName("optional")
     public boolean optional;
-
-    @SerializedName("value")
     public JsonElement value = JsonParser.parseString("");
 
     public static boolean canShowValue;
@@ -139,8 +130,9 @@ public class Attribute {
         o.addProperty("type", type);
         o.addProperty("name", name);
         o.addProperty("timestamp", timestamp);
-        o.add("value", value);
-        o.add("meta", meta);
+
+        if (meta != null)  o.add("meta", meta);
+        if (value != null && !value.isJsonNull()) o.add("value", value);
 
         return o;
     }

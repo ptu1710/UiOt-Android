@@ -9,7 +9,6 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
 import com.ixxc.uiot.R;
 import com.mapbox.geojson.Point;
 
@@ -18,23 +17,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Device {
-    @SerializedName("id")
     public String id;
-    @SerializedName("version")
-    public String version;
-    @SerializedName("createdOn")
+    public int version;
     public long createdOn;
-    @SerializedName("name")
     public String name;
-    @SerializedName("accessPublicRead")
     public Boolean accessPublicRead;
-    @SerializedName("realm")
     public String realm;
-    @SerializedName("type")
     public String type;
-    @SerializedName("attributes")
     public JsonObject attributes;
-    @SerializedName("path")
     public ArrayList<String> path;
 
     public Device() { }
@@ -141,7 +131,6 @@ public class Device {
 
     // Get icon resource id
     public int getIconRes() {
-
         switch (type) {
             case "GroupAsset":
                 return R.drawable.ic_folder;
@@ -182,9 +171,8 @@ public class Device {
             case "WeatherAsset":
                 return R.drawable.ic_weather_partly_cloudy;
             case "RoomAsset":
-                return R.drawable.ic_room;
             case "DoorAsset":
-                return R.drawable.ic_door;
+                return R.drawable.ic_room;
             case "GroundwaterSensorAsset":
                 return R.drawable.ic_water_outline;
             case "PVSolarAsset":
@@ -201,7 +189,7 @@ public class Device {
                 return R.drawable.ic_upload_network;
         }
 
-        return R.drawable.ic_iot;
+        return R.drawable.ic_cogs;
     }
 
     //Get color of icon
@@ -266,13 +254,12 @@ public class Device {
                 return ResourcesCompat.getColor(ctx.getResources(), R.color.Electricity_Supplier_Asset, null);
         }
 
-        return ResourcesCompat.getColor(ctx.getResources(), R.color.white, null);
+        return ResourcesCompat.getColor(ctx.getResources(), R.color.black, null);
     }
 
     // Get icon drawable
     public Drawable getIconDrawable(Context context) {
-        int resId = getIconRes();
-        Drawable icon = ResourcesCompat.getDrawable(context.getResources(), resId, null);
+        Drawable icon = ResourcesCompat.getDrawable(context.getResources(), getIconRes(), null);
         assert icon != null;
         icon.setTint(getColorId(context));
 

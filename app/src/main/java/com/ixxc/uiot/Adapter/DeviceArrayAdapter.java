@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.ixxc.uiot.Model.Device;
-import com.ixxc.uiot.Model.Model;
 import com.ixxc.uiot.R;
 import com.ixxc.uiot.Utils;
 
@@ -20,27 +19,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceArrayAdapter extends ArrayAdapter<String> {
+    Context ctx;
     private final List<String> itemsAll;
     private final List<String> suggestions;
 
     public DeviceArrayAdapter(@NonNull Context context, int resource, @NonNull List<String> list) {
         super(context, resource, list);
 
+        this.ctx = context;
         this.itemsAll = new ArrayList<>(list);
         this.suggestions = new ArrayList<>();
     }
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-        if (view == null) view = LayoutInflater.from(getContext()).inflate(R.layout.dropdown_item_1, parent, false);
+        if (view == null) view = LayoutInflater.from(ctx).inflate(R.layout.dropdown_item_1, parent, false);
 
         String name = itemsAll.get(position);
 
         TextView tv_name = view.findViewById(R.id.tv_name);
         ImageView iv_icon = view.findViewById(R.id.iv_icon);
         tv_name.setText(Utils.formatString(name));
-        Device device = new Device(name);
-        iv_icon.setImageResource(device.getIconRes());
+        iv_icon.setImageDrawable(new Device(name).getIconDrawable(ctx));
 
         return view;
     }

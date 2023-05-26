@@ -53,7 +53,7 @@ public class ChartActivity extends AppCompatActivity {
     List<String> attributes;
     Calendar calendar;
     SimpleDateFormat sdf;
-    JsonArray dataPoints;
+    JsonArray dataPoints = new JsonArray();
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -147,8 +147,14 @@ public class ChartActivity extends AppCompatActivity {
             }
         });
 
-        btn_show_chart.setOnClickListener(view -> new Thread(()->{
-            dataPoints = APIManager.getDatapoint(device_id, selectedAttribute, interval, timestampMillis - dis, timestampMillis);
+        btn_show_chart.setOnClickListener(view -> new Thread(()-> {
+            JsonObject body = new JsonObject();
+            body.addProperty("type", "lttb");
+            body.addProperty("amountOfPoints", 100);
+            body.addProperty("fromTimestamp", timestampMillis - dis);
+            body.addProperty("toTimestamp", timestampMillis);
+
+            dataPoints = APIManager.getDatapoint(device_id, selectedAttribute, body);
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();

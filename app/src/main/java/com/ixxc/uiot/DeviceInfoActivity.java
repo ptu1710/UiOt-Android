@@ -248,7 +248,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     private void showAttributes() {
         attributeList = current_device.getDeviceAttribute();
 
-        attributesAdapter = new AttributesAdapter(device_id, attributeList, new AttributeListener() {
+        attributesAdapter = new AttributesAdapter(this, device_id, attributeList, new AttributeListener() {
             @Override
             public void onAttributeClicked(int position) {
                 rv_attribute.scrollToPosition(position);
@@ -267,12 +267,10 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
                 Button btn_add = dlg.findViewById(R.id.btn_add_configuration);
                 btn_add.setOnClickListener(v1 -> {
+                    if (attributeList.get(position).meta == null) attributeList.get(position).meta = new JsonObject();
+
                     for (MetaItem item : selectedMetaItems) {
-                        if (MetaItem.getMetaType(item.name).equals("boolean")) {
-                            attributeList.get(position).meta.addProperty(item.name, false);
-                        } else {
-                            attributeList.get(position).meta.addProperty(item.name, "");
-                        }
+                        addMetaItem(position, item);
                     }
 
                     attributesAdapter.notifyDataSetChanged();
@@ -284,7 +282,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
                 rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
 
                 JsonObject meta = attributeList.get(position).meta == null ? new JsonObject() : attributeList.get(position).meta;
-                List<MetaItem> ms = metaItems.stream().filter(metaItem -> !meta.keySet().contains(metaItem.name)).collect(Collectors.toList());
+                List<MetaItem> ms = metaItems.stream().filter(item -> !meta.keySet().contains(item.getName())).collect(Collectors.toList());
 
                 ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(DeviceInfoActivity.this, ms, DeviceInfoActivity.this);
                 rv_config_item.setAdapter(configurationAdapter);
@@ -295,6 +293,21 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);
         rv_attribute.setVisibility(View.VISIBLE);
+    }
+
+    private void addMetaItem(int position, MetaItem item) {
+//        Log.d(GlobalVars.LOG_TAG, "addMetaItem: " + item.getType());
+        switch (item.getType()) {
+            case "boolean":
+                attributeList.get(position).meta.addProperty(item.getName(), false);
+                break;
+            case "text":
+                attributeList.get(position).meta.addProperty(item.getName(), "");
+                break;
+            default:
+                attributeList.get(position).meta.add(item.getName(), null);
+                break;
+        }
     }
 
     @Override
@@ -367,7 +380,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
                 }
 
                 body.addProperty("id", current_device.id);
-                body.addProperty("version",  current_device.version);
+                body.addProperty("version", current_device.version);
                 body.addProperty("createdOn", current_device.createdOn);
                 // Change name
                 body.addProperty("name", String.valueOf(et_name.getText()));

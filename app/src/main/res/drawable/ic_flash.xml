@@ -5,5 +5,5 @@
     android:viewportHeight="24">
   <path
       android:pathData="M7,2v11h3v9l7,-12h-4l4,-8H7Z"
-      android:fillColor="@color/Energy_Optimisation_Asset"/>
+      android:fillColor="@color/white"/>
 </vector>

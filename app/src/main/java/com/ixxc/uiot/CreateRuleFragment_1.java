@@ -20,8 +20,8 @@ import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.Model;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CreateRuleFragment_1 extends Fragment {
@@ -86,7 +86,7 @@ public class CreateRuleFragment_1 extends Fragment {
             setDeviceAdapter(selectedModel);
 
             Device device = new Device(selectedModel);
-            iv_add.setImageResource(device.getIconRes());
+            iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
 
             parentActivity.rule.setRuleTypes(selectedModel);
             Log.d(GlobalVars.LOG_TAG, "setRuleTypes: " + selectedModel);
@@ -155,20 +155,15 @@ public class CreateRuleFragment_1 extends Fragment {
 
             }
             parentActivity.rule.setAttributeValue(Attribute.GetInputType(selectedValueType), act_operator.getText().toString(),"null");
-            tie_value.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean focused) {
-                    if(!focused){
-                        parentActivity.rule.setAttributeValue(Attribute.GetInputType(selectedValueType), act_operator.getText().toString(),tie_value.getText().toString());
-                    }
+            tie_value.setOnFocusChangeListener((view1, focused) -> {
+                if(!focused){
+                    parentActivity.rule.setAttributeValue(Attribute.GetInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
             });
 
             Log.d(GlobalVars.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
         });
 
-
-        Log.d("AAA", tie_value.getText().toString());
     }
     // TODO: remove asset
     private void setDeviceAdapter(String deviceType) {

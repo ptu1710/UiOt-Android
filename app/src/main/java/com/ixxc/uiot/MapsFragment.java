@@ -217,7 +217,7 @@ public class MapsFragment extends Fragment {
             });
 
             tvAssetName.setText(device.name);
-            ivIcon.setImageResource(device.getIconRes());
+            ivIcon.setImageDrawable(device.getIconDrawable(parentActivity));
 
             rv_attributes.setHasFixedSize(true);
             rv_attributes.setLayoutManager(layoutManager);

@@ -1,5 +1,6 @@
 package com.ixxc.uiot.API;
 
+import com.google.gson.GsonBuilder;
 import com.ixxc.uiot.GlobalVars;
 
 import okhttp3.OkHttpClient;
@@ -40,7 +41,7 @@ public class APIClient {
         OkHttpClient client = getUnsafeOkHttpClient();
         return new Retrofit.Builder()
                 .baseUrl(GlobalVars.baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().serializeNulls().create()))
                 .client(client)
                 .build();
     }

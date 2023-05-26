@@ -2,14 +2,27 @@ package com.ixxc.uiot.Model;
 
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MetaItem {
-    public String name;
-    public String type;
+    private final String name;
+    private final String type;
 
-    private static List<MetaItem> metaItemList;
+    private static List<MetaItem> metaItemList = new ArrayList<>();
+
+    public MetaItem(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getType() {
+        return type;
+    }
 
     public static List<MetaItem> getMetaItemList() { return metaItemList; }
 
@@ -17,8 +30,9 @@ public class MetaItem {
         metaItemList = list;
     }
 
-    public static String getMetaType(String name) {
-        return metaItemList.stream().filter(metaItem -> metaItem.name.equals(name)).collect(Collectors.toList()).get(0).type;
+    // find the metaItem by name
+    public static MetaItem findMetaItemByName(String name) {
+        return metaItemList.stream().filter(metaItem -> metaItem.getName().equals(name)).findFirst().orElse(null);
     }
 
     public JsonObject toJson() {

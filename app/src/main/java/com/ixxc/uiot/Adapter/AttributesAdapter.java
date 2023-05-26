@@ -1,18 +1,23 @@
 package com.ixxc.uiot.Adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -47,15 +52,16 @@ import java.util.List;
 import java.util.Objects;
 
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.AttrsViewHolder> {
-    Context ctx;
+    private final Context ctx;
     private final List<Attribute> attributes;
     private final String deviceId;
-    public static Dictionary<String, Attribute> changedAttributes;
-    AttributeListener attributeListener;
-    public boolean isEditMode = false;
+    private final AttributeListener attributeListener;
     private boolean hasMap = false;
+    public boolean isEditMode = false;
+    public static Dictionary<String, Attribute> changedAttributes;
 
-    public AttributesAdapter(String deviceId, List<Attribute> attrsObj, AttributeListener attributeListener) {
+    public AttributesAdapter(Context ctx, String deviceId, List<Attribute> attrsObj, AttributeListener attributeListener) {
+        this.ctx = ctx;
         this.attributes = attrsObj;
         changedAttributes = new Hashtable<>();
         this.attributeListener = attributeListener;
@@ -71,7 +77,6 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     @Override
     public AttrsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        ctx = parent.getContext();
 
         if(viewType == R.layout.attribute_layout){
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.attribute_layout, parent, false);
@@ -85,9 +90,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     @Override
     public void onBindViewHolder(@NonNull AttrsViewHolder holder, int position) {
         if (position == attributes.size()) {
-            if (!hasMap) {
-                setMapView(holder);
-            }
+            if (!hasMap) setMapView(holder);
             return;
         }
 
@@ -103,6 +106,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         if(isEditMode) {
             holder.btn_add_config.setVisibility(View.VISIBLE);
             holder.til_value.setVisibility(View.VISIBLE);
+            holder.ib_edit.setVisibility(View.VISIBLE);
+            holder.iv_expand.setVisibility(View.GONE);
             holder.et_value.setFocusableInTouchMode(true);
 
             // Add Meta Info
@@ -114,7 +119,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 // Add config view here
                 for (String key : attr.meta.keySet()) {
                     if (holder.meta_layout.findViewWithTag(key) == null) {
-                        View view = createConfigView(position, key, MetaItem.getMetaType(key), attr.getMetaValue(key));
+                        View view = createConfigView(position, key, MetaItem.findMetaItemByName(key).getType(), attr.getMetaValue(key));
                         if (view instanceof CheckBox) holder.meta_layout.addView(view, viewCount++);
                         else holder.meta_layout.addView(view, 0);
                     }
@@ -163,6 +168,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             setExpandedView(holder, validatedType, value, isExpanded);
             view.setTag(!isExpanded);
         });
+
+        holder.ib_edit.setOnClickListener(view -> Log.d("AttributesAdapter", "onClick: edit button clicked"));
     }
 
     private void setExpandedView(AttrsViewHolder holder, String type, String value, boolean isExpanded) {
@@ -261,6 +268,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         private final Button btn_add_config;
         private final LinearLayout meta_layout;
         private final ImageView iv_expand;
+        private final ImageButton ib_edit;
         private final LinearLayout linear_label;
         private final MapView mapView;
 
@@ -275,6 +283,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             iv_expand = itemView.findViewById(R.id.iv_expand);
             linear_label = itemView.findViewById(R.id.linear_label);
             mapView = itemView.findViewById(R.id.mapView);
+            ib_edit = itemView.findViewById(R.id.ib_edit);
         }
     }
 
@@ -284,6 +293,8 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         params.setMargins(0, 0, 0, 32);
+
+//        Log.d(GlobalVars.LOG_TAG, "createConfigView: " + name + " - " + type + " - " + value);
 
         switch (type) {
             case "boolean":
@@ -296,13 +307,11 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 return cb;
             case "text":
             case "positiveInteger":
-            case "agentLink":
-            case "attributeLink[]":
-
                 TextInputLayout til = new TextInputLayout(ctx);
+
                 til.setHint(Utils.formatString(name));
-                til.setLayoutParams(params);
                 til.setTag(name);
+                til.setLayoutParams(params);
 
                 TextInputEditText et = new TextInputEditText(til.getContext());
                 et.setInputType(Attribute.GetInputType(type));
@@ -311,6 +320,38 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 til.addView(et);
 
                 return til;
+            case "attributeLink[]":
+            case "forecastConfiguration":
+                TextInputLayout til1 = new TextInputLayout(ctx);
+
+                LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        Utils.dpToPx(ctx, 120)
+                );
+
+                til1.setHint(Utils.formatString(name));
+                til1.setTag(name);
+                til1.setLayoutParams(params);
+
+                TextInputEditText et1 = new TextInputEditText(til1.getContext());
+                et1.setInputType(Attribute.GetInputType(type));
+                et1.setText(value);
+                et1.setLayoutParams(params1);
+                et1.setOnFocusChangeListener((view, focused) -> attributes.get(pos).meta.addProperty(name, String.valueOf(et1.getText())));
+                til1.addView(et1);
+
+                return til1;
+            case "agentLink":
+                Button btn = new Button(ctx);
+                btn.setText(Utils.formatString(name));
+                btn.setCompoundDrawablesWithIntrinsicBounds(ResourcesCompat.getDrawable(ctx.getResources(), R.drawable.ic_edit, null), null, null, null);
+                btn.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(ctx.getResources(), R.color.bg, null)));
+                btn.setTextColor(ResourcesCompat.getColor(ctx.getResources(), R.color.white, null));
+                btn.setLayoutParams(params);
+                btn.setTag(name);
+                btn.setOnClickListener(view -> Toast.makeText(ctx, "Not implemented yet", Toast.LENGTH_SHORT).show());
+
+                return btn;
             case "valueConstraint[]":
             case "valueFormat":
             case "text[]":

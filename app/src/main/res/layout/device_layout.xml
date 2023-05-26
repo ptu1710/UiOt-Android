@@ -38,7 +38,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_expand_3"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_iot" />
+            app:srcCompat="@drawable/ic_vn" />
 
         <TextView
             android:id="@+id/tv_name"
