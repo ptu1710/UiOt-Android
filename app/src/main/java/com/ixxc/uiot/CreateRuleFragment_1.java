@@ -98,7 +98,7 @@ public class CreateRuleFragment_1 extends Fragment {
                 attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.name))
+                        .map(attribute -> Utils.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -114,7 +114,7 @@ public class CreateRuleFragment_1 extends Fragment {
                         .collect(Collectors.toList());
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.name))
+                        .map(attribute -> Utils.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -129,15 +129,15 @@ public class CreateRuleFragment_1 extends Fragment {
         act_attribute.setOnItemClickListener((adapterView, view, i, l) -> {
             act_attribute.setSelection(0);
 
-            selectedValueType =  attributes.get(i).type;
+            selectedValueType =  attributes.get(i).getType();
 
             List<String> operators = parentActivity.getRuleOperator(parentActivity, selectedValueType);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, operators);
             act_operator.setHint(R.string.operator);
             act_operator.setAdapter(adapter);
 
-            parentActivity.rule.setAttributeName(attributes.get(i).name);
-            Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).name);
+            parentActivity.rule.setAttributeName(attributes.get(i).getName());
+            Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
         });
 
         act_operator.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -154,10 +154,10 @@ public class CreateRuleFragment_1 extends Fragment {
                     break;
 
             }
-            parentActivity.rule.setAttributeValue(Attribute.GetInputType(selectedValueType), act_operator.getText().toString(),"null");
+            parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(),"null");
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    parentActivity.rule.setAttributeValue(Attribute.GetInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
+                    parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
             });
 
@@ -167,7 +167,7 @@ public class CreateRuleFragment_1 extends Fragment {
     }
     // TODO: remove asset
     private void setDeviceAdapter(String deviceType) {
-        devices = Device.getDevicesList().stream()
+        devices = Device.getDeviceList().stream()
                 .filter(device -> device.type.equals(deviceType)).collect(Collectors.toList());
 
         List<String> deviceNames = devices.stream().map(device -> device.name).collect(Collectors.toList());

@@ -5,22 +5,10 @@
     <item android:title="@string/copy_id"
         android:icon="@drawable/ic_copy"
         android:id="@+id/copy"
-        app:showAsAction="always"/>
-
-    <item android:title="@string/edit"
-        android:icon="@drawable/ic_edit"
-        android:id="@+id/edit"
-        app:showAsAction="ifRoom"/>
-
-    <item android:title="@string/cancel"
-        android:icon="@drawable/ic_cancel"
-        android:id="@+id/cancel"
-        android:visible="false"
         app:showAsAction="ifRoom"/>
 
     <item android:title="@string/save"
         android:icon="@drawable/ic_save"
         android:id="@+id/save"
-        android:visible="false"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 </menu>

@@ -26,32 +26,25 @@ public class Device {
     public String type;
     public JsonObject attributes;
     public ArrayList<String> path;
+    public static boolean devicesLoaded = false;
+    private static final List<Device> deviceList = new ArrayList<>();
 
     public Device() { }
 
-    public Device(String type) {
-        this.type = type;
-    }
+    public Device(String type) { this.type = type; }
 
-    public static boolean devicesLoaded = false;
-
-    private static final List<Device> deviceList = new ArrayList<>();
-
-    public static List<Device> getDevicesList() {
+    public static List<Device> getDeviceList() {
         return deviceList;
     }
 
-    public static void setDevicesList(List<Device> list) {
+    public static void setDeviceList(List<Device> list) {
         if (list == null) return;
 
         deviceList.clear();
-
         if (list.get(0).type.equals("GroupAsset") && list.get(0).name.equals("Consoles")) list.remove(0);
 
         for (Device device : list) {
-            if (!device.type.contains("ConsoleAsset")) {
-                deviceList.add(device);
-            }
+            if (!device.type.contains("ConsoleAsset")) deviceList.add(device);
         }
     }
 
@@ -87,7 +80,7 @@ public class Device {
         for (String key : attributes.keySet()) {
             JsonObject o = attributes.get(key).getAsJsonObject();
             Attribute attribute = new Gson().fromJson(o, Attribute.class);
-            if (!attribute.optional && attribute.value != null && !attribute.value.isJsonObject()) {
+            if (!attribute.isOptional() && attribute.getValue() != null && !attribute.getValue().isJsonObject()) {
                 attributeList.add(attribute);
             }
         }
@@ -301,7 +294,7 @@ public class Device {
         for (String key : attributes.keySet()) {
             JsonObject o = attributes.get(key).getAsJsonObject();
             Attribute attribute = new Gson().fromJson(o, Attribute.class);
-            if (attribute.meta != null && attribute.getMetaValue("storeDataPoints").equals("true")) {
+            if (attribute.getMeta() != null && attribute.getMetaValue("storeDataPoints").equals("true")) {
                 attributeList.add(key);
             }
         }

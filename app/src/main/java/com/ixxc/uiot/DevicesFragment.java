@@ -131,7 +131,7 @@ public class DevicesFragment extends Fragment {
 
     private void InitVars() {
         me = User.getMe();
-        devicesList = Device.getDevicesList();
+        devicesList = Device.getDeviceList();
     }
 
     private void InitViews(View v) {
@@ -249,7 +249,7 @@ public class DevicesFragment extends Fragment {
 
     private void InitDevicesAdapter() {
 
-        devicesList = Device.getDevicesList();
+        devicesList = Device.getDeviceList();
 
         deviceRecyclerAdapter = new DeviceRecyclerAdapter(parentActivity, devicesList);
 

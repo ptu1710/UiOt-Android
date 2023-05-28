@@ -49,7 +49,7 @@
     <string name="parent">Parent</string>
     <string name="public_read">Public read</string>
     <string name="add_attribute">Add attribute</string>
-    <string name="add_configuration_item">+ Add configuration item</string>
+    <string name="add_configuration_items">+ Add configuration items</string>
     <string name="uit_logo">uit_logo</string>
     <string name="username">Username</string>
     <string name="test">test</string>
@@ -89,6 +89,26 @@
     <string name="plan_an_occurrence">Plan an occurrence</string>
     <string name="plan_a_repeating_occurrence">Plan a repeating occurrence</string>
     <string name="all_day">All day</string>
+    <string name="add_configuration_items_1">Add configuration items</string>
+    <string name="done">Done</string>
+    <string name="agent_link">Agent Link</string>
+    <string name="add_parameters">Add parameters</string>
+    <string name="email">Email</string>
+    <string name="active">Active</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="new_password">New Password</string>
+    <string name="regenerate_secret">Regenerate secret</string>
+    <string name="repeat_new_password">Repeat New Password</string>
+    <string name="roles">Roles</string>
+    <string name="realm_roles">Realm Roles</string>
+    <string name="manager_roles">Manager Roles</string>
+    <string name="custom_roles_set">Custom roles set</string>
+    <string name="linked_device_s">Linked Device(s):</string>
+    <string name="device_type">Device Type</string>
+    <string name="device_name">Device Name</string>
+    <string name="add">Add</string>
+    <string name="add_optional_attributes">Add optional attributes</string>
 
     <string-array name="timeframe">
         <item>Hour</item>
@@ -147,5 +167,23 @@
         <item>Does not contain key</item>
         <item>Has no value</item>
         <item>Has a value</item>
+    </string-array>
+
+    <string-array name="agent_link_params">
+<!--        <item>Value Filters</item>-->
+<!--        <item>Value Converter</item>-->
+<!--        <item>Write Value Converter</item>-->
+<!--        <item>Write Value</item>-->
+<!--        <item>Message Match Predicate</item>-->
+<!--        <item>Message Match Filters</item>-->
+<!--        <item>Update On Write</item>-->
+<!--        <item>Headers</item>-->
+<!--        <item>Query Parameters</item>-->
+        <item>pollingMillis</item>
+        <item>path</item>
+<!--        <item>Paging Mode</item>-->
+<!--        <item>Method</item>-->
+<!--        <item>Content Type</item>-->
+<!--        <item>Polling Attribute</item>-->
     </string-array>
 </resources>

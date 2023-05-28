@@ -128,7 +128,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.name))
+                        .map(attribute -> Utils.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -144,7 +144,7 @@ public class CreateRuleFragment_2 extends Fragment {
                         .collect(Collectors.toList());
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.name))
+                        .map(attribute -> Utils.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter2 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -224,7 +224,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.name))
+                        .map(attribute -> Utils.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -240,7 +240,7 @@ public class CreateRuleFragment_2 extends Fragment {
                         .collect(Collectors.toList());
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.name))
+                        .map(attribute -> Utils.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -255,14 +255,11 @@ public class CreateRuleFragment_2 extends Fragment {
         act_attribute.setOnItemClickListener((adapterView, view, i, l) -> {
             act_attribute.setSelection(0);
 
-            selectedValueType = attributes.get(i).type;
+            selectedValueType = attributes.get(i).getType();
             setValueLayout(act_attribute.getText().toString());
 
-
-            List<String> operators = parentActivity.getRuleOperator(parentActivity, selectedValueType);
-
-            parentActivity.rule.setAttributeName(attributes.get(i).name);
-            Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).name);
+            parentActivity.rule.setAttributeName(attributes.get(i).getName());
+            Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
         });
     }
 
@@ -326,7 +323,7 @@ public class CreateRuleFragment_2 extends Fragment {
     }
 
     private void setDeviceAdapter(String deviceType) {
-        devices = Device.getDevicesList().stream()
+        devices = Device.getDeviceList().stream()
                 .filter(device -> device.type.equals(deviceType)).collect(Collectors.toList());
 
         List<String> deviceNames = devices.stream().map(device -> device.name).collect(Collectors.toList());

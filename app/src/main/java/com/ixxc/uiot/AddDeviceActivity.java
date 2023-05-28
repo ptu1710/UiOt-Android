@@ -112,7 +112,7 @@ public class AddDeviceActivity extends AppCompatActivity {
         modelsType = new ArrayList<>();
         modelsName = new ArrayList<>();
 
-        parentDevices = Device.getDevicesList();
+        parentDevices = Device.getDeviceList();
 
         parentNames = parentDevices.stream().map(device -> device.name).collect(Collectors.toList());
         parentNames.add(0, "None");
@@ -159,20 +159,20 @@ public class AddDeviceActivity extends AppCompatActivity {
             }
 
             List<Attribute> optionalAttributes = result.get(0).attributeDescriptors.stream()
-                    .filter(item -> item.optional)
+                    .filter(Attribute::isOptional)
                     .collect(Collectors.toList());
 
             CharSequence[] optionalName = new CharSequence[optionalAttributes.size()];
 
             for (Attribute a : optionalAttributes) {
-                optionalName[optionalAttributes.indexOf(a)] = a.name;
+                optionalName[optionalAttributes.indexOf(a)] = a.getName();
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(AddDeviceActivity.this);
             builder.setTitle("Select optional attribute");
             builder.setMultiChoiceItems(optionalName, null, (dialog, i, isChecked) -> {
                 if (isChecked) {
-                    Toast.makeText(AddDeviceActivity.this, optionalAttributes.get(i).name, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddDeviceActivity.this, optionalAttributes.get(i).getName(), Toast.LENGTH_SHORT).show();
                     selectedOptional.add(optionalAttributes.get(i));
                 }
             });
@@ -193,7 +193,7 @@ public class AddDeviceActivity extends AppCompatActivity {
             }
 
             List<Attribute> requireAttributes = result.get(0).attributeDescriptors.stream()
-                    .filter(item -> !item.optional)
+                    .filter(item -> !item.isOptional())
                     .collect(Collectors.toList());
 
             List<Attribute> finalAttributes = Stream.concat(requireAttributes.stream(), selectedOptional.stream())
@@ -202,9 +202,9 @@ public class AddDeviceActivity extends AppCompatActivity {
             JsonObject attributes = new JsonObject();
 
             for (Attribute a : finalAttributes) {
-                String name = a.name;
-                String type = a.type;
-                JsonObject meta = a.meta;
+                String name = a.getName();
+                String type = a.getType();
+                JsonObject meta = a.getMeta();
 
                 JsonObject attribute = new JsonObject();
                 attribute.addProperty("name", name);

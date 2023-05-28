@@ -31,8 +31,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:inputType="none"
-            android:text="Type"
-            android:textStyle="bold" />
+            android:text="@string/type"
+            android:textStyle="bold"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -54,8 +55,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:inputType="none"
-            android:text="Device Type"
-            android:textStyle="bold" />
+            android:text="@string/device_type"
+            android:textStyle="bold"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -76,8 +78,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="none"
-            android:text="Parent"
-            android:textStyle="bold" />
+            android:text="@string/parent"
+            android:textStyle="bold"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,7 +101,7 @@
             android:id="@+id/et_device_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Device Name"
+            android:hint="@string/device_name"
             android:singleLine="true"
             android:textStyle="bold" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -108,7 +111,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Add"
+        android:text="@string/add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_add_optional" />
@@ -120,7 +123,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
-        android:text="Add optional attributes"
+        android:text="@string/add_optional_attributes"
         android:textAllCaps="false"
         android:textColor="@color/bg"
         app:layout_constraintStart_toStartOf="parent"

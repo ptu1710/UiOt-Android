@@ -21,7 +21,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:hint="@string/new_name"
-        android:visibility="gone"
+        android:visibility="visible"
         app:boxBackgroundColor="#FFFFFF"
         app:boxBackgroundMode="outline"
         app:endIconMode="clear_text"
@@ -46,7 +46,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:hint="@string/parent"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@+id/iv_clear_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_username">
@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="@string/public_read"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_parent" />
 
@@ -78,14 +78,14 @@
         android:layout_height="28dp"
         android:layout_marginEnd="16dp"
         android:clickable="true"
+        android:contentDescription="@string/cancel"
         android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/til_parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/til_parent"
         app:srcCompat="@drawable/ic_cancel"
-        app:tint="@color/black"
-        android:contentDescription="@string/cancel" />
+        app:tint="@color/black" />
 
     <Button
         android:id="@+id/btn_add_attribute"
@@ -95,7 +95,7 @@
         android:layout_marginEnd="16dp"
         android:text="@string/add_attribute"
         android:textColor="@color/bg"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_parent" />
 

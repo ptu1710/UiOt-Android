@@ -1,13 +1,14 @@
 package com.ixxc.uiot.Adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ixxc.uiot.Interface.MetaItemListener;
@@ -19,34 +20,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>{
-
-    Context context;
+    Context ctx;
     List<MetaItem> metaItems;
-    ArrayList<MetaItem> items_chosen= new ArrayList<>();
-    MetaItemListener metaItemListener;
+    List<MetaItem> selected_items = new ArrayList<>();
+    MetaItemListener listener;
 
-    public ConfigurationAdapter(Context context, List<MetaItem> metaItems, MetaItemListener metaItemListener) {
-        this.context = context;
+    public ConfigurationAdapter(Context ctx, List<MetaItem> metaItems, MetaItemListener listener) {
+        this.ctx = ctx;
         this.metaItems = metaItems;
-        this.metaItemListener = metaItemListener;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ConfigurationAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.configuration_item, parent, false));
+        return new ViewHolder(LayoutInflater.from(ctx).inflate(R.layout.checkbox_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ConfigurationAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(ConfigurationAdapter.ViewHolder holder, int position) {
         String name = Utils.formatString(metaItems.get(position).getName());
-        holder.cb_config_item.setText(name);
-        holder.cb_config_item.setOnClickListener(v -> {
-            if(holder.cb_config_item.isChecked()) items_chosen.add(metaItems.get(position));
-            else items_chosen.remove(metaItems.get(position));
-
-            metaItemListener.metaItemListener(items_chosen);
-        });
+        holder.cb_item.setText(name);
+        holder.cb_item.setButtonTintList(ColorStateList.valueOf(ResourcesCompat.getColor(ctx.getResources(), R.color.bg, null)));
+        holder.cb_item.setOnClickListener(v -> listener.metaItemListener(selected_items));
     }
 
     @Override
@@ -55,12 +51,11 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        CheckBox cb_config_item;
+        CheckBox cb_item;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            cb_config_item = itemView.findViewById(R.id.cb_config_item);
+            cb_item = itemView.findViewById(R.id.cb_item);
         }
     }
 }

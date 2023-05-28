@@ -19,6 +19,9 @@
         android:theme="@style/Theme.UiOt"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".EditAttributeActivity"
+            android:exported="false" />
+        <activity
             android:name=".CreateRuleActivity"
             android:exported="false" />
         <activity

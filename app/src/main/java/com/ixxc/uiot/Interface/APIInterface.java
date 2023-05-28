@@ -67,7 +67,7 @@ public interface APIInterface {
 
     // Update  a device
     @PUT("api/master/asset/{assetId}")
-    Call<String> updateDeviceInfo(@Path("assetId") String deviceId, @Body JsonObject requestBody);
+    Call<String> updateDevice(@Path("assetId") String deviceId, @Body JsonObject requestBody);
 
     // Query all users
     @Headers("Content-Type: application/json")

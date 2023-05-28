@@ -73,9 +73,7 @@ public class APIManager {
             Response<List<Device>> response = call.execute();
             if (response.isSuccessful() && response.code() == 200) {
                 List<Device> deviceList = response.body();
-                Device.setDevicesList(deviceList);
-            } else {
-                Device.setDevicesList(null);
+                Device.setDeviceList(deviceList);
             }
 
             Device.devicesLoaded = true;
@@ -106,9 +104,9 @@ public class APIManager {
         return false;
     }
 
-    public static boolean updateDeviceInfo(String deviceId, JsonObject requestBody){
+    public static boolean updateDevice(String deviceId, JsonObject requestBody){
 
-        Call<String> call = userAI.updateDeviceInfo(deviceId, requestBody);
+        Call<String> call = userAI.updateDevice(deviceId, requestBody);
         try {
             Response<String> response = call.execute();
             return response.isSuccessful();

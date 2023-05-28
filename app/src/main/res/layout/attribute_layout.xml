@@ -25,7 +25,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/linear_label"
+                android:id="@+id/linear_attribute"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -104,7 +104,7 @@
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/add_configuration_item"
+                    android:text="@string/add_configuration_items"
                     android:textColor="@color/bg" />
             </LinearLayout>
         </LinearLayout>

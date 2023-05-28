@@ -23,6 +23,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,11 +37,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.AttributesAdapter;
-import com.ixxc.uiot.Adapter.ConfigurationAdapter;
 import com.ixxc.uiot.Interface.AttributeListener;
 import com.ixxc.uiot.Interface.MetaItemListener;
 import com.ixxc.uiot.Model.Attribute;
@@ -48,14 +47,15 @@ import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.Model.Model;
 import com.ixxc.uiot.Model.User;
 
-import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class DeviceInfoActivity extends AppCompatActivity implements MetaItemListener {
-    Toolbar toolbar;
     ActionBar actionBar;
+    Toolbar toolbar;
     Menu actionbarMenu;
     RecyclerView rv_attribute;
     EditText et_name;
@@ -70,17 +70,16 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     List<Attribute> attributeList;
     AttributesAdapter attributesAdapter;
     List<String> parentNames;
-    List<MetaItem> metaItems;
-    ArrayList<MetaItem> selectedMetaItems;
+    List<MetaItem> metaItems, selectedMetaItems;
     User me;
-
-    boolean isEditMode = false;
+    ActivityResultLauncher<Intent> launcher;
+    Dictionary<String, Attribute> changedAttributes = new Hashtable<>();
 
     @SuppressLint("NotifyDataSetChanged")
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
-        boolean isOK = bundle.getBoolean("DEVICE_OK");
         boolean isUpdated = bundle.getBoolean("UPDATE_DEVICE");
+        boolean isOK;
 
         if (isUpdated) {
             boolean isUpdateOK = bundle.getBoolean("UPDATE_OK");
@@ -92,7 +91,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             }
 
             isOK = isUpdateOK;
-        }
+        } else isOK = bundle.getBoolean("DEVICE_OK");
 
         if (isOK) {
             metaItems = MetaItem.getMetaItemList();
@@ -116,13 +115,26 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_info);
 
-        Intent intent = getIntent();
-        device_id = intent.getStringExtra("DEVICE_ID");
+        // Get the return data from child activity
+        launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result != null && result.getResultCode() == RESULT_OK) {
+                Intent data;
+                if ((data = result.getData()) != null) {
+                    Attribute attribute = new Gson().fromJson(data.getStringExtra("ATTRIBUTE"), Attribute.class);
+                    attributeList.replaceAll(a -> a.getName().equals(attribute.getName()) ? attribute : a);
+
+                    updateDevice();
+                }
+            }
+        });
+
+        device_id = getIntent().getStringExtra("DEVICE_ID");
 
         InitVars();
         InitViews();
         InitEvents();
 
+        toolbar.setTitle("Device Info");
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         assert actionBar != null;
@@ -177,8 +189,8 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             Button btn_add = dialog.findViewById(R.id.btn_add);
 
             List<String> types = current_model.getOptional().stream()
-                    .filter(item -> attributeList.stream().noneMatch(a -> a.name.equals(item.name)))
-                    .map(item -> item.name)
+                    .map(Attribute::getName)
+                    .filter(name -> attributeList.stream().noneMatch(a -> a.getName().equals(name)))
                     .collect(Collectors.toList());
 
             act_type.setText(R.string.custom);
@@ -231,7 +243,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         if (type.equals("Custom")) attribute = new Attribute(name, valueType);
         else {
             attribute = current_model.getOptional(type);
-            attribute.value = JsonParser.parseString("");
+            attribute.setValue(JsonParser.parseString(""));
         }
 
         attributeList.add(attribute);
@@ -244,7 +256,6 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         return s.substring(s.indexOf("(") + 1, s.indexOf(")"));
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private void showAttributes() {
         attributeList = current_device.getDeviceAttribute();
 
@@ -255,38 +266,10 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             }
 
             @Override
-            public void addConfigClicked(int position) {
-
-                Dialog dlg = new Dialog(DeviceInfoActivity.this);
-                dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dlg.setContentView(R.layout.add_configuration_items);
-                Window window = dlg.getWindow();
-                if (window == null) return;
-                Button btn_cancel = dlg.findViewById(R.id.btn_cancel_configuration);
-                btn_cancel.setOnClickListener(v12 -> dlg.dismiss());
-
-                Button btn_add = dlg.findViewById(R.id.btn_add_configuration);
-                btn_add.setOnClickListener(v1 -> {
-                    if (attributeList.get(position).meta == null) attributeList.get(position).meta = new JsonObject();
-
-                    for (MetaItem item : selectedMetaItems) {
-                        addMetaItem(position, item);
-                    }
-
-                    attributesAdapter.notifyDataSetChanged();
-                    dlg.dismiss();
-                });
-
-                window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-                RecyclerView rv_config_item = dlg.findViewById(R.id.rv_config_item);
-                rv_config_item.setLayoutManager(new LinearLayoutManager(DeviceInfoActivity.this));
-
-                JsonObject meta = attributeList.get(position).meta == null ? new JsonObject() : attributeList.get(position).meta;
-                List<MetaItem> ms = metaItems.stream().filter(item -> !meta.keySet().contains(item.getName())).collect(Collectors.toList());
-
-                ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(DeviceInfoActivity.this, ms, DeviceInfoActivity.this);
-                rv_config_item.setAdapter(configurationAdapter);
-                dlg.show();
+            public void onEditClicked(int position) {
+                Attribute attribute = attributeList.get(position);
+                launcher.launch(new Intent(DeviceInfoActivity.this, EditAttributeActivity.class)
+                        .putExtra("ATTRIBUTE", attribute.toJson().toString()));
             }
         });
 
@@ -295,25 +278,10 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         rv_attribute.setVisibility(View.VISIBLE);
     }
 
-    private void addMetaItem(int position, MetaItem item) {
-//        Log.d(GlobalVars.LOG_TAG, "addMetaItem: " + item.getType());
-        switch (item.getType()) {
-            case "boolean":
-                attributeList.get(position).meta.addProperty(item.getName(), false);
-                break;
-            case "text":
-                attributeList.get(position).meta.addProperty(item.getName(), "");
-                break;
-            default:
-                attributeList.get(position).meta.add(item.getName(), null);
-                break;
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (me.canWriteDevices()) {
-            getMenuInflater().inflate(R.menu.menu_edit, menu);
+            getMenuInflater().inflate(R.menu.menu_save_device, menu);
             actionbarMenu = menu;
         }
 
@@ -332,102 +300,73 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             clipboard.setPrimaryClip(clip);
 
             Toast.makeText(this, "Device ID copied to clipboard", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.edit || id == R.id.save || id == R.id.cancel) {
-            editModeEnable(id == R.id.cancel);
-            actionbarMenu.findItem(R.id.edit).setVisible(!isEditMode);
-            actionbarMenu.findItem(R.id.copy).setVisible(!isEditMode);
-            actionbarMenu.findItem(R.id.save).setVisible(isEditMode);
-            actionbarMenu.findItem(R.id.cancel).setVisible(isEditMode);
+        } else if (id == R.id.save) {
+            // TODO: Save device info
+            Log.d(GlobalVars.LOG_TAG, "onOptionsItemSelected: Save menu item clicked");
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private void editModeEnable(boolean isCancel) {
-        isEditMode = attributesAdapter.isEditMode = !isEditMode;
+    private void updateDevice() {
+        et_name.setText(current_device.name);
+        rv_attribute.clearFocus();
 
-        if (isEditMode && !isCancel) {
-            til_name.setVisibility(View.VISIBLE);
-            til_parent.setVisibility(View.VISIBLE);
-            iv_clear_parent.setVisibility(View.VISIBLE);
-            cb_public.setVisibility(View.VISIBLE);
-            btn_add_attribute.setVisibility(View.VISIBLE);
-            et_name.setText(current_device.name);
-            attributesAdapter.notifyDataSetChanged();
-        } else {
-            if (!isCancel) {
-                rv_attribute.clearFocus();
+        JsonObject body = new JsonObject();
 
-                JsonObject body = new JsonObject();
+        current_device.path.clear();
+        current_device.path.add(current_device.id);
 
-                current_device.path.clear();
-                current_device.path.add(current_device.id);
-
-                if (!selected_id.equals("")) {
-                    current_device.path.add(selected_id);
-                    body.addProperty("parentId", selected_id);
-                }
-
-                JsonElement path = new Gson().toJsonTree(current_device.path);
-                body.add("path", path);
-
-                Enumeration<String> keys = AttributesAdapter.changedAttributes.keys();
-                while (keys.hasMoreElements()) {
-                    String key = keys.nextElement();
-                    attributeList.add(AttributesAdapter.changedAttributes.get(key));
-                }
-
-                body.addProperty("id", current_device.id);
-                body.addProperty("version", current_device.version);
-                body.addProperty("createdOn", current_device.createdOn);
-                // Change name
-                body.addProperty("name", String.valueOf(et_name.getText()));
-
-                body.addProperty("accessPublicRead", cb_public.isChecked());
-                body.addProperty("realm", current_device.realm);
-                body.addProperty("type", current_device.type);
-
-                // Change attributes
-                for (Attribute a : attributeList) {
-                    current_device.attributes.add(a.name, a.toJson());
-                }
-
-                body.add("attributes", current_device.attributes);
-
-                Log.d(GlobalVars.LOG_TAG, body.toString());
-
-                // Commit device changes here
-                new Thread(() -> {
-                    boolean updated = APIManager.updateDeviceInfo(device_id, body);
-                    current_device = APIManager.getDevice(device_id);
-
-                    Message message = handler.obtainMessage();
-                    Bundle bundle = new Bundle();
-                    bundle.putBoolean("UPDATE_DEVICE", true);
-                    bundle.putBoolean("UPDATE_OK", updated);
-                    message.setData(bundle);
-                    handler.sendMessage(message);
-                }).start();
-            } else {
-                Message message = handler.obtainMessage();
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("DEVICE_OK", true);
-                message.setData(bundle);
-                handler.sendMessage(message);
-            }
-
-            til_name.setVisibility(View.GONE);
-            til_parent.setVisibility(View.GONE);
-            iv_clear_parent.setVisibility(View.GONE);
-            cb_public.setVisibility(View.GONE);
-            btn_add_attribute.setVisibility(View.GONE);
+        if (!selected_id.equals("")) {
+            current_device.path.add(selected_id);
+            body.addProperty("parentId", selected_id);
         }
+
+        JsonElement path = new Gson().toJsonTree(current_device.path);
+        body.add("path", path);
+
+        Enumeration<String> keys = changedAttributes.keys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            attributeList.add(changedAttributes.get(key));
+        }
+
+        body.addProperty("id", current_device.id);
+        body.addProperty("version", current_device.version);
+        body.addProperty("createdOn", current_device.createdOn);
+
+        // Change name
+        body.addProperty("name", String.valueOf(et_name.getText()));
+
+        body.addProperty("accessPublicRead", cb_public.isChecked());
+        body.addProperty("realm", current_device.realm);
+        body.addProperty("type", current_device.type);
+
+        // Change attributes
+        for (Attribute a : attributeList) {
+            current_device.attributes.add(a.getName(), a.toJson());
+        }
+
+        body.add("attributes", current_device.attributes);
+
+        Log.d(GlobalVars.LOG_TAG, body.toString());
+
+        // Commit device changes here
+        new Thread(() -> {
+            boolean updated = APIManager.updateDevice(device_id, body);
+            current_device = APIManager.getDevice(device_id);
+
+            Message message = handler.obtainMessage();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("UPDATE_DEVICE", true);
+            bundle.putBoolean("UPDATE_OK", updated);
+            message.setData(bundle);
+            handler.sendMessage(message);
+        }).start();
     }
 
     @Override
-    public void metaItemListener(ArrayList<MetaItem> metaItems) {
+    public void metaItemListener(List<MetaItem> metaItems) {
         selectedMetaItems = metaItems;
     }
 }

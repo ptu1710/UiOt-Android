@@ -71,21 +71,6 @@ public class DeviceTreeViewAdapter extends TreeViewAdapter {
     }
 
     @Override
-    public void setTreeNodeClickListener(OnTreeNodeClickListener listener) {
-        super.setTreeNodeClickListener(listener);
-    }
-
-    @Override
-    public void setTreeNodeLongClickListener(OnTreeNodeLongClickListener listener) {
-        super.setTreeNodeLongClickListener(listener);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull TreeViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
-    }
-
-    @Override
     public void onViewDetachedFromWindow(@NonNull TreeViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         holder.itemView.clearAnimation();
@@ -144,7 +129,6 @@ public class DeviceTreeViewAdapter extends TreeViewAdapter {
                 toDetails.putExtra("DEVICE_ID", device.id);
                 ctx.startActivity(toDetails);
             });
-
 
 //            if (selectedPosition != -1 && (getAbsoluteAdapterPosition() >= selectedPosition + 1 && getAbsoluteAdapterPosition() <= selectedPosition + node.getChildren().size())) {
 //                itemView.startAnimation(AnimationUtils.loadAnimation(ctx, R.anim.devices_rv_anim));

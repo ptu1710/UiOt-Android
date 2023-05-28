@@ -40,13 +40,13 @@ public class Model {
 
     public List<Attribute> getOptional() {
         return attributeDescriptors.stream()
-                .filter(item -> item.optional)
+                .filter(Attribute::isOptional)
                 .collect(Collectors.toList());
     }
 
     public Attribute getOptional(String name) {
         return getOptional().stream()
-                .filter(a -> a.name.equals(name))
+                .filter(a -> a.getName().equals(name))
                 .collect(Collectors.toList()).get(0);
     }
 }

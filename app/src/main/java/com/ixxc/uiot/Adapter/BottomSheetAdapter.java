@@ -23,8 +23,8 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
 
     public BottomSheetAdapter(List<Attribute> attributes) {
         this.attributes = attributes;
-        this.attributeNames = attributes.stream().map(attribute -> attribute.name).collect(Collectors.toList());
-        this.attributeValues = attributes.stream().map(attribute -> attribute.value).collect(Collectors.toList());
+        this.attributeNames = attributes.stream().map(Attribute::getName).collect(Collectors.toList());
+        this.attributeValues = attributes.stream().map(Attribute::getValue).collect(Collectors.toList());
     }
 
     @NonNull
@@ -39,8 +39,8 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
 
         String label;
 
-        if (attributes.get(position).meta != null && attributes.get(position).meta.get("label") != null) {
-            label = attributes.get(position).meta.get("label").getAsString();
+        if (attributes.get(position).getMeta() != null && attributes.get(position).getMeta().get("label") != null) {
+            label = attributes.get(position).getMeta().get("label").getAsString();
         } else {
             label = attributeNames.get(position);
         }

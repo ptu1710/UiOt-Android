@@ -85,7 +85,7 @@ public class HomeFragment extends Fragment {
                 APIManager.getUserRoles();
             }
 
-            if (Device.getDevicesList() == null || Device.getDevicesList().size() == 0) {
+            if (Device.getDeviceList() == null || Device.getDeviceList().size() == 0) {
                 String queryString = "{ \"realm\": { \"name\": \"master\" }}";
                 JsonObject query = JsonParser.parseString(queryString).getAsJsonObject();
                 APIManager.queryDevices(query);

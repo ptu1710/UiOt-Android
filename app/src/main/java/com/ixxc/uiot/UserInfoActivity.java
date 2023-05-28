@@ -114,8 +114,10 @@ public class UserInfoActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
-        actionBar.setTitle("...");
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("...");
+        }
     }
 
     private void InitViews() {
@@ -182,15 +184,13 @@ public class UserInfoActivity extends AppCompatActivity {
             iv_roles_expand.startAnimation(a);
         });
 
-        btn_custom_role_set.setOnClickListener(view -> {
-            customRoleDialog.show();
-        });
+        btn_custom_role_set.setOnClickListener(view -> customRoleDialog.show());
 
         btn_linked_devices.setOnClickListener(view -> {
             if (isGetDataDone) {
                 for (LinkedDevice device : linkedDeviceList) {
-                    int index = IntStream.range(0, Device.getDevicesList().size())
-                            .filter(i -> Device.getDevicesList().get(i).id.equals(device.id.get("assetId").getAsString()))
+                    int index = IntStream.range(0, Device.getDeviceList().size())
+                            .filter(i -> Device.getDeviceList().get(i).id.equals(device.id.get("assetId").getAsString()))
                             .findFirst()
                             .orElse(-1);
 
@@ -335,7 +335,7 @@ public class UserInfoActivity extends AppCompatActivity {
         linkedDevicesDialog = linkedDevicesDialog();
         linkedDevicesDialog.create();
 
-        btn_linked_devices.setText(linkedDeviceList.size() - user.getNumofConsoles() + " device(s)");
+        btn_linked_devices.setText(String.join(" ", String.valueOf(linkedDeviceList.size() - user.getNumofConsoles()), "device(s)"));
 
         pb_user_info.setVisibility(View.GONE);
 
@@ -366,7 +366,7 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private AlertDialog linkedDevicesDialog() {
-        List<Device> devices = Device.getDevicesList();
+        List<Device> devices = Device.getDeviceList();
         CharSequence[] devicesName = new CharSequence[devices.size()];
 
         for (Device device : devices) devicesName[devices.indexOf(device)] = device.name;
@@ -465,8 +465,8 @@ public class UserInfoActivity extends AppCompatActivity {
         String firstName = String.valueOf(et_firstname.getText());
         String lastName = String.valueOf(et_lastname.getText());
 
-        String pwd = String.valueOf(et_pwd.getText());
-        String rePwd = String.valueOf(et_rePwd.getText());
+//        String pwd = String.valueOf(et_pwd.getText());
+//        String rePwd = String.valueOf(et_rePwd.getText());
 
         body.addProperty("enabled", enabled);
         body.addProperty("email", email);

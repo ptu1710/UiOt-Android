@@ -1,95 +1,35 @@
 package com.ixxc.uiot.Model;
 
-import android.text.InputType;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.annotations.SerializedName;
 
-public class Attribute {
-    public String name;
-    public String type;
-    public JsonObject meta;
-    public boolean optional;
-    public JsonElement value = JsonParser.parseString("");
+import java.io.Serializable;
 
-    public static boolean canShowValue;
+public class Attribute implements Serializable {
+    private final String name;
+    private final String type;
+    private JsonObject meta;
+    private JsonElement value = JsonParser.parseString("");
+    private final long timestamp;
+    private final boolean optional;
+    private boolean isExpanded = false;
+
+    public String getName() { return name; }
+    public String getType() { return type; }
+    public void setMeta(JsonObject meta) { this.meta = meta; }
+    public JsonObject getMeta() { return meta; }
+    public void setValue(JsonElement value) { this.value = value; }
+    public JsonElement getValue() { return value; }
+    public boolean isOptional() { return optional; }
+    public boolean isExpanded() { return isExpanded; }
+    public void setExpanded(boolean expanded) { this.isExpanded = expanded; }
 
     public Attribute(String name, String type) {
         this.name = name;
         this.type = type;
-    }
-
-    @SerializedName("timestamp")
-    public long timestamp;
-
-    public String getMetaValue(String name) {
-        if (meta == null) return "";
-
-        JsonElement element = this.meta.get(name);
-
-        if (element == null || element.isJsonNull()) return "";
-        else if (element.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonObject()));
-        else if (element.isJsonArray()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonArray()));
-        else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) return String.valueOf(element.getAsInt());
-        else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isBoolean()) return String.valueOf(element.getAsBoolean());
-        else return element.getAsString();
-    }
-
-    public String getValueString() {
-        if (value.isJsonNull()) return "";
-        else if (value.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(value.getAsJsonObject()));
-        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return String.valueOf(value.getAsInt());
-        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return String.valueOf(value.getAsInt());
-        else return value.getAsString();
-    }
-
-    public static int GetInputType(String type){
-        canShowValue = false;
-
-        switch (type.trim()){
-            case "JSONObject":
-            case "JSONArray":
-            case "GEO_JSONPoint":
-            case "JSON":
-            case "booleanMap":
-            case "integerMap":
-            case "numberMap":
-            case "multivaluedTextMap":
-            case "agentLink":
-            case "attributeLink[]":
-                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
-            case "timestamp":
-            case "timestampISO8601":
-            case "dateAndTime":
-            case "timeDurationISO8601":
-            case "periodDurationISO8601":
-            case "timeAndPeriodDurationISO8601":
-            case "integer":
-            case "long":
-            case "bigInteger":
-            case "number":
-            case "bigNumber":
-            case "TCP_IPPortNumber":
-            case "positiveInteger":
-            case "positiveNumber":
-            case "negativeInteger":
-            case "negativeNumber":
-            case "integerByte":
-            case "byte":
-                canShowValue = true;
-                return InputType.TYPE_CLASS_NUMBER;
-            case "attributeLink":
-            case "HTTP_URL":
-            case "WS_URL":
-                return InputType.TYPE_TEXT_VARIATION_URI;
-            case "email":
-                return InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-            default:
-                return InputType.TYPE_CLASS_TEXT;
-
-        }
+        this.optional = false;
+        this.timestamp = System.currentTimeMillis();
     }
 
     public static String formatJsonValue(String text){
@@ -123,6 +63,54 @@ public class Attribute {
         }
 
         return json.toString();
+    }
+
+    public String getMetaValue(String name) {
+        if (meta == null) return "";
+
+        JsonElement element = this.meta.get(name);
+
+        if (element == null || element.isJsonNull()) return "";
+        else if (element.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonObject()));
+        else if (element.isJsonArray()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonArray()));
+        else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) return String.valueOf(element.getAsInt());
+        else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isBoolean()) return String.valueOf(element.getAsBoolean());
+        else return element.getAsString();
+    }
+
+    public String getValueString() {
+        if (value == null || value.isJsonNull()) return "";
+        else if (value.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(value.getAsJsonObject()));
+        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return String.valueOf(value.getAsInt());
+        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return String.valueOf(value.getAsInt());
+        else return value.getAsString();
+    }
+
+    public boolean canShowValue(String type) {
+        switch (type) {
+            case "timestamp":
+            case "timestampISO8601":
+            case "dateAndTime":
+            case "timeDurationISO8601":
+            case "periodDurationISO8601":
+            case "timeAndPeriodDurationISO8601":
+            case "integer":
+            case "long":
+            case "bigInteger":
+            case "number":
+            case "bigNumber":
+            case "TCP_IPPortNumber":
+            case "positiveInteger":
+            case "positiveNumber":
+            case "negativeInteger":
+            case "negativeNumber":
+            case "integerByte":
+            case "byte":
+            case "boolean":
+                return true;
+        }
+
+        return false;
     }
 
     public JsonObject toJson() {

@@ -141,7 +141,7 @@ public class MapsFragment extends Fragment {
             // Add device markers to the map
             ArrayList<PointAnnotationOptions> markerList = new ArrayList<>();
 
-            for (Device device : Device.getDevicesList()) {
+            for (Device device : Device.getDeviceList()) {
                 if (device.getPoint() == null) continue;
 
                 Bitmap bitmap = device.getIconPinBitmap(parentActivity);
