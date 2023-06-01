@@ -1,14 +1,21 @@
 package com.ixxc.uiot;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -261,6 +268,55 @@ public class CreateRuleFragment_2 extends Fragment {
             parentActivity.rule.setAttributeName(attributes.get(i).getName());
             Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
         });
+
+        btn_message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OpenMessageDialog();
+            }
+        });
+    }
+
+    private void OpenMessageDialog() {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.message_dialog_layout);
+
+        Window window = dialog.getWindow();
+        if(window == null) return;
+
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        WindowManager.LayoutParams windowAttributes = window.getAttributes();
+        windowAttributes.gravity = Gravity.CENTER;
+        window.setAttributes(windowAttributes);
+
+        dialog.setCancelable(true);
+
+        EditText edt_mess = dialog.findViewById(R.id.edt_message);
+        Button btn_OK = dialog.findViewById(R.id.btn_OK);
+        Button btn_Cancel = dialog.findViewById(R.id.btn_Cancel);
+
+        btn_Cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_OK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("AAA", edt_mess.getText().toString());
+                parentActivity.rule.setMessage(edt_mess.getText().toString());
+
+                dialog.dismiss();
+
+            }
+        });
+
+        dialog.show();
     }
 
     private void setValueLayout(String s) {

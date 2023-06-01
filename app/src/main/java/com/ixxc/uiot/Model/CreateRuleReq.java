@@ -8,7 +8,7 @@ import com.mapbox.bindgen.Value;
 import java.util.List;
 
 public class CreateRuleReq {
-    String ruleName, ruleAction;
+    String ruleName, ruleAction, message;
 
     JsonObject recurrence, attributeName, attributeValue;
     JsonArray ruleTypes, deviceIds, targetIds;
@@ -19,6 +19,9 @@ public class CreateRuleReq {
 
     public void setRuleName(String ruleName) {
         this.ruleName = ruleName;
+    }
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getRuleName() {
