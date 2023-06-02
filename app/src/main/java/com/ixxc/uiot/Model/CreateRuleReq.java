@@ -8,9 +8,9 @@ import com.mapbox.bindgen.Value;
 import java.util.List;
 
 public class CreateRuleReq {
-    String ruleName, ruleAction, message;
+    String ruleName, ruleAction;
 
-    JsonObject recurrence, attributeName, attributeValue;
+    JsonObject recurrence, attributeName, attributeValue, messageObj;
     JsonArray ruleTypes, deviceIds, targetIds;
 
     public void setRecurrence(JsonObject recurrence) {
@@ -19,9 +19,6 @@ public class CreateRuleReq {
 
     public void setRuleName(String ruleName) {
         this.ruleName = ruleName;
-    }
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getRuleName() {
@@ -102,6 +99,39 @@ public class CreateRuleReq {
         this.targetIds = targetIds;
     }
 
+    public void setMessageObj(String type, String mess){
+        JsonObject message = new JsonObject();
+        if(type.equals("Email")){
+            message.addProperty("type", "email");
+            message.addProperty("subject", "Subject Email");
+            message.addProperty("html", mess);
+        } else if (type.equals("Push Notification")) {
+            JsonObject action = new JsonObject();
+            action.addProperty("openInBrowser", true);
+            action.addProperty("url", "website URL");
+
+            JsonObject buttons_1= new JsonObject();
+            buttons_1.add("action",action);
+            buttons_1.addProperty("title","action button");
+
+            JsonObject buttons_2= new JsonObject();
+            buttons_2.addProperty("title","decline button");
+
+            JsonArray buttons = new JsonArray();
+            buttons.add(buttons_1);
+            buttons.add(buttons_2);
+
+            message.addProperty("type", "push");
+            message.addProperty("title", "Title Notification");
+            message.addProperty("body", mess);
+            message.add("action",action);
+            message.add("buttons",buttons);
+
+        }
+
+        this.messageObj = message;
+    }
+
     public JsonObject toJson() {
         // level 8
         JsonObject attributes = new JsonObject();
@@ -114,8 +144,8 @@ public class CreateRuleReq {
         attributeItems.add(attributeItem);
         attributes.add("items", attributeItems);
 
-        JsonObject action = new JsonObject();
-        action.addProperty("openInBrowser", true);
+//        JsonObject action = new JsonObject();
+//        action.addProperty("openInBrowser", true);
 
         // level 7
         JsonObject assets = new JsonObject();
@@ -126,11 +156,11 @@ public class CreateRuleReq {
         JsonObject users = new JsonObject();
         users.add("ids", targetIds);
 
-        JsonObject message = new JsonObject();
-        message.addProperty("type", "push");
-        message.addProperty("title", "Rule Notification");
-        message.addProperty("body", "Click to view the rule details.");
-        message.add("action", action);
+//        JsonObject message = new JsonObject();
+//        message.addProperty("type", "push");
+//        message.addProperty("title", "Rule Notification");
+//        message.addProperty("body", "Click to view the rule details.");
+//        message.add("action", action);
 
         // level 6
         JsonArray groupItems = new JsonArray();
@@ -142,7 +172,7 @@ public class CreateRuleReq {
         target.add("users", users);
 
         JsonObject notification = new JsonObject();
-        notification.add("message", message);
+        notification.add("message", messageObj);
 
         // level 5
         JsonObject group = new JsonObject();
@@ -161,8 +191,8 @@ public class CreateRuleReq {
         JsonArray then = new JsonArray();
         JsonObject thenObject = new JsonObject();
         thenObject.addProperty("action", ruleAction);
-
         thenObject.add("target", target);
+        thenObject.add("notification",notification);
 
 //        switch (ruleAction){
 //            case "target":

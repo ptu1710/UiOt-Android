@@ -173,6 +173,7 @@ public class CreateRuleFragment_2 extends Fragment {
             parentActivity.rule.setTargetIds(User.getMe().id);
 
             selectedModel = models.get(i);
+            Log.d("AAA", selectedModel);
 
             Device device = new Device(selectedModel.replaceAll(" ",""));
             iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
@@ -309,8 +310,7 @@ public class CreateRuleFragment_2 extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.d("AAA", edt_mess.getText().toString());
-                parentActivity.rule.setMessage(edt_mess.getText().toString());
-
+                parentActivity.rule.setMessageObj(selectedModel,edt_mess.getText().toString());
                 dialog.dismiss();
 
             }
