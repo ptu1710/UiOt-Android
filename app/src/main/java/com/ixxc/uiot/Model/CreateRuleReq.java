@@ -71,26 +71,27 @@ public class CreateRuleReq {
                 attributeValue.addProperty("value", value);
 
         }
+        attributeValue.addProperty("match","EXACT");
+        attributeValue.addProperty("negate", false);
+        attributeValue.addProperty("operator", valueObject.toUpperCase());
 
         switch (valueObject){
             case "Is true":
             case "Is false":
+                attributeValue.addProperty("predicateType","boolean");
                 boolean bool = ((String) valueObject).contains("true");
                 attributeValue.addProperty("value", bool);
                 break;
             case "Has no value":
+                attributeValue.addProperty("predicateType","value-empty");
+                attributeValue.remove("value");
+                break;
             case "Has a value":
+                attributeValue.addProperty("predicateType","value-empty");
+                attributeValue.addProperty("negate", true);
                 attributeValue.remove("value");
 
         }
-
-        attributeValue.addProperty("negate", false);
-        attributeValue.addProperty("operator", valueObject.toUpperCase());
-
-        if(value.equals("null")){
-            attributeValue.remove("value");
-        }
-
 
 
         this.attributeValue = attributeValue;
