@@ -96,7 +96,7 @@ public class CreateRuleActivity extends AppCompatActivity {
         jsonObject.addProperty("name", rule.getRuleName());
         jsonObject.addProperty("lang", "JSON");
         jsonObject.addProperty("realm", "master");
-        jsonObject.add("rules", rule.toJson());
+        jsonObject.addProperty("rules", rule.toJson().toString());
 
         new Thread(() -> {
             int ruleId = APIManager.createRule(jsonObject);

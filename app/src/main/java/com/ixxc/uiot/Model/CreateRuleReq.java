@@ -1,6 +1,7 @@
 package com.ixxc.uiot.Model;
 
-import com.google.errorprone.annotations.Var;
+import android.util.Log;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mapbox.bindgen.Value;
@@ -8,13 +9,29 @@ import com.mapbox.bindgen.Value;
 import java.util.List;
 
 public class CreateRuleReq {
-    String ruleName, ruleAction;
+    String ruleName, ruleAction,ruleAsset,value_then,attributeName_then;
 
-    JsonObject recurrence, attributeName, attributeValue, messageObj;
+    JsonObject recurrence;
+    JsonObject attributeName;
+    JsonObject attributeValue;
+
+    public void setValue_then(String value_then) {
+        this.value_then = value_then;
+    }
+
+    public void setAttributeName_then(String attributeName_then) {
+        this.attributeName_then = attributeName_then;
+    }
+
+    JsonObject messageObj;
     JsonArray ruleTypes, deviceIds, targetIds;
 
     public void setRecurrence(JsonObject recurrence) {
         this.recurrence = recurrence;
+    }
+
+    public void setRuleAsset(String ruleAsset) {
+        this.ruleAsset = ruleAsset;
     }
 
     public void setRuleName(String ruleName) {
@@ -50,8 +67,8 @@ public class CreateRuleReq {
                 attributeValue.addProperty("value",Float.valueOf(value));
                 break;
             default:
-                attributeValue.addProperty("predicateType", "text");
-                attributeValue.addProperty("value", valueObject);
+                attributeValue.addProperty("predicateType", "string");
+                attributeValue.addProperty("value", value);
 
         }
 
@@ -110,8 +127,11 @@ public class CreateRuleReq {
             action.addProperty("openInBrowser", true);
             action.addProperty("url", "website URL");
 
+            JsonObject action_btn1 = action;
+            action_btn1.remove("openInBrowser");
+
             JsonObject buttons_1= new JsonObject();
-            buttons_1.add("action",action);
+            buttons_1.add("action",action_btn1);
             buttons_1.addProperty("title","action button");
 
             JsonObject buttons_2= new JsonObject();
@@ -132,6 +152,18 @@ public class CreateRuleReq {
         this.messageObj = message;
     }
 
+    public Boolean isNumeric(String str) {
+        Log.d("AAA", "isNumeric: " + str);
+        if (str == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(str);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
     public JsonObject toJson() {
         // level 8
         JsonObject attributes = new JsonObject();
@@ -151,16 +183,17 @@ public class CreateRuleReq {
         JsonObject assets = new JsonObject();
         assets.add("types", ruleTypes);
         assets.add("attributes", attributes);
-        assets.add("ids", deviceIds);
+        if(deviceIds != null) assets.add("ids", deviceIds);
+
 
         JsonObject users = new JsonObject();
         users.add("ids", targetIds);
 
-//        JsonObject message = new JsonObject();
-//        message.addProperty("type", "push");
-//        message.addProperty("title", "Rule Notification");
-//        message.addProperty("body", "Click to view the rule details.");
-//        message.add("action", action);
+        JsonArray types = new JsonArray();
+        types.add(ruleAsset);
+
+        JsonObject matchedAssets = new JsonObject();
+        matchedAssets.add("types",types);
 
         // level 6
         JsonArray groupItems = new JsonArray();
@@ -170,6 +203,7 @@ public class CreateRuleReq {
 
         JsonObject target = new JsonObject();
         target.add("users", users);
+        target.add("matchedAssets",matchedAssets);
 
         JsonObject notification = new JsonObject();
         notification.add("message", messageObj);
@@ -193,16 +227,18 @@ public class CreateRuleReq {
         thenObject.addProperty("action", ruleAction);
         thenObject.add("target", target);
         thenObject.add("notification",notification);
+        thenObject.addProperty("value",value_then);
 
-//        switch (ruleAction){
-//            case "target":
-//                thenObject.add("target", target);
-//                break;
-//            case "notification":
-//                thenObject.add("notification", notification);
-//                break;
-//        }
+        try {
+            if(isNumeric(value_then)){
+                thenObject.addProperty("value", Double.parseDouble(value_then));
+            } else if (value_then.contains("true") || value_then.contains("false")) {
+                thenObject.addProperty("value",Boolean.parseBoolean(value_then));
+            }
+        }
+        catch (Exception e){}
 
+        thenObject.addProperty("attributeName",attributeName_then);
 
 
         then.add(thenObject);

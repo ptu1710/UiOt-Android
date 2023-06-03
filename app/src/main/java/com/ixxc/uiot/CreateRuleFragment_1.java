@@ -154,15 +154,17 @@ public class CreateRuleFragment_1 extends Fragment {
                     break;
 
             }
-            parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(),"null");
+            parentActivity.rule.setAttributeValue(0, act_operator.getText().toString(),"null");
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
+                    Log.d("AAA", "Value_attr " + Objects.requireNonNull(tie_value.getText()).toString());
                     parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
             });
 
             Log.d(GlobalVars.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
         });
+
 
     }
     // TODO: remove asset

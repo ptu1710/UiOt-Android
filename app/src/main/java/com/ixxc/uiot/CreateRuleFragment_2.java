@@ -6,11 +6,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -19,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CreateRuleFragment_2 extends Fragment {
@@ -168,14 +173,21 @@ public class CreateRuleFragment_2 extends Fragment {
     // TODO: remove asset
     private void InitEvents() {
         act_actions.setOnItemClickListener((adapterView, view, i, l) -> {
-            if (i == 0) parentActivity.rule.setRuleAction("notification");
 
             parentActivity.rule.setTargetIds(User.getMe().id);
 
             selectedModel = models.get(i);
-            Log.d("AAA", selectedModel);
+            switch (selectedModel){
+                case "Email":
+                case "Push Notification":
+                    parentActivity.rule.setRuleAction("notification");
+                    break;
+                default:
+                    parentActivity.rule.setRuleAsset(selectedModel.replaceAll(" ",""));
+                    parentActivity.rule.setRuleAction("write-attribute");
+            }
 
-            Device device = new Device(selectedModel.replaceAll(" ",""));
+            Device device = new Device(selectedModel);
             iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
 
             switch (selectedModel){
@@ -266,7 +278,48 @@ public class CreateRuleFragment_2 extends Fragment {
             selectedValueType = attributes.get(i).getType();
             setValueLayout(act_attribute.getText().toString());
 
-            parentActivity.rule.setAttributeName(attributes.get(i).getName());
+            cb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(cb.isChecked()){
+                        parentActivity.rule.setValue_then("true");
+                    }
+                    else{
+                        parentActivity.rule.setValue_then("false");
+                    }
+                }
+            });
+
+            tie_value.setOnFocusChangeListener((view1, focused) -> {
+                if(!focused){
+                    Log.d("AAA", "Value_then " + tie_value.getText().toString());
+                    parentActivity.rule.setValue_then(Objects.requireNonNull(tie_value.getText()).toString());
+                }
+
+
+            });
+
+            tie_value.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                    if (i == EditorInfo.IME_ACTION_DONE) {
+                        parentActivity.rule.setValue_then(Objects.requireNonNull(tie_value.getText()).toString());
+                        return true;
+
+                    }
+                    return false;
+                }
+            });
+
+            act_unlock.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    parentActivity.rule.setValue_then(list_unlock.get(i).replaceAll(" ","_"));
+                }
+            });
+
+            //parentActivity.rule.setAttributeName(attributes.get(i).getName());
+            parentActivity.rule.setAttributeName_then(attributes.get(i).getName());
             Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
         });
 
@@ -276,6 +329,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 OpenMessageDialog();
             }
         });
+
     }
 
     private void OpenMessageDialog() {
