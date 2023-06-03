@@ -110,7 +110,6 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         } else {
             holder.iv_expand.setRotation(90);
             holder.linear_menu.setVisibility(View.VISIBLE);
-
             attributeListener.onAttributeClicked(holder.getBindingAdapterPosition());
         }
     }

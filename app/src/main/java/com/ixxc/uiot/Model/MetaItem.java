@@ -8,7 +8,6 @@ import java.util.List;
 public class MetaItem {
     private final String name;
     private final String type;
-
     private static List<MetaItem> metaItemList = new ArrayList<>();
 
     public MetaItem(String name, String type) {

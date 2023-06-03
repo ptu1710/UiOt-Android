@@ -2,16 +2,21 @@ package com.ixxc.uiot.Adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.JsonObject;
+import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.Interface.MetaItemListener;
+import com.ixxc.uiot.Interface.ParamItemListener;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.R;
 import com.ixxc.uiot.Utils;
@@ -19,17 +24,19 @@ import com.ixxc.uiot.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>{
+public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.ViewHolder> implements ParamItemListener {
     Context ctx;
     List<MetaItem> metaItems;
-    List<MetaItem> selected_items = new ArrayList<>();
-    MetaItemListener listener;
+    JsonObject meta;
+    ParamItemListener listener;
 
-    public ConfigurationAdapter(Context ctx, List<MetaItem> metaItems, MetaItemListener listener) {
+    public ConfigurationAdapter(Context ctx, JsonObject meta) {
         this.ctx = ctx;
-        this.metaItems = metaItems;
-        this.listener = listener;
+        this.meta = meta;
+        this.metaItems = MetaItem.getMetaItemList();
     }
+
+    public void setListener(ParamItemListener listener) { this.listener = listener; }
 
     @NonNull
     @Override
@@ -39,15 +46,24 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
 
     @Override
     public void onBindViewHolder(ConfigurationAdapter.ViewHolder holder, int position) {
-        String name = Utils.formatString(metaItems.get(position).getName());
-        holder.cb_item.setText(name);
+        String name = metaItems.get(position).getName();
+        String displayName = Utils.formatString(name);
+        boolean isCheck = meta.has(name);
+
+        holder.cb_item.setText(displayName);
         holder.cb_item.setButtonTintList(ColorStateList.valueOf(ResourcesCompat.getColor(ctx.getResources(), R.color.bg, null)));
-        holder.cb_item.setOnClickListener(v -> listener.metaItemListener(selected_items));
+        holder.cb_item.setOnCheckedChangeListener((compoundButton, checked) -> onParamItemClick(checked, name));
+        holder.cb_item.setChecked(isCheck);
     }
 
     @Override
     public int getItemCount() {
         return metaItems.size();
+    }
+
+    @Override
+    public void onParamItemClick(boolean checked, String name) {
+        listener.onParamItemClick(checked, name);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

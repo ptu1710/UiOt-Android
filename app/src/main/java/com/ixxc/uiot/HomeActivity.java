@@ -86,7 +86,7 @@ public class HomeActivity extends AppCompatActivity {
         navbar.selectTabAt(0, false);
 
         Intent toDetails = new Intent(this, DeviceInfoActivity.class);
-        toDetails.putExtra("DEVICE_ID", "78sPypWkwJxnvlgsTvK4l6");
+        toDetails.putExtra("DEVICE_ID", "6iWtSbgqMQsVq8RPkJJ9vo");
         startActivity(toDetails);
     }
 

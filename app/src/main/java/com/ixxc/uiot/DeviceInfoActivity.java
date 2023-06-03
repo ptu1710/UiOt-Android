@@ -275,7 +275,6 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);
-        rv_attribute.setVisibility(View.VISIBLE);
     }
 
     @Override

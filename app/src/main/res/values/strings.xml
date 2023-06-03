@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">UiOt</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="refresh">refresh</string>
     <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoicGF0dXMiLCJhIjoiY2w5NnBtNzBxMDEyYjNucGR5ZXZtcTg1MSJ9.m3W_7Ta9A_NGKJw0fPW1Wg</string>
@@ -181,6 +180,7 @@
 <!--        <item>Query Parameters</item>-->
         <item>pollingMillis</item>
         <item>path</item>
+        <item>valueFilters</item>
 <!--        <item>Paging Mode</item>-->
 <!--        <item>Method</item>-->
 <!--        <item>Content Type</item>-->

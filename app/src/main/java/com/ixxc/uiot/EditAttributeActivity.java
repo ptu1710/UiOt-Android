@@ -38,7 +38,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.ixxc.uiot.Adapter.ConfigurationAdapter;
 import com.ixxc.uiot.Adapter.ParamsAdapter;
-import com.ixxc.uiot.Interface.MetaItemListener;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.MetaItem;
@@ -47,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EditAttributeActivity extends AppCompatActivity implements MetaItemListener {
+public class EditAttributeActivity extends AppCompatActivity {
     Toolbar toolbar;
     ActionBar actionBar;
     TextView tv_name;
@@ -55,9 +54,10 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
     Button btn_add_config;
     LinearLayout linear_config_items;
 
-    List<MetaItem> selectedMetaItems = new ArrayList<>();
-    List<MetaItem> metaItems;
+    List<MetaItem> selectedMeta = new ArrayList<>();
+    List<MetaItem> metaModels;
     Attribute attribute;
+    JsonObject attributeMeta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,31 +96,39 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
             window.setBackgroundDrawableResource(R.drawable.bg_add_config_menu);
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
-            Button btn_cancel = dlg.findViewById(R.id.btn_cancel);
-            btn_cancel.setOnClickListener(v -> {
+             Button btn_cancel = dlg.findViewById(R.id.btn_cancel);
+            btn_cancel.setOnClickListener(view1 -> {
+                selectedMeta.clear();
                 dlg.dismiss();
-                selectedMetaItems.clear();
             });
 
             Button btn_add = dlg.findViewById(R.id.btn_save);
             btn_add.setOnClickListener(view1 -> {
-                if (attribute.getMeta() == null) attribute.setMeta(new JsonObject());
+                linear_config_items.removeAllViews();
 
-                for (MetaItem item : selectedMetaItems) {
-                    addMetaItem(item, "");
+                attributeMeta.keySet().clear();
+                for (MetaItem item : selectedMeta) {
+                    String value = attribute.getMetaValue(item.getName());
+                    addMetaItem(item, value);
                 }
 
+                selectedMeta.clear();
                 dlg.dismiss();
             });
 
-            JsonObject meta = attribute.getMeta() == null ? new JsonObject() : attribute.getMeta();
-            List<MetaItem> ms = metaItems.stream().filter(item -> !meta.keySet().contains(item.getName())).collect(Collectors.toList());
-            ConfigurationAdapter configurationAdapter = new ConfigurationAdapter(this, ms, this);
+            ConfigurationAdapter configAdapter = new ConfigurationAdapter(this, attributeMeta);
+            configAdapter.setListener((checked, name) -> {
+                if (checked) {
+                    selectedMeta.add(metaModels.stream().filter(item -> item.getName().equals(name)).findFirst().orElse(null));
+                } else {
+                    selectedMeta.removeIf(item -> item.getName().equals(name));
+                }
+            });
 
             RecyclerView rv_config_item = dlg.findViewById(R.id.rv_item);
             rv_config_item.setLayoutManager(new LinearLayoutManager(this));
             rv_config_item.setHasFixedSize(true);
-            rv_config_item.setAdapter(configurationAdapter);
+            rv_config_item.setAdapter(configAdapter);
             dlg.show();
         });
     }
@@ -134,7 +142,8 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
         actionBar = getSupportActionBar();
 
         attribute = new Gson().fromJson(jsonString, Attribute.class);
-        metaItems = MetaItem.getMetaItemList();
+        attributeMeta = attribute.getMeta() == null ? new JsonObject() : attribute.getMeta();
+        metaModels = MetaItem.getMetaItemList();
     }
 
     private void InitViews() {
@@ -145,11 +154,13 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
     }
 
     private void loadMetaItems() {
-        if (attribute.getMeta() == null) return;
+        if (attributeMeta == null) return;
 
-        for (String key : attribute.getMeta().keySet()) {
+        for (String key : attributeMeta.keySet()) {
             String value = attribute.getMetaValue(key);
-            metaItems.stream().filter(metaItem -> metaItem.getName().equals(key)).findFirst().ifPresent(item -> addMetaItem(item, value));
+            metaModels.stream()
+                    .filter(metaItem -> metaItem.getName().equals(key))
+                    .findFirst().ifPresent(item -> addMetaItem(item, value));
         }
     }
 
@@ -157,13 +168,13 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
 
         switch (item.getType()) {
             case "boolean":
-                attribute.getMeta().addProperty(item.getName(), !TextUtils.isEmpty(value) && Boolean.parseBoolean(value));
+                attributeMeta.addProperty(item.getName(), !TextUtils.isEmpty(value) && Boolean.parseBoolean(value));
                 break;
             case "text":
-                attribute.getMeta().addProperty(item.getName(), value);
+                attributeMeta.addProperty(item.getName(), value);
                 break;
             default:
-                attribute.getMeta().add(item.getName(), TextUtils.isEmpty(value) ? null : JsonParser.parseString(value).getAsJsonObject());
+                attributeMeta.add(item.getName(), TextUtils.isEmpty(value) ? new JsonObject() : JsonParser.parseString(value).getAsJsonObject());
                 break;
         }
 
@@ -187,7 +198,7 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
                 cb.setLayoutParams(params);
                 cb.setTag(name);
                 cb.setButtonTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.bg, null)));
-                cb.setOnCheckedChangeListener((compoundButton, checked) -> attribute.getMeta().addProperty(name, checked));
+                cb.setOnCheckedChangeListener((compoundButton, checked) -> attributeMeta.addProperty(name, checked));
 
                 return cb;
             case "text":
@@ -215,6 +226,7 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
         layoutParams.setMargins(0, 16, 0, 0);
 
         switch (param) {
+            case "valueFilters":
             case "path":
             case "pollingMillis":
                 TextInputLayout til = new TextInputLayout(this);
@@ -237,7 +249,7 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
                     public void afterTextChanged(Editable editable) {
                         Log.d(GlobalVars.LOG_TAG, "afterTextChanged: " + editable);
                         agentObject.addProperty(param, String.valueOf(editable));
-                        attribute.getMeta().add(meta, agentObject);
+                        attributeMeta.add(meta, agentObject);
                     }
                 });
 
@@ -269,8 +281,13 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
         JsonObject agentLinkObject;
         JsonObject changedParams;
         if (!value.isEmpty() && (element = JsonParser.parseString(value)) != null && element.isJsonObject()) {
+            // Attribute has already agent link
             agentLinkObject = element.getAsJsonObject();
-        } else agentLinkObject = new JsonObject();
+        } else {
+            // Blank agent link
+            agentLinkObject = new JsonObject();
+            agentLinkObject.addProperty("id", "");
+        }
 
         changedParams = agentLinkObject.deepCopy();
 
@@ -290,7 +307,7 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
             if (agent != null) {
                 agentLinkObject.addProperty("id", agent.id);
                 agentLinkObject.addProperty("type", agent.type);
-                attribute.getMeta().add(meta, agentLinkObject);
+                attributeMeta.add(meta, agentLinkObject);
             }
         });
 
@@ -351,7 +368,7 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
                 }
                 else {
                     changedParams.remove(param);
-                    attribute.getMeta().get(meta).getAsJsonObject().remove(param);
+                    attributeMeta.get(meta).getAsJsonObject().remove(param);
                     linear.removeView(linear.findViewWithTag(param));
                 }
             });
@@ -398,7 +415,7 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
             @Override
             public void afterTextChanged(Editable editable) {
                 Log.d(GlobalVars.LOG_TAG, "name: " + editable);
-                attribute.getMeta().addProperty(name, String.valueOf(et1.getText()));
+                attributeMeta.addProperty(name, String.valueOf(et1.getText()));
             }
         });
 
@@ -410,9 +427,6 @@ public class EditAttributeActivity extends AppCompatActivity implements MetaItem
 
         return til1;
     }
-
-    @Override
-    public void metaItemListener(List<MetaItem> metaItems) { selectedMetaItems = metaItems; }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

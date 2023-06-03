@@ -106,7 +106,7 @@ public class HomeFragment extends Fragment {
     private void showBasicInfo() {
         me = User.getMe();
 
-        Device device = Device.getDeviceById("3Hvx7VhlVFUqsgfMltkQ6G");
+        Device device = Device.getDeviceById("5zI6XqkQVSfdgOrZ1MyWEf");
         if (device != null) defaultDevice = new WeatherDevice(device);
         else defaultDevice = new WeatherDevice();
 
