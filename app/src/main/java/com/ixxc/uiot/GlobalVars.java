@@ -9,5 +9,6 @@ public class GlobalVars {
     public static String authType = "authorization_code";
     public static String client = "openremote";
     public static String LOG_TAG = "API LOG";
+    public static String WIDGET_KEY = "WIDGET";
 
 }

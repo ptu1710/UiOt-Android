@@ -44,7 +44,7 @@ import com.ixxc.uiot.Interface.MetaItemListener;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.MetaItem;
-import com.ixxc.uiot.Model.Model;
+import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.User;
 
 import java.util.Dictionary;
@@ -66,7 +66,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     Button btn_add_attribute;
     String device_id, selected_id;
     Device current_device;
-    Model current_model;
+    DeviceModel current_model;
     List<Attribute> attributeList;
     AttributesAdapter attributesAdapter;
     List<String> parentNames;
@@ -94,8 +94,9 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         } else isOK = bundle.getBoolean("DEVICE_OK");
 
         if (isOK) {
-            metaItems = MetaItem.getMetaItemList();
+            current_model = DeviceModel.getDeviceModel(current_device.type);
 
+            metaItems = MetaItem.getMetaItemList();
             actionBar.setTitle(current_device.name);
             et_name.setText(current_device.name);
             cb_public.setChecked(current_device.accessPublicRead);
@@ -146,9 +147,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         parentNames = Device.getDeviceNames();
 
         new Thread(() -> {
-            APIManager.getDeviceModels();
             current_device = APIManager.getDevice(device_id);
-            current_model = Model.getDeviceModel(current_device.type);
             APIManager.getMetaItem(null);
 
             Message message = handler.obtainMessage();
@@ -242,7 +241,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         Attribute attribute;
         if (type.equals("Custom")) attribute = new Attribute(name, valueType);
         else {
-            attribute = current_model.getOptional(type);
+            attribute = current_model.getAttributeModel(type);
             attribute.setValue(JsonParser.parseString(""));
         }
 

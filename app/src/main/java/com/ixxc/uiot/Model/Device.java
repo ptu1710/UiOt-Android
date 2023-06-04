@@ -41,7 +41,7 @@ public class Device {
         if (list == null) return;
 
         deviceList.clear();
-        if (list.get(0).type.equals("GroupAsset") && list.get(0).name.equals("Consoles")) list.remove(0);
+        list.removeIf(device -> device.type.equals("GroupAsset") && device.name.equals("Consoles"));
 
         for (Device device : list) {
             if (!device.type.contains("ConsoleAsset")) deviceList.add(device);
@@ -49,12 +49,7 @@ public class Device {
     }
 
     public static Device getDeviceById(String id) {
-        for (Device device : deviceList) {
-            if (device.id.equals(id)) {
-                return device;
-            }
-        }
-        return null;
+        return deviceList.stream().filter(device -> device.id.equals(id)).findFirst().orElse(null);
     }
 
     public static List<String> getDeviceNames() {

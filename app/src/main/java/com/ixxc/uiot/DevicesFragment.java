@@ -48,7 +48,7 @@ public class DevicesFragment extends Fragment {
     SearchView searchView;
     TextView tv_sort, tv_type;
     List<Device> devicesList;
-    ActivityResultLauncher<Intent> mLauncher;
+    ActivityResultLauncher<Intent> launcher;
     DeviceTreeViewAdapter deviceTreeViewAdapter;
     DeviceRecyclerAdapter deviceRecyclerAdapter;
     User me;
@@ -88,8 +88,12 @@ public class DevicesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) refreshDevices();
+        launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                refreshDevices();
+            }
+
+            parentActivity.homeFrag.InitWidgets();
         });
     }
 
@@ -151,7 +155,7 @@ public class DevicesFragment extends Fragment {
     private void InitEvents() {
         iv_add.setOnClickListener(view -> {
             Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
-            mLauncher.launch(intent);
+            launcher.launch(intent);
         });
 
         iv_delete.setOnClickListener(view -> {
@@ -260,7 +264,9 @@ public class DevicesFragment extends Fragment {
             searchView.clearFocus();
 
             if (treeNode.getChildren().size() == 0) {
-                view.findViewById(R.id.iv_go).performClick();
+                Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
+                intent.putExtra("DEVICE_ID", ((Device) treeNode.getValue()).id);
+                launcher.launch(intent);
             } else if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
                 DeviceTreeViewAdapter.selectedPosition = deviceTreeViewAdapter.getTreeNodes().indexOf(treeNode);
             }

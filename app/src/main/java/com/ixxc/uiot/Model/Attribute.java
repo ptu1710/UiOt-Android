@@ -1,19 +1,28 @@
 package com.ixxc.uiot.Model;
 
+import android.content.Context;
+import android.text.TextUtils;
+
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ixxc.uiot.GlobalVars;
+import com.ixxc.uiot.Utils;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 
-public class Attribute implements Serializable {
+public class Attribute {
     private final String name;
     private final String type;
     private JsonObject meta;
     private JsonElement value = JsonParser.parseString("");
+    private final ArrayList<String> units = new ArrayList<>();
     private final long timestamp;
     private final boolean optional;
     private boolean isExpanded = false;
+
+    public String getUnits() { return String.join(" ", units); }
 
     public String getName() { return name; }
     public String getType() { return type; }
@@ -86,6 +95,53 @@ public class Attribute implements Serializable {
         else return value.getAsString();
     }
 
+    public String getUnit(String unitString) {
+        switch (unitString) {
+            case "kilo watt":
+                return "kW";
+            case "kilo metre":
+                return "km";
+            case "milli metre":
+                return "mm";
+            case "EUR per kilo watt hour":
+                return "€/kWh";
+            case "micro gram per metre cubed":
+                return "µg/m³";
+            case "kilo metre per hour":
+                return "km/h";
+            case "decibel":
+                return "(dB)";
+            case "knot":
+                return "kn";
+            case "kilo watt hour":
+                return "kWh";
+            case "metre cubed per hour":
+                return "m³/h";
+            case "EUR":
+                return "€";
+            case "celsius":
+                return "°C";
+            case "kilo gram per kilo watt hour":
+                return "kg/kWh";
+            case "percentage":
+                return "%";
+            case "metre per second":
+                return "m/s";
+            case "kelvin":
+                return "K";
+            case "metre squared":
+                return "m²";
+            case "metre":
+                return "m";
+            case "kilo gram":
+                return "kg";
+            case "degree":
+                return "°";
+            default:
+                return unitString;
+        }
+    }
+
     public boolean canShowValue(String type) {
         switch (type) {
             case "timestamp":
@@ -111,6 +167,12 @@ public class Attribute implements Serializable {
         }
 
         return false;
+    }
+
+    public boolean isInWidgets(Context ctx, String deviceId) {
+        String widgetString = Utils.getPreferences(ctx, GlobalVars.WIDGET_KEY);
+        JsonArray widgets = TextUtils.isEmpty(widgetString) ? new JsonArray() : JsonParser.parseString(widgetString).getAsJsonArray();
+        return widgets.contains(JsonParser.parseString(String.join("-", deviceId, name)));
     }
 
     public JsonObject toJson() {

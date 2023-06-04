@@ -24,7 +24,7 @@ import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.CreateDeviceReq;
 import com.ixxc.uiot.Model.Device;
-import com.ixxc.uiot.Model.Model;
+import com.ixxc.uiot.Model.DeviceModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class AddDeviceActivity extends AppCompatActivity {
     Button btn_add, btn_add_optional;
     List<String> modelsType, modelsName, parentNames;
 
-    List<Model> models;
+    List<DeviceModel> models;
 
     List<Device> parentDevices;
 
@@ -56,22 +56,9 @@ public class AddDeviceActivity extends AppCompatActivity {
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
 
-        boolean getDevice = bundle.getBoolean("GET_DEV");
         boolean createDevice = bundle.getBoolean("CREATE_DEV");
 
-        if (getDevice) {
-            models = Model.getModelList();
-            modelsName = models.stream().map(model -> model.assetDescriptor.get("name").getAsString()).collect(Collectors.toList());
-
-            typeAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, modelsType);
-            act_type.setAdapter(typeAdapter);
-
-            devicesAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, modelsName);
-            act_device.setAdapter(devicesAdapter);
-
-            parentAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, parentNames);
-            act_parent.setAdapter(parentAdapter);
-        } else if (createDevice) {
+        if (createDevice) {
             Intent returnIntent = new Intent();
             setResult(Activity.RESULT_OK, returnIntent);
             finish();
@@ -96,15 +83,9 @@ public class AddDeviceActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("New device");
 
-        new Thread(() -> {
-            APIManager.getDeviceModels();
-
-            Message msg = handler.obtainMessage();
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("GET_DEV", true);
-            msg.setData(bundle);
-            handler.sendMessage(msg);
-        }).start();
+        act_type.setAdapter(typeAdapter);
+        act_device.setAdapter(devicesAdapter);
+        act_parent.setAdapter(parentAdapter);
     }
 
     private void InitVars() {
@@ -119,6 +100,13 @@ public class AddDeviceActivity extends AppCompatActivity {
 
         modelsType.add("Agent");
         modelsType.add("Asset");
+
+        models = DeviceModel.getModelList();
+        modelsName = models.stream().map(model -> model.assetDescriptor.get("name").getAsString()).collect(Collectors.toList());
+
+        typeAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, modelsType);
+        devicesAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, modelsName);
+        parentAdapter = new ArrayAdapter<>(this, R.layout.dropdown_item, parentNames);
     }
 
     private void InitViews() {
@@ -149,7 +137,7 @@ public class AddDeviceActivity extends AppCompatActivity {
         });
 
         btn_add_optional.setOnClickListener(view -> {
-            List<Model> result = models.stream()
+            List<DeviceModel> result = models.stream()
                     .filter(item -> item.assetDescriptor.get("name").getAsString().equals(act_device.getText().toString()))
                     .collect(Collectors.toList());
 
@@ -183,7 +171,7 @@ public class AddDeviceActivity extends AppCompatActivity {
         });
 
         btn_add.setOnClickListener(view -> {
-            List<Model> result = models.stream()
+            List<DeviceModel> result = models.stream()
                     .filter(item -> item.assetDescriptor.get("name").getAsString().equals(act_device.getText().toString()))
                     .collect(Collectors.toList());
 

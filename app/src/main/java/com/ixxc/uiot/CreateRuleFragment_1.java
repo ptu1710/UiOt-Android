@@ -17,7 +17,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.ixxc.uiot.Adapter.DeviceArrayAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
-import com.ixxc.uiot.Model.Model;
+import com.ixxc.uiot.Model.DeviceModel;
 
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +70,7 @@ public class CreateRuleFragment_1 extends Fragment {
     }
 
     private void InitVars() {
-        models = Model.getModelList().stream().map(model -> (model.assetDescriptor.get("name").getAsString())).collect(Collectors.toList());
+        models = DeviceModel.getModelList().stream().map(model -> (model.assetDescriptor.get("name").getAsString())).collect(Collectors.toList());
         //models.add("PVSolarAsset");
         models.add("Time");
         //models.sort(Comparator.comparing(o -> o.assetDescriptor.get("name").getAsString()));
@@ -95,7 +95,7 @@ public class CreateRuleFragment_1 extends Fragment {
         act_devices.setOnItemClickListener((adapterView, view, i, l) -> {
             if (i == 0) {
                 Log.d("AAA", selectedModel);
-                attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
+                attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
                         .map(attribute -> Utils.formatString(attribute.getName()))

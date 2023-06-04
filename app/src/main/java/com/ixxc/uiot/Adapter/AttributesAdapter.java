@@ -1,7 +1,9 @@
 package com.ixxc.uiot.Adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +11,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.Interface.AttributeListener;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
@@ -34,8 +41,6 @@ import com.mapbox.maps.plugin.gestures.GesturesPlugin;
 import com.mapbox.maps.plugin.gestures.GesturesUtils;
 import com.mapbox.maps.plugin.scalebar.ScaleBarPlugin;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,12 +50,10 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     private final String deviceId;
     private final AttributeListener attributeListener;
     private boolean hasMap = false;
-    public static Dictionary<String, Attribute> changedAttributes;
 
     public AttributesAdapter(Context ctx, String deviceId, List<Attribute> attrsObj, AttributeListener attributeListener) {
         this.ctx = ctx;
         this.attributes = attrsObj;
-        changedAttributes = new Hashtable<>();
         this.attributeListener = attributeListener;
         this.deviceId = deviceId;
     }
@@ -87,6 +90,10 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         String type = attr.getType();
         String validatedType = Utils.formatString(attr.getType());
 
+        holder.ib_star.setEnabled(attr.canShowValue(type));
+        holder.ib_star.setImageTintList(ColorStateList.valueOf(attr.canShowValue(type) ? Utils.getColor(ctx, R.color.bg) : Utils.getColor(ctx, R.color.darker_grey)));
+        holder.ib_star.setImageResource(attr.isInWidgets(ctx, deviceId) ? R.drawable.ic_star_fill : R.drawable.ic_star_border);
+
         holder.tv_name.setText(name);
 
         if (value.equals("")) holder.tv_value.setText(R.string.no_value);
@@ -100,10 +107,30 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         });
 
         holder.ib_edit.setOnClickListener(view -> attributeListener.onEditClicked(holder.getBindingAdapterPosition()));
+
+        holder.ib_star.setOnClickListener(view -> {
+            String widgetString = Utils.getPreferences(ctx, GlobalVars.WIDGET_KEY);
+            JsonArray widgets = TextUtils.isEmpty(widgetString) ? new JsonArray() : JsonParser.parseString(widgetString).getAsJsonArray();
+            JsonElement widgetInfo = JsonParser.parseString(String.join("-", deviceId, attr.getName()));
+
+            String toastMsg;
+            if (widgets.contains(widgetInfo)) {
+                widgets.remove(widgetInfo);
+                holder.ib_star.setImageResource(R.drawable.ic_star_border);
+                toastMsg = "Removed widget!";
+            } else {
+                widgets.add(widgetInfo);
+                holder.ib_star.setImageResource(R.drawable.ic_star_fill);
+                toastMsg = "New widget added!";
+            }
+
+            Utils.savePreferences(ctx, GlobalVars.WIDGET_KEY, widgets.toString());
+
+            Toast.makeText(ctx, toastMsg, Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void setExpandedView(AttrsViewHolder holder, boolean isExpanded) {
-
         if (isExpanded) {
             holder.iv_expand.setRotation(0);
             holder.linear_menu.setVisibility(View.GONE);
@@ -176,7 +203,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         private final LinearLayout linear_menu;
         private final MapView mapView;
         private final ImageButton ib_edit;
-//        private final ImageButton ib_star;
+        private final ImageButton ib_star;
 //        private final ImageButton ib_delete;
 
         public AttrsViewHolder(@NonNull View itemView) {
@@ -188,7 +215,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             mapView = itemView.findViewById(R.id.mapView);
             iv_expand = itemView.findViewById(R.id.iv_expand);
             ib_edit = itemView.findViewById(R.id.ib_edit);
-//            ib_star = itemView.findViewById(R.id.ib_star);
+            ib_star = itemView.findViewById(R.id.ib_star);
 //            ib_delete = itemView.findViewById(R.id.ib_delete);
         }
     }

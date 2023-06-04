@@ -22,7 +22,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.ixxc.uiot.Adapter.DeviceArrayAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
-import com.ixxc.uiot.Model.Model;
+import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.User;
 
 import java.util.ArrayList;
@@ -110,7 +110,7 @@ public class CreateRuleFragment_2 extends Fragment {
         //models = Model.getModelList().stream().map(model -> Utils.formatString((model.assetDescriptor.get("name").getAsString()))).collect(Collectors.toList());
 
         //models = Model.getModelList().stream().map(model -> (model.assetDescriptor.get("name").getAsString())).collect(Collectors.toList());
-        models = Model.getModelList().stream().filter(model -> !model.assetDescriptor.get("name").getAsString().contains("Agent"))
+        models = DeviceModel.getModelList().stream().filter(model -> !model.assetDescriptor.get("name").getAsString().contains("Agent"))
                 .map(model -> (model.assetDescriptor.get("name").getAsString()))
                 .collect(Collectors.toList());
         //models.add("PVSolarAsset");
@@ -125,7 +125,7 @@ public class CreateRuleFragment_2 extends Fragment {
         act_actions.setOnItemClickListener((adapterView, view, i, l) -> {
             if (i == 0) {
 
-                attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
+                attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
                         .map(attribute -> Utils.formatString(attribute.getName()))
@@ -221,7 +221,7 @@ public class CreateRuleFragment_2 extends Fragment {
         act_devices.setOnItemClickListener((adapterView, view, i, l) -> {
             if (i == 0) {
                 Log.d("AAA", selectedModel);
-                attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
+                attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
                         .map(attribute -> Utils.formatString(attribute.getName()))

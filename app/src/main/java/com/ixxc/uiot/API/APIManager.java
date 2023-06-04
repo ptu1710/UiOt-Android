@@ -11,7 +11,7 @@ import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
 import com.ixxc.uiot.Model.MetaItem;
-import com.ixxc.uiot.Model.Model;
+import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.Realm;
 import com.ixxc.uiot.Model.RegisterDevice;
 import com.ixxc.uiot.Model.Role;
@@ -82,12 +82,12 @@ public class APIManager {
     }
 
     public static void getDeviceModels() {
-        Call<List<Model>> call = userAI.getDeviceModels();
+        Call<List<DeviceModel>> call = userAI.getDeviceModels();
 
         try {
-            Response<List<Model>> response = call.execute();
+            Response<List<DeviceModel>> response = call.execute();
             if (response.isSuccessful()) {
-                Model.setModelList(response.body());
+                DeviceModel.setModelList(response.body());
             }
         } catch (IOException e) { e.printStackTrace(); }
     }

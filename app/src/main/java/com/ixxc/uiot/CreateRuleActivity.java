@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Model.CreateRuleReq;
@@ -43,8 +42,6 @@ public class CreateRuleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_rule);
-
-        new Thread(APIManager::getDeviceModels).start();
 
         fm = getSupportFragmentManager();
         fm.beginTransaction().replace(R.id.fragment_wizard, create_0).commit();

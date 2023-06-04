@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.text.InputType;
 
+import androidx.core.content.res.ResourcesCompat;
+
 public class Utils {
     public static Handler delayHandler;
 
@@ -73,7 +75,7 @@ public class Utils {
     }
 
     public static void savePreferences(Context context, String key, String value) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("com.ixxc.uiot", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
         editor.apply();
@@ -81,7 +83,13 @@ public class Utils {
 
     // Get saved preferences
     public static String getPreferences(Context context, String key) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("com.ixxc.uiot", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+//        sharedPreferences.edit().clear().apply();
         return sharedPreferences.getString(key, "");
+    }
+
+    // Get color
+    public static int getColor(Context context, int colorRes) {
+        return ResourcesCompat.getColor(context.getResources(), colorRes, null);
     }
 }

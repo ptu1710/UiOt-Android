@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Model {
+public class DeviceModel {
     @SerializedName("assetDescriptor")
     public JsonObject assetDescriptor;
 
@@ -20,22 +20,20 @@ public class Model {
     @SerializedName("valueDescriptors")
     public ArrayList<String> valueDescriptors;
 
-    private static List<Model> modelList = new ArrayList<>();
+    private static List<DeviceModel> modelList = new ArrayList<>();
 
-    public static List<Model> getModelList() {
+    public static List<DeviceModel> getModelList() {
         return modelList;
     }
 
-    public static void setModelList(List<Model> modelList) {
-        Model.modelList = modelList;
+    public static void setModelList(List<DeviceModel> modelList) {
+        DeviceModel.modelList = modelList;
     }
 
-    public static Model getDeviceModel(String name) {
-        List<Model> result = Model.getModelList().stream()
+    public static DeviceModel getDeviceModel(String name) {
+        return  DeviceModel.getModelList().stream()
                 .filter(item -> item.assetDescriptor.get("name").getAsString().equals(name))
-                .collect(Collectors.toList());
-
-        return result.get(0);
+                .findFirst().orElse(null);
     }
 
     public List<Attribute> getOptional() {
@@ -44,9 +42,9 @@ public class Model {
                 .collect(Collectors.toList());
     }
 
-    public Attribute getOptional(String name) {
-        return getOptional().stream()
+    public Attribute getAttributeModel(String name) {
+        return attributeDescriptors.stream()
                 .filter(a -> a.getName().equals(name))
-                .collect(Collectors.toList()).get(0);
+                .findFirst().orElse(null);
     }
 }
