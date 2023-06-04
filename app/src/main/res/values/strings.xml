@@ -168,8 +168,7 @@
         <item>Has a value</item>
     </string-array>
 
-    <string-array name="agent_link_params">
-<!--        <item>Value Filters</item>-->
+    <string-array name="http_agent_params">
 <!--        <item>Value Converter</item>-->
 <!--        <item>Write Value Converter</item>-->
 <!--        <item>Write Value</item>-->
@@ -185,5 +184,11 @@
 <!--        <item>Method</item>-->
 <!--        <item>Content Type</item>-->
 <!--        <item>Polling Attribute</item>-->
+    </string-array>
+
+    <string-array name="mqtt_agent_params">
+        <item>subscriptionTopic</item>
+        <item>publishTopic</item>
+        <item>valueFilters</item>
     </string-array>
 </resources>

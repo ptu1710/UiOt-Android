@@ -417,8 +417,6 @@ public class APIManager {
 
                 JsonObject body = register.toJson(token);
 
-                Log.d(GlobalVars.LOG_TAG, "register: " + body);
-
                 Call<RegisterDevice> call2 = userAI.registerDevice(body);
                 call2.execute();
 

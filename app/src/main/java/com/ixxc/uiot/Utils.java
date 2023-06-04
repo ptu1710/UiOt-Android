@@ -1,6 +1,7 @@
 package com.ixxc.uiot;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.text.InputType;
 
@@ -69,5 +70,18 @@ public class Utils {
             default:
                 return InputType.TYPE_CLASS_TEXT;
         }
+    }
+
+    public static void savePreferences(Context context, String key, String value) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("com.ixxc.uiot", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, value);
+        editor.apply();
+    }
+
+    // Get saved preferences
+    public static String getPreferences(Context context, String key) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("com.ixxc.uiot", Context.MODE_PRIVATE);
+        return sharedPreferences.getString(key, "");
     }
 }

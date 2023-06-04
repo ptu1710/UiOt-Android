@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -49,9 +51,10 @@ import java.util.stream.Collectors;
 public class EditAttributeActivity extends AppCompatActivity {
     Toolbar toolbar;
     ActionBar actionBar;
-    TextView tv_name;
+    TextView tv_name, tv_type;
     TextInputEditText  et_value;
     Button btn_add_config;
+    ImageButton ibtn_delete, ibtn_copy, ibtn_copy_1;
     LinearLayout linear_config_items;
 
     List<MetaItem> selectedMeta = new ArrayList<>();
@@ -73,6 +76,7 @@ public class EditAttributeActivity extends AppCompatActivity {
         actionBar.setTitle(Utils.formatString(attribute.getName()));
 
         tv_name.setText(attribute.getName());
+        tv_type.setText(attribute.getType());
         et_value.setInputType(Utils.getInputType(attribute.getType()));
         et_value.setText(attribute.getValueString());
 
@@ -131,6 +135,13 @@ public class EditAttributeActivity extends AppCompatActivity {
             rv_config_item.setAdapter(configAdapter);
             dlg.show();
         });
+
+        // TODO: Add ibtn_delete click effect
+        ibtn_delete.setOnClickListener(view -> {
+            Log.d(GlobalVars.LOG_TAG, "Delete attribute: " + attribute.getName() + " - " + attribute.isOptional());
+        });
+
+        // TODO: Add ibtn_copy click event
     }
 
     private void InitVars() {
@@ -148,9 +159,13 @@ public class EditAttributeActivity extends AppCompatActivity {
 
     private void InitViews() {
         tv_name = findViewById(R.id.tv_name);
+        tv_type = findViewById(R.id.tv_type);
         et_value = findViewById(R.id.et_value);
         btn_add_config = findViewById(R.id.btn_add_configuration_items);
         linear_config_items = findViewById(R.id.linear_config_items);
+        ibtn_delete = findViewById(R.id.ibtn_delete);
+        ibtn_copy = findViewById(R.id.ib_copy);
+        ibtn_copy_1 = findViewById(R.id.ib_copy_1);
     }
 
     private void loadMetaItems() {
@@ -225,18 +240,43 @@ public class EditAttributeActivity extends AppCompatActivity {
         );
         layoutParams.setMargins(0, 16, 0, 0);
 
+        TextInputLayout til = new TextInputLayout(this);
+        til.setTag(param);
+        til.setHint(Utils.formatString(param));
+        til.setLayoutParams(layoutParams);
+
+        TextInputEditText et = new TextInputEditText(til.getContext());
+        et.setTag("et_" + param);
+        et.setInputType(Utils.getInputType(param));
+
         switch (param) {
             case "valueFilters":
+                et.setText(agentObject.has(param) ? agentObject.get(param).getAsJsonArray().get(0).getAsJsonObject().get("path").getAsString() : "");
+                et.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        // Create new filter object
+                        JsonArray filters = new JsonArray();
+                        JsonObject filter = new JsonObject();
+                        filter.addProperty("type", "jsonPath");
+                        filter.addProperty("path", String.valueOf(editable));
+                        filters.add(filter);
+
+                        agentObject.add(param, filters);
+                        attributeMeta.add(meta, agentObject);
+                    }
+                });
+
+                til.addView(et);
+                return til;
             case "path":
             case "pollingMillis":
-                TextInputLayout til = new TextInputLayout(this);
-                til.setTag(param);
-                til.setHint(Utils.formatString(param));
-                til.setLayoutParams(layoutParams);
-
-                TextInputEditText et = new TextInputEditText(til.getContext());
-                et.setTag("et_" + param);
-                et.setInputType(Utils.getInputType(param));
                 et.setText(agentObject.has(param) ? agentObject.get(param).getAsString() : "");
                 et.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -247,7 +287,6 @@ public class EditAttributeActivity extends AppCompatActivity {
 
                     @Override
                     public void afterTextChanged(Editable editable) {
-                        Log.d(GlobalVars.LOG_TAG, "afterTextChanged: " + editable);
                         agentObject.addProperty(param, String.valueOf(editable));
                         attributeMeta.add(meta, agentObject);
                     }
@@ -414,7 +453,6 @@ public class EditAttributeActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Log.d(GlobalVars.LOG_TAG, "name: " + editable);
                 attributeMeta.addProperty(name, String.valueOf(et1.getText()));
             }
         });
@@ -441,6 +479,8 @@ public class EditAttributeActivity extends AppCompatActivity {
             return true;
         } else if (item.getItemId() == R.id.done) {
             et_value.clearFocus();
+            attribute.setMeta(attributeMeta);
+            Log.d(GlobalVars.LOG_TAG, "onOptionsItemSelected: " + attribute.toJson());
             setResult(RESULT_OK, new Intent().putExtra("ATTRIBUTE", String.valueOf(attribute.toJson())));
             finish();
             return true;

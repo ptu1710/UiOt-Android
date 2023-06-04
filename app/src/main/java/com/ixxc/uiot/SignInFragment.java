@@ -120,13 +120,13 @@ public class SignInFragment extends Fragment {
                 super.onPageFinished(view, url);
             }
 
+            @SuppressLint("WebViewClientOnReceivedSslError")
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-//                handler.proceed();
+                handler.proceed();
             }
         });
 
-        Log.d(GlobalVars.LOG_TAG, "getToken: " + GlobalVars.getCodeUrl);
         webView.loadUrl(GlobalVars.getCodeUrl);
     }
 

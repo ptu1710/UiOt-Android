@@ -29,7 +29,12 @@ public class ParamsAdapter extends RecyclerView.Adapter<ParamsAdapter.ViewHolder
     public ParamsAdapter(Context ctx, JsonObject agentLinkObject) {
         this.ctx = ctx;
         this.agentLinkObject = agentLinkObject;
-        this.paramsKey = new ArrayList<>(Arrays.asList(ctx.getResources().getStringArray(R.array.agent_link_params)));
+
+        if (agentLinkObject.has("type") && agentLinkObject.get("type").getAsString().equals("HTTPAgentLink")) {
+            this.paramsKey = new ArrayList<>(Arrays.asList(ctx.getResources().getStringArray(R.array.http_agent_params)));
+        } else {
+            this.paramsKey = new ArrayList<>(Arrays.asList(ctx.getResources().getStringArray(R.array.mqtt_agent_params)));
+        }
     }
 
     @NonNull
