@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 public class CreateRuleFragment_1 extends Fragment {
     CreateRuleActivity parentActivity;
-    ImageView iv_add;
+    ImageView iv_add,iv_and;
     AutoCompleteTextView act_devices, act_attribute, act_operator, act_models;
 
     List<String> models;
@@ -34,7 +34,7 @@ public class CreateRuleFragment_1 extends Fragment {
     List<Device> devices;
     String selectedModel, selectedValueType;
 
-    TextInputEditText tie_value;
+    TextInputEditText tie_value,tie_rangeValue;
 
     public CreateRuleFragment_1() { }
 
@@ -67,6 +67,8 @@ public class CreateRuleFragment_1 extends Fragment {
         act_operator = view.findViewById(R.id.act_operator);
         act_models = view.findViewById(R.id.act_models);
         tie_value = view.findViewById(R.id.tie_value);
+        tie_rangeValue = view.findViewById(R.id.tie_rangeValue);
+        iv_and = view.findViewById(R.id.iv_and);
     }
 
     private void InitVars() {
@@ -149,9 +151,16 @@ public class CreateRuleFragment_1 extends Fragment {
                 case "Has a value":
                     tie_value.setVisibility(View.GONE);
                     break;
+                case "Between":
+                case "Is not between":
+                    tie_value.setVisibility(View.VISIBLE);
+                    tie_rangeValue.setVisibility(View.VISIBLE);
+                    iv_and.setVisibility(View.VISIBLE);
+                    break;
                 default:
                     tie_value.setVisibility(View.VISIBLE);
                     break;
+
 
             }
             parentActivity.rule.setAttributeValue(0, act_operator.getText().toString(),"null");
@@ -160,6 +169,14 @@ public class CreateRuleFragment_1 extends Fragment {
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
                     Log.d("AAA", "Value_attr " + Objects.requireNonNull(tie_value.getText()).toString());
+                    parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
+                }
+            });
+
+            tie_rangeValue.setOnFocusChangeListener((view1, focused) -> {
+                if(!focused){
+                    Log.d("AAA", "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()).toString());
+                    parentActivity.rule.setRange_value(Double.parseDouble(tie_rangeValue.getText().toString()));
                     parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
             });

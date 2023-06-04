@@ -10,6 +10,7 @@ import java.util.List;
 
 public class CreateRuleReq {
     String ruleName, ruleAction,ruleAsset,value_then,attributeName_then;
+    Double range_value;
 
     JsonObject recurrence;
     JsonObject attributeName;
@@ -17,6 +18,9 @@ public class CreateRuleReq {
 
     public void setValue_then(String value_then) {
         this.value_then = value_then;
+    }
+    public void setRange_value(Double range_value) {
+        this.range_value = range_value;
     }
 
     public void setAttributeName_then(String attributeName_then) {
@@ -98,12 +102,12 @@ public class CreateRuleReq {
                 attributeValue.addProperty("operator", "LESS_EQUALS");
                 break;
             case "Between":
-                attributeValue.addProperty("rangeValue", 100);
+                attributeValue.addProperty("rangeValue", range_value);
                 break;
             case "Is not between":
                 attributeValue.addProperty("operator","BETWEEN");
                 attributeValue.addProperty("negate", true);
-                attributeValue.addProperty("rangeValue", 100);
+                attributeValue.addProperty("rangeValue", range_value);
                 break;
 
 
