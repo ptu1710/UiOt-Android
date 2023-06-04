@@ -65,6 +65,7 @@ public class CreateRuleActivity extends AppCompatActivity {
         });
 
         btn_back.setOnClickListener(view -> {
+            btn_next.setText(R.string.next);
             if (currentTabIndex > 0) {
                 currentTabIndex--;
                 changeTab(currentTabIndex);

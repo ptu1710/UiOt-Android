@@ -174,8 +174,8 @@ public class CreateRuleFragment_2 extends Fragment {
     private void InitEvents() {
         act_actions.setOnItemClickListener((adapterView, view, i, l) -> {
 
-            //parentActivity.rule.setTargetIds(User.getMe().id);
-            parentActivity.rule.setTargetIds("USER_ID");
+            parentActivity.rule.setTargetIds(User.getMe().id);
+            //parentActivity.rule.setTargetIds("USER_ID");
 
             selectedModel = models.get(i);
             switch (selectedModel){
@@ -301,17 +301,14 @@ public class CreateRuleFragment_2 extends Fragment {
 
             });
 
-            tie_value.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                    if (i == EditorInfo.IME_ACTION_DONE) {
-                        parentActivity.rule.setValue_then(Objects.requireNonNull(tie_value.getText()).toString());
-                        return true;
-
-                    }
-                    return false;
+            tie_value.setOnEditorActionListener((textView, p, keyEvent) -> {
+                if(p == EditorInfo.IME_ACTION_DONE) {
+                    textView.clearFocus();
+                    // TODO: Hide keyboard
                 }
+                return false;
             });
+
 
             act_unlock.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

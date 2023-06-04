@@ -109,7 +109,27 @@ public class CreateRuleReq {
                 attributeValue.addProperty("negate", true);
                 attributeValue.addProperty("rangeValue", range_value);
                 break;
-
+            case "Starts with":
+                attributeValue.addProperty("match","BEGIN");
+                break;
+            case "Does not start with":
+                attributeValue.addProperty("negate", true);
+                attributeValue.addProperty("match","BEGIN");
+                break;
+            case "Ends with":
+                attributeValue.addProperty("match","END");
+                break;
+            case "Does not end with":
+                attributeValue.addProperty("negate", true);
+                attributeValue.addProperty("match","END");
+                break;
+            case "Contains":
+                attributeValue.addProperty("match","CONTAINS");
+                break;
+            case "Does not contain":
+                attributeValue.addProperty("negate", true);
+                attributeValue.addProperty("match","CONTAINS");
+                break;
 
 
         }

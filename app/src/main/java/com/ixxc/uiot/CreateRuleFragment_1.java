@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
@@ -173,12 +174,30 @@ public class CreateRuleFragment_1 extends Fragment {
                 }
             });
 
+            tie_value.setOnEditorActionListener((textView, p, keyEvent) -> {
+                if(p == EditorInfo.IME_ACTION_DONE) {
+                    textView.clearFocus();
+                    // TODO: Hide keyboard
+                }
+
+                return false;
+            });
+
             tie_rangeValue.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
                     Log.d("AAA", "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()).toString());
                     parentActivity.rule.setRange_value(Double.parseDouble(tie_rangeValue.getText().toString()));
                     parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
+            });
+
+            tie_rangeValue.setOnEditorActionListener((textView, p, keyEvent) -> {
+                if(p == EditorInfo.IME_ACTION_DONE) {
+                    textView.clearFocus();
+                    // TODO: Hide keyboard
+                }
+
+                return false;
             });
 
             Log.d(GlobalVars.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
