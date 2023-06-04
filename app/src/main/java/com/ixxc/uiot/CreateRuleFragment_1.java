@@ -155,6 +155,8 @@ public class CreateRuleFragment_1 extends Fragment {
 
             }
             parentActivity.rule.setAttributeValue(0, act_operator.getText().toString(),"null");
+
+            // TODO: get value after typing enter
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
                     Log.d("AAA", "Value_attr " + Objects.requireNonNull(tie_value.getText()).toString());

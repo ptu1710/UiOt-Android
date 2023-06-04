@@ -290,6 +290,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 }
             });
 
+            // TODO: get value after typing enter
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
                     Log.d("AAA", "Value_then " + tie_value.getText().toString());

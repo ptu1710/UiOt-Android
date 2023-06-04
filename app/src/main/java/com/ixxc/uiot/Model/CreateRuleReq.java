@@ -73,7 +73,7 @@ public class CreateRuleReq {
         }
         attributeValue.addProperty("match","EXACT");
         attributeValue.addProperty("negate", false);
-        attributeValue.addProperty("operator", valueObject.toUpperCase());
+        attributeValue.addProperty("operator", valueObject.toUpperCase().replaceAll(" ","_"));
 
         switch (valueObject){
             case "Is true":
@@ -90,6 +90,23 @@ public class CreateRuleReq {
                 attributeValue.addProperty("predicateType","value-empty");
                 attributeValue.addProperty("negate", true);
                 attributeValue.remove("value");
+                break;
+            case "Greater than or equal to":
+                attributeValue.addProperty("operator", "GREATER_EQUALS");
+                break;
+            case "Less than or equal to":
+                attributeValue.addProperty("operator", "LESS_EQUALS");
+                break;
+            case "Between":
+                attributeValue.addProperty("rangeValue", 100);
+                break;
+            case "Is not between":
+                attributeValue.addProperty("operator","BETWEEN");
+                attributeValue.addProperty("negate", true);
+                attributeValue.addProperty("rangeValue", 100);
+                break;
+
+
 
         }
 
