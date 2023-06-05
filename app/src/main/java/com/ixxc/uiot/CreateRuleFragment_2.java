@@ -1,17 +1,28 @@
 package com.ixxc.uiot;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CreateRuleFragment_2 extends Fragment {
@@ -161,13 +173,22 @@ public class CreateRuleFragment_2 extends Fragment {
     // TODO: remove asset
     private void InitEvents() {
         act_actions.setOnItemClickListener((adapterView, view, i, l) -> {
-            if (i == 0) parentActivity.rule.setRuleAction("notification");
 
             parentActivity.rule.setTargetIds(User.getMe().id);
+            //parentActivity.rule.setTargetIds("USER_ID");
 
             selectedModel = models.get(i);
+            switch (selectedModel){
+                case "Email":
+                case "Push Notification":
+                    parentActivity.rule.setRuleAction("notification");
+                    break;
+                default:
+                    parentActivity.rule.setRuleAsset(selectedModel.replaceAll(" ",""));
+                    parentActivity.rule.setRuleAction("write-attribute");
+            }
 
-            Device device = new Device(selectedModel.replaceAll(" ",""));
+            Device device = new Device(selectedModel);
             iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
 
             switch (selectedModel){
@@ -258,9 +279,97 @@ public class CreateRuleFragment_2 extends Fragment {
             selectedValueType = attributes.get(i).getType();
             setValueLayout(act_attribute.getText().toString());
 
-            parentActivity.rule.setAttributeName(attributes.get(i).getName());
+            cb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(cb.isChecked()){
+                        parentActivity.rule.setValue_then("true");
+                    }
+                    else{
+                        parentActivity.rule.setValue_then("false");
+                    }
+                }
+            });
+
+            // TODO: get value after typing enter
+            tie_value.setOnFocusChangeListener((view1, focused) -> {
+                if(!focused){
+                    Log.d("AAA", "Value_then " + tie_value.getText().toString());
+                    parentActivity.rule.setValue_then(Objects.requireNonNull(tie_value.getText()).toString());
+                }
+
+
+            });
+
+            tie_value.setOnEditorActionListener((textView, p, keyEvent) -> {
+                if(p == EditorInfo.IME_ACTION_DONE) {
+                    textView.clearFocus();
+                    // TODO: Hide keyboard
+                }
+                return false;
+            });
+
+
+            act_unlock.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    parentActivity.rule.setValue_then(list_unlock.get(i).replaceAll(" ","_"));
+                }
+            });
+
+            //parentActivity.rule.setAttributeName(attributes.get(i).getName());
+            parentActivity.rule.setAttributeName_then(attributes.get(i).getName());
             Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
         });
+
+        btn_message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OpenMessageDialog();
+            }
+        });
+
+    }
+
+    private void OpenMessageDialog() {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.message_dialog_layout);
+
+        Window window = dialog.getWindow();
+        if(window == null) return;
+
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        WindowManager.LayoutParams windowAttributes = window.getAttributes();
+        windowAttributes.gravity = Gravity.CENTER;
+        window.setAttributes(windowAttributes);
+
+        dialog.setCancelable(true);
+
+        EditText edt_mess = dialog.findViewById(R.id.edt_message);
+        Button btn_OK = dialog.findViewById(R.id.btn_OK);
+        Button btn_Cancel = dialog.findViewById(R.id.btn_Cancel);
+
+        btn_Cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_OK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("AAA", edt_mess.getText().toString());
+                parentActivity.rule.setMessageObj(selectedModel,edt_mess.getText().toString());
+                dialog.dismiss();
+
+            }
+        });
+
+        dialog.show();
     }
 
     private void setValueLayout(String s) {
