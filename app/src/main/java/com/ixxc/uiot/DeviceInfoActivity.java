@@ -286,6 +286,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             public void onEditClicked(int position) {
                 Attribute attribute = attributeList.get(position);
                 launcher.launch(new Intent(DeviceInfoActivity.this, EditAttributeActivity.class)
+                        .putExtra("COLOR", currentColor)
                         .putExtra("ATTRIBUTE", attribute.toJson().toString()));
             }
         }, currentColor);

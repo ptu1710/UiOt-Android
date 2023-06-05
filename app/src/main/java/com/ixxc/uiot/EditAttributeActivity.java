@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,13 +53,14 @@ public class EditAttributeActivity extends AppCompatActivity {
     TextView tv_name, tv_type;
     TextInputEditText  et_value;
     Button btn_add_config;
-    ImageButton ibtn_delete, ibtn_copy, ibtn_copy_1;
+    ImageButton ibtn_copy, ibtn_copy_1;
     LinearLayout linear_config_items;
 
     List<MetaItem> selectedMeta = new ArrayList<>();
     List<MetaItem> metaModels;
     Attribute attribute;
     JsonObject attributeMeta;
+    int currentColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +79,10 @@ public class EditAttributeActivity extends AppCompatActivity {
         tv_type.setText(attribute.getType());
         et_value.setInputType(Utils.getInputType(attribute.getType()));
         et_value.setText(attribute.getValueString());
+
+        ibtn_copy.setImageTintList(ColorStateList.valueOf(currentColor));
+        ibtn_copy_1.setImageTintList(ColorStateList.valueOf(currentColor));
+        btn_add_config.setBackgroundTintList(ColorStateList.valueOf(currentColor));
 
         loadMetaItems();
     }
@@ -100,13 +104,18 @@ public class EditAttributeActivity extends AppCompatActivity {
             window.setBackgroundDrawableResource(R.drawable.bg_add_config_menu);
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
-             Button btn_cancel = dlg.findViewById(R.id.btn_cancel);
+            TextView tv_title = dlg.findViewById(R.id.tv_title);
+            tv_title.setBackgroundColor(currentColor);
+
+            Button btn_cancel = dlg.findViewById(R.id.btn_cancel);
+            btn_cancel.setTextColor(currentColor);
             btn_cancel.setOnClickListener(view1 -> {
                 selectedMeta.clear();
                 dlg.dismiss();
             });
 
             Button btn_add = dlg.findViewById(R.id.btn_save);
+            btn_add.setTextColor(currentColor);
             btn_add.setOnClickListener(view1 -> {
                 linear_config_items.removeAllViews();
 
@@ -120,7 +129,7 @@ public class EditAttributeActivity extends AppCompatActivity {
                 dlg.dismiss();
             });
 
-            ConfigurationAdapter configAdapter = new ConfigurationAdapter(this, attributeMeta);
+            ConfigurationAdapter configAdapter = new ConfigurationAdapter(this, attributeMeta, currentColor);
             configAdapter.setListener((checked, name) -> {
                 if (checked) {
                     selectedMeta.add(metaModels.stream().filter(item -> item.getName().equals(name)).findFirst().orElse(null));
@@ -136,19 +145,16 @@ public class EditAttributeActivity extends AppCompatActivity {
             dlg.show();
         });
 
-        // TODO: Add ibtn_delete click effect
-        ibtn_delete.setOnClickListener(view -> {
-            Log.d(GlobalVars.LOG_TAG, "Delete attribute: " + attribute.getName() + " - " + attribute.isOptional());
-        });
-
         // TODO: Add ibtn_copy click event
     }
 
     private void InitVars() {
+        currentColor = getIntent().getIntExtra("COLOR", R.color.bg);
         String jsonString = getIntent().getStringExtra("ATTRIBUTE");
 
         // Don't move this line to other place
         toolbar = findViewById(R.id.action_bar);
+        toolbar.setBackgroundColor(currentColor);
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
 
@@ -163,7 +169,6 @@ public class EditAttributeActivity extends AppCompatActivity {
         et_value = findViewById(R.id.et_value);
         btn_add_config = findViewById(R.id.btn_add_configuration_items);
         linear_config_items = findViewById(R.id.linear_config_items);
-        ibtn_delete = findViewById(R.id.ibtn_delete);
         ibtn_copy = findViewById(R.id.ib_copy);
         ibtn_copy_1 = findViewById(R.id.ib_copy_1);
     }
@@ -208,11 +213,11 @@ public class EditAttributeActivity extends AppCompatActivity {
         switch (type) {
             case "boolean":
                 CheckBox cb = new CheckBox(this);
+                cb.setButtonTintList(ColorStateList.valueOf(currentColor));
                 cb.setText(Utils.formatString(name));
                 cb.setChecked(value.equals("true"));
                 cb.setLayoutParams(params);
                 cb.setTag(name);
-                cb.setButtonTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.bg, null)));
                 cb.setOnCheckedChangeListener((compoundButton, checked) -> attributeMeta.addProperty(name, checked));
 
                 return cb;
@@ -363,6 +368,7 @@ public class EditAttributeActivity extends AppCompatActivity {
 
         // Set add params button event
         Button btn_add_params = cardView.findViewById(R.id.btn_add_params);
+        btn_add_params.setTextColor(currentColor);
         btn_add_params.setOnClickListener(view -> {
             // Create pop up dialog
             Dialog dlg = new Dialog(EditAttributeActivity.this);
@@ -374,8 +380,12 @@ public class EditAttributeActivity extends AppCompatActivity {
             window.setBackgroundDrawableResource(R.drawable.bg_add_config_menu);
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
+            TextView  tv_title = dlg.findViewById(R.id.tv_title);
+            tv_title.setBackgroundColor(currentColor);
+
             // Set cancel button event
             Button btn_cancel = dlg.findViewById(R.id.btn_cancel);
+            btn_cancel.setTextColor(currentColor);
             btn_cancel.setOnClickListener(v -> {
                 linear.removeAllViews();
                 for (String param : agentLinkObject.keySet()) {
@@ -387,6 +397,7 @@ public class EditAttributeActivity extends AppCompatActivity {
 
             // Set save button event
             Button btn_save = dlg.findViewById(R.id.btn_save);
+            btn_save.setTextColor(currentColor);
             btn_save.setOnClickListener(v -> {
                 agentLinkObject.keySet().clear();
                 for (String key : changedParams.keySet()) {
@@ -395,7 +406,7 @@ public class EditAttributeActivity extends AppCompatActivity {
                 dlg.dismiss();
             });
 
-            ParamsAdapter paramsAdapter = new ParamsAdapter(EditAttributeActivity.this, agentLinkObject);
+            ParamsAdapter paramsAdapter = new ParamsAdapter(EditAttributeActivity.this, agentLinkObject, currentColor);
             paramsAdapter.setListener((checked, param) -> {
                 // If checked, add item to changedParams then add view. Else remove item from changedParams then remove view
                 if (checked) {

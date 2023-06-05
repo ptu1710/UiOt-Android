@@ -2,26 +2,20 @@ package com.ixxc.uiot.Adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.JsonObject;
-import com.ixxc.uiot.GlobalVars;
-import com.ixxc.uiot.Interface.MetaItemListener;
 import com.ixxc.uiot.Interface.ParamItemListener;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.R;
 import com.ixxc.uiot.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdapter.ViewHolder> implements ParamItemListener {
@@ -29,11 +23,13 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
     List<MetaItem> metaItems;
     JsonObject meta;
     ParamItemListener listener;
+    int color;
 
-    public ConfigurationAdapter(Context ctx, JsonObject meta) {
+    public ConfigurationAdapter(Context ctx, JsonObject meta, int color) {
         this.ctx = ctx;
         this.meta = meta;
         this.metaItems = MetaItem.getMetaItemList();
+        this.color = color;
     }
 
     public void setListener(ParamItemListener listener) { this.listener = listener; }
@@ -50,8 +46,8 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
         String displayName = Utils.formatString(name);
         boolean isCheck = meta.has(name);
 
+        holder.cb_item.setButtonTintList(ColorStateList.valueOf(color));
         holder.cb_item.setText(displayName);
-        holder.cb_item.setButtonTintList(ColorStateList.valueOf(ResourcesCompat.getColor(ctx.getResources(), R.color.bg, null)));
         holder.cb_item.setOnCheckedChangeListener((compoundButton, checked) -> onParamItemClick(checked, name));
         holder.cb_item.setChecked(isCheck);
     }

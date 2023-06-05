@@ -114,20 +114,6 @@
                 android:layout_margin="12dp"
                 android:text="@string/add_configuration_items" />
 
-            <ImageButton
-                android:id="@+id/ibtn_delete"
-                android:layout_width="96dp"
-                android:layout_height="48dp"
-                android:background="@android:color/transparent"
-                android:importantForAccessibility="no"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="8dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_delete"
-                app:tint="@color/bg" />
-
         </LinearLayout>
     </ScrollView>
 

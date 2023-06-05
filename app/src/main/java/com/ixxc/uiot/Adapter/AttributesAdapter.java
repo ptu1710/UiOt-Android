@@ -93,7 +93,10 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         String validatedType = Utils.formatString(attr.getType());
 
         holder.ib_edit.setImageTintList(ColorStateList.valueOf(color));
+
+        holder.ib_delete.setEnabled(attr.isOptional());
         holder.ib_delete.setImageTintList(ColorStateList.valueOf(color));
+        holder.ib_delete.setImageTintList(ColorStateList.valueOf(attr.isOptional() ? color : Utils.getColor(ctx, R.color.darker_grey)));
 
         holder.ib_star.setEnabled(attr.canShowValue(type));
         holder.ib_star.setImageTintList(ColorStateList.valueOf(attr.canShowValue(type) ? color : Utils.getColor(ctx, R.color.darker_grey)));

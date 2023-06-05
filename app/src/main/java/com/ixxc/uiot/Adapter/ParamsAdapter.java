@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.JsonObject;
@@ -25,10 +24,12 @@ public class ParamsAdapter extends RecyclerView.Adapter<ParamsAdapter.ViewHolder
     List<String> paramsKey;
     JsonObject agentLinkObject;
     ParamItemListener listener;
+    int color;
 
-    public ParamsAdapter(Context ctx, JsonObject agentLinkObject) {
+    public ParamsAdapter(Context ctx, JsonObject agentLinkObject, int color) {
         this.ctx = ctx;
         this.agentLinkObject = agentLinkObject;
+        this.color = color;
 
         if (agentLinkObject.has("type") && agentLinkObject.get("type").getAsString().equals("HTTPAgentLink")) {
             this.paramsKey = new ArrayList<>(Arrays.asList(ctx.getResources().getStringArray(R.array.http_agent_params)));
@@ -48,7 +49,7 @@ public class ParamsAdapter extends RecyclerView.Adapter<ParamsAdapter.ViewHolder
         String name = paramsKey.get(position);
         holder.cb_item.setText(Utils.formatString(name));
         holder.cb_item.setChecked(agentLinkObject.has(name));
-        holder.cb_item.setButtonTintList(ColorStateList.valueOf(ResourcesCompat.getColor(ctx.getResources(), R.color.bg, null)));
+        holder.cb_item.setButtonTintList(ColorStateList.valueOf(color));
         holder.cb_item.setOnClickListener(view -> onParamItemClick(holder.cb_item.isChecked(), name));
     }
 
