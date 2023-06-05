@@ -49,13 +49,15 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     private final List<Attribute> attributes;
     private final String deviceId;
     private final AttributeListener attributeListener;
+    private final int color;
     private boolean hasMap = false;
 
-    public AttributesAdapter(Context ctx, String deviceId, List<Attribute> attrsObj, AttributeListener attributeListener) {
+    public AttributesAdapter(Context ctx, String deviceId, List<Attribute> attrsObj, AttributeListener attributeListener, int color) {
         this.ctx = ctx;
         this.attributes = attrsObj;
         this.attributeListener = attributeListener;
         this.deviceId = deviceId;
+        this.color = color;
     }
 
     @Override
@@ -90,8 +92,11 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         String type = attr.getType();
         String validatedType = Utils.formatString(attr.getType());
 
+        holder.ib_edit.setImageTintList(ColorStateList.valueOf(color));
+        holder.ib_delete.setImageTintList(ColorStateList.valueOf(color));
+
         holder.ib_star.setEnabled(attr.canShowValue(type));
-        holder.ib_star.setImageTintList(ColorStateList.valueOf(attr.canShowValue(type) ? Utils.getColor(ctx, R.color.bg) : Utils.getColor(ctx, R.color.darker_grey)));
+        holder.ib_star.setImageTintList(ColorStateList.valueOf(attr.canShowValue(type) ? color : Utils.getColor(ctx, R.color.darker_grey)));
         holder.ib_star.setImageResource(attr.isInWidgets(ctx, deviceId) ? R.drawable.ic_star_fill : R.drawable.ic_star_border);
 
         holder.tv_name.setText(name);
@@ -204,7 +209,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         private final MapView mapView;
         private final ImageButton ib_edit;
         private final ImageButton ib_star;
-//        private final ImageButton ib_delete;
+        private final ImageButton ib_delete;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -216,7 +221,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
             iv_expand = itemView.findViewById(R.id.iv_expand);
             ib_edit = itemView.findViewById(R.id.ib_edit);
             ib_star = itemView.findViewById(R.id.ib_star);
-//            ib_delete = itemView.findViewById(R.id.ib_delete);
+            ib_delete = itemView.findViewById(R.id.ib_delete);
         }
     }
 }

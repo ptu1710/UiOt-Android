@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -43,8 +45,8 @@ import com.ixxc.uiot.Interface.AttributeListener;
 import com.ixxc.uiot.Interface.MetaItemListener;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
-import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.Model.DeviceModel;
+import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.Model.User;
 
 import java.util.Dictionary;
@@ -74,6 +76,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     User me;
     ActivityResultLauncher<Intent> launcher;
     Dictionary<String, Attribute> changedAttributes = new Hashtable<>();
+    int currentColor;
 
     @SuppressLint("NotifyDataSetChanged")
     Handler handler = new Handler(message -> {
@@ -95,6 +98,9 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
         if (isOK) {
             current_model = DeviceModel.getDeviceModel(current_device.type);
+            currentColor = current_device.getColorId(this);
+
+            if (!current_device.type.contains("Agent")) setMainColor();
 
             metaItems = MetaItem.getMetaItemList();
             actionBar.setTitle(current_device.name);
@@ -135,7 +141,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         InitViews();
         InitEvents();
 
-        toolbar.setTitle("Device Info");
+        toolbar.setTitle("Loading...");
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         assert actionBar != null;
@@ -186,6 +192,12 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             EditText et_name_1 = dialog.findViewById(R.id.et_name);
             Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
             Button btn_add = dialog.findViewById(R.id.btn_add);
+            TextView tv_title = dialog.findViewById(R.id.tv_title);
+
+            // Set main color
+            tv_title.setBackgroundColor(currentColor);
+            btn_add.setTextColor(currentColor);
+            btn_cancel.setTextColor(currentColor);
 
             List<String> types = current_model.getOptional().stream()
                     .map(Attribute::getName)
@@ -235,6 +247,12 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         });
     }
 
+    private void setMainColor() {
+        toolbar.setBackgroundColor(currentColor);
+        cb_public.setButtonTintList(ColorStateList.valueOf(currentColor));
+        btn_add_attribute.setTextColor(currentColor);
+    }
+
     private boolean addAttribute(String type, String name, String valueType) {
         if (type.equals("Custom") && (name.equals("") || valueType.equals(""))) return false;
 
@@ -270,7 +288,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
                 launcher.launch(new Intent(DeviceInfoActivity.this, EditAttributeActivity.class)
                         .putExtra("ATTRIBUTE", attribute.toJson().toString()));
             }
-        });
+        }, currentColor);
 
         rv_attribute.setLayoutManager(new LinearLayoutManager(this));
         rv_attribute.setAdapter(attributesAdapter);

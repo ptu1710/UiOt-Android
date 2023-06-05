@@ -7,13 +7,14 @@
 
 
     <TextView
-        android:id="@+id/tv_add_attribute"
+        android:id="@+id/tv_title"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:background="@color/bg"
         android:gravity="center_vertical"
         android:paddingStart="24dp"
-        android:text="Add attribute"
+        android:paddingEnd="24dp"
+        android:text="@string/add_attribute"
         android:textColor="@color/white"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -29,16 +30,17 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        android:hint="Type"
+        android:hint="@string/type"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_add_attribute">
+        app:layout_constraintTop_toBottomOf="@+id/tv_title">
 
         <AutoCompleteTextView
             android:id="@+id/act_type"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="none" />
+            android:inputType="none"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,7 +53,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         app:endIconMode="clear_text"
-        android:hint="Name"
+        android:hint="@string/new_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_type">
@@ -70,7 +72,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Value type"
+        android:hint="@string/value"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
@@ -82,7 +84,8 @@
             android:id="@+id/act_value"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="none" />
+            android:inputType="none"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -94,7 +97,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="8dp"
-        android:text="Add"
+        android:text="@string/add"
         android:textColor="@color/bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +111,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Cancel"
+        android:text="@string/cancel"
         android:textColor="@color/bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
