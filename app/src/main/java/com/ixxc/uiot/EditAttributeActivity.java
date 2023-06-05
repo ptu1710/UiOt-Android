@@ -221,6 +221,7 @@ public class EditAttributeActivity extends AppCompatActivity {
                 cb.setOnCheckedChangeListener((compoundButton, checked) -> attributeMeta.addProperty(name, checked));
 
                 return cb;
+            case "valueFormat":
             case "text":
             case "positiveInteger":
             case "attributeLink[]":
@@ -229,7 +230,6 @@ public class EditAttributeActivity extends AppCompatActivity {
             case "agentLink":
                 return createAgentLinkView(value);
             case "valueConstraint[]":
-            case "valueFormat":
             case "text[]":
             default:
                 return null;
