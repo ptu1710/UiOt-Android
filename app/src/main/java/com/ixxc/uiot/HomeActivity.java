@@ -1,12 +1,12 @@
 package com.ixxc.uiot;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -44,10 +44,6 @@ public class HomeActivity extends AppCompatActivity {
                 int selectedIndex = navbar.getSelectedIndex();
                 if (selectedIndex == 0) {
                     finish();
-                } else if (selectedIndex == 1) {
-                    if (!devicesFrag.selected_device_id.isEmpty()) {
-                        devicesFrag.changeSelectedDevice(-1, "");
-                    }
                 }
                 navbar.selectTabAt(0, true);
             }
@@ -107,7 +103,7 @@ public class HomeActivity extends AppCompatActivity {
         navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
             @Override
             public void onTabSelected(int lastIndex, @Nullable AnimatedBottomBar.Tab lastTab, int newIndex, @NonNull AnimatedBottomBar.Tab newTab) {
-                if (fragment == devicesFrag) devicesFrag.changeSelectedDevice(-1, "");
+                if (fragment == devicesFrag) devicesFrag.changeSelectedDevice(-1, null);
 
                 switch (newIndex) {
                     case 0:

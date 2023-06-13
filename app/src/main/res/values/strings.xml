@@ -111,6 +111,9 @@
     <string name="agent">Agent</string>
     <string name="asset">Asset</string>
     <string name="all">All</string>
+    <string name="delete">Delete</string>
+    <string name="view_device_information">View device information</string>
+    <string name="view_on_maps">View device on Maps</string>
 
     <string-array name="timeframe">
         <item>Hour</item>

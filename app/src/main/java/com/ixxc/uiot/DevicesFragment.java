@@ -2,15 +2,21 @@ package com.ixxc.uiot;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -42,7 +48,7 @@ public class DevicesFragment extends Fragment {
     HomeActivity parentActivity;
     ShimmerFrameLayout layout_shimmer;
     RecyclerView rv_devices;
-    ImageView iv_add, iv_delete, iv_community, iv_cancel;
+    ImageView iv_add, iv_cancel;
     SwipeRefreshLayout srl_devices;
     View rootView;
     SearchView searchView;
@@ -52,7 +58,6 @@ public class DevicesFragment extends Fragment {
     DeviceTreeViewAdapter deviceTreeViewAdapter;
     DeviceRecyclerAdapter deviceRecyclerAdapter;
     User me;
-    public String selected_device_id = "";
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -143,8 +148,6 @@ public class DevicesFragment extends Fragment {
         layout_shimmer = v.findViewById(R.id.layout_shimmer);
         rv_devices = v.findViewById(R.id.rv_devices);
         iv_add = v.findViewById(R.id.iv_add);
-        iv_community = v.findViewById(R.id.iv_community);
-        iv_delete = v.findViewById(R.id.iv_delete);
         iv_cancel = v.findViewById(R.id.iv_cancel);
         srl_devices = v.findViewById(R.id.srl_devices);
         searchView = v.findViewById(R.id.searchView);
@@ -158,25 +161,7 @@ public class DevicesFragment extends Fragment {
             launcher.launch(intent);
         });
 
-        iv_delete.setOnClickListener(view -> {
-            if (selected_device_id.equals("")) return;
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity);
-            builder.setTitle("Warning!");
-            builder.setMessage("Delete this device?");
-            builder.setPositiveButton("Delete", (dialogInterface, i) -> new Thread(() -> {
-                Message msg = handler.obtainMessage();
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("DELETE_DEVICE", APIManager.delDevice(selected_device_id));
-                msg.setData(bundle);
-                handler.sendMessage(msg);
-            }).start());
-
-            builder.setNegativeButton("Cancel", (dialogInterface, i) -> { });
-            builder.show();
-        });
-
-        iv_cancel.setOnClickListener(view -> changeSelectedDevice(-1, ""));
+        iv_cancel.setOnClickListener(view -> changeSelectedDevice(-1, null));
 
         srl_devices.setOnRefreshListener(this::refreshDevices);
 
@@ -276,7 +261,7 @@ public class DevicesFragment extends Fragment {
             searchView.clearFocus();
 
             if (!me.canWriteDevices()) return false;
-            changeSelectedDevice(0, ((Device) treeNode.getValue()).id);
+            changeSelectedDevice(0, ((Device) treeNode.getValue()));
             return true;
         });
     }
@@ -291,22 +276,84 @@ public class DevicesFragment extends Fragment {
         layout_shimmer.setVisibility(View.GONE);
     }
 
-    public void changeSelectedDevice(int index, String id) {
+    public void changeSelectedDevice(int index, Device device) {
         if (index != -1) {
-            iv_add.setVisibility(View.GONE);
-            iv_delete.setVisibility(View.VISIBLE);
-            iv_cancel.setVisibility(View.VISIBLE);
+            Dialog dialog = new Dialog(parentActivity);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.devices_bottom_dialog);
+
+            ImageView iv_icon = dialog.findViewById(R.id.iv_icon);
+            TextView tv_name = dialog.findViewById(R.id.tv_name);
+            TextView tv_id = dialog.findViewById(R.id.tv_id);
+            LinearLayout layout_delete = dialog.findViewById(R.id.layout_delete);
+            LinearLayout layout_info = dialog.findViewById(R.id.layout_info);
+            LinearLayout layout_on_maps = dialog.findViewById(R.id.layout_on_maps);
+
+            iv_icon.setImageDrawable(device.getIconDrawable(parentActivity));
+            tv_name.setText(device.name);
+            tv_id.setText(device.id);
+
+            layout_info.setOnClickListener(view -> {
+                Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
+                intent.putExtra("DEVICE_ID", device.id);
+                launcher.launch(intent);
+                dialog.dismiss();
+            });
+
+            layout_on_maps.setOnClickListener(view -> {
+                if (device.getPoint() == null) {
+                    Toast.makeText(parentActivity, "This device has no location on maps!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                parentActivity.navbar.selectTabAt(2, true);
+                Utils.delayHandler.postDelayed(() -> parentActivity.mapsFrag.setBottomSheet(device.id), 320);
+
+                dialog.dismiss();
+                Toast.makeText(parentActivity, "layout_on_maps", Toast.LENGTH_SHORT).show();
+            });
+
+            layout_delete.setOnClickListener(view -> {
+                String alertMsg = "Delete \"" + device.name + "\" ? This action cannot be undone!";
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity);
+                builder.setTitle("Warning!");
+                builder.setMessage(alertMsg);
+                builder.setPositiveButton("Delete", (dialogInterface, i) -> {
+                    boolean hasChild = devicesList.stream().anyMatch(d -> d.getParentId().equals(device.id));
+                    if (hasChild) {
+                        Toast.makeText(parentActivity, "Cannot be delete this device because it contains child device(s)!", Toast.LENGTH_LONG).show();
+                        refreshDevices();
+                        return;
+                    }
+
+                    new Thread(() -> {
+                        Message msg = handler.obtainMessage();
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean("DELETE_DEVICE", APIManager.delDevice(device.id));
+                        msg.setData(bundle);
+                        handler.sendMessage(msg);
+                    }).start();
+                });
+
+                builder.setNegativeButton("Cancel", (dialogInterface, i) -> { });
+                builder.show();
+
+                dialog.dismiss();
+            });
+
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+            dialog.getWindow().setGravity(Gravity.BOTTOM);
+            dialog.show();
+
         } else {
             if (!me.canWriteDevices()) iv_add.setVisibility(View.GONE);
             else iv_add.setVisibility(View.VISIBLE);
 
-            iv_delete.setVisibility(View.GONE);
-            iv_cancel.setVisibility(View.GONE);
-
 //            devicesAdapter.notifyItemChanged(devicesAdapter.checkedPos);
 //            devicesAdapter.checkedPos = index;
         }
-
-        selected_device_id = id;
     }
 }

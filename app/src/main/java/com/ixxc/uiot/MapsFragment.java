@@ -182,13 +182,13 @@ public class MapsFragment extends Fragment {
         if (!isHidden()) onHiddenChanged(false);
     }
 
-    private void setBottomSheet(@NonNull String deviceId) {
+    public void setBottomSheet(@NonNull String deviceId) {
         Device device = Device.getDeviceById(deviceId);
 
         if (device != null) {
             Dialog dialog = new Dialog(parentActivity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.bottom_sheet);
+            dialog.setContentView(R.layout.maps_bottom_dialog);
 
             List<Attribute> attributes = device.getRequiredAttributes();
             BottomSheetAdapter adapter = new BottomSheetAdapter(attributes);
