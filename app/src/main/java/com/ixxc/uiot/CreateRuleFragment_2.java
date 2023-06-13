@@ -178,7 +178,7 @@ public class CreateRuleFragment_2 extends Fragment {
             //parentActivity.rule.setTargetIds("USER_ID");
 
             selectedModel = models.get(i);
-            switch (selectedModel){
+            switch (selectedModel) {
                 case "Email":
                 case "Push Notification":
                     parentActivity.rule.setRuleAction("notification");

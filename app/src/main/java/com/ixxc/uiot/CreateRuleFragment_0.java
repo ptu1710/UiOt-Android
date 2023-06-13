@@ -15,13 +15,16 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.JsonObject;
+import com.ixxc.uiot.Model.Rule;
 
 import java.util.Objects;
 
 public class CreateRuleFragment_0 extends Fragment {
     CreateRuleActivity parentActivity;
 
-    public CreateRuleFragment_0() { }
+    public CreateRuleFragment_0() {
+    }
+
     public CreateRuleFragment_0(CreateRuleActivity parentActivity) {
         this.parentActivity = parentActivity;
     }
@@ -50,7 +53,7 @@ public class CreateRuleFragment_0 extends Fragment {
         });
 
         til_name.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if(i == EditorInfo.IME_ACTION_DONE) {
+            if (i == EditorInfo.IME_ACTION_DONE) {
                 textView.clearFocus();
                 // TODO: Hide keyboard
             }
@@ -71,5 +74,11 @@ public class CreateRuleFragment_0 extends Fragment {
 
         RadioGroup rg_trigger = view.findViewById(R.id.rg_trigger);
         rg_trigger.setOnCheckedChangeListener((radioGroup, i) -> til_name.clearFocus());
+
+        if (parentActivity.chose != null) {
+            til_name.setText(Rule.rule_selected.getName());
+        }
+
     }
+
 }

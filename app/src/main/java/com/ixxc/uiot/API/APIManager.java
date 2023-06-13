@@ -487,4 +487,17 @@ public class APIManager {
 
         return new ArrayList<>();
     }
+
+    public static int deleteRule(Integer id) {
+        Call<Void> call = userAI.deleteRule(id);
+
+        int returnCode = -1;
+        try {
+            Response<Void> response = call.execute();
+            returnCode = response.code();
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return returnCode;
+    }
+
 }

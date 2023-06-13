@@ -20,6 +20,11 @@ public class Utils {
         );
     }
 
+    public static  String capitalizeFirst(String s){
+        s = s.replace("_"," ");
+        return String.valueOf(s.charAt(0)).toUpperCase() + s.substring(1).toLowerCase();
+    }
+
     // Convert dp to px
     public static int dpToPx(Context context, int dp) {
         float density = context.getResources().getDisplayMetrics().density;

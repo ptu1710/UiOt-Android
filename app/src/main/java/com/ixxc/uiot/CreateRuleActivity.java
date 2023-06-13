@@ -1,6 +1,7 @@
 package com.ixxc.uiot;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +28,8 @@ public class CreateRuleActivity extends AppCompatActivity {
     FragmentManager fm;
     int currentTabIndex = 0;
 
+    public String chose;
+
     public CreateRuleReq rule = new CreateRuleReq();
 
     Handler handler = new Handler(msg -> {
@@ -43,6 +46,10 @@ public class CreateRuleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_rule);
+
+        Intent intent = getIntent();
+        chose = intent.getStringExtra("CHOSE");
+        Log.d("AAA", "chose: " + chose);
 
         new Thread(APIManager::getDeviceModels).start();
 
