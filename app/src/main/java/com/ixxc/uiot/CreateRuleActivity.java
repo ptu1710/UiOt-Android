@@ -56,7 +56,7 @@ public class CreateRuleActivity extends AppCompatActivity {
         fm = getSupportFragmentManager();
         fm.beginTransaction().replace(R.id.fragment_wizard, create_0).commit();
 
-        btn_next = findViewById(R.id.btn_next);
+        /*btn_next = findViewById(R.id.btn_next);
         btn_back = findViewById(R.id.btn_back);
 
         btn_next.setOnClickListener(v -> {
@@ -79,10 +79,10 @@ public class CreateRuleActivity extends AppCompatActivity {
             } else {
                 finish();
             }
-        });
+        });*/
     }
 
-    private void changeTab(int newTabIndex) {
+    public void changeTab(int newTabIndex) {
 
         switch (newTabIndex) {
             case 0:
@@ -97,7 +97,7 @@ public class CreateRuleActivity extends AppCompatActivity {
         }
     }
 
-    private void createRule(CreateRuleReq rule) {
+    public void createRule(CreateRuleReq rule) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", 0);
         jsonObject.addProperty("type", "realm");

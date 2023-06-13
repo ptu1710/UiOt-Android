@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -21,6 +22,7 @@ import java.util.Objects;
 
 public class CreateRuleFragment_0 extends Fragment {
     CreateRuleActivity parentActivity;
+    Button btn_next, btn_back;
 
     public CreateRuleFragment_0() {
     }
@@ -79,6 +81,21 @@ public class CreateRuleFragment_0 extends Fragment {
             til_name.setText(Rule.rule_selected.getName());
         }
 
+        btn_next = view.findViewById(R.id.btn_next);
+        btn_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.changeTab(1);
+            }
+        });
+
+        btn_back = view.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.finish();
+            }
+        });
     }
 
 }

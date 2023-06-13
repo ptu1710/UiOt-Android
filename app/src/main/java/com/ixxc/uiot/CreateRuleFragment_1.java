@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,8 @@ public class CreateRuleFragment_1 extends Fragment {
     String selectedModel, selectedValueType;
 
     TextInputEditText tie_value,tie_rangeValue;
+
+    Button btn_next, btn_back;
 
     public CreateRuleFragment_1() { }
 
@@ -74,6 +77,9 @@ public class CreateRuleFragment_1 extends Fragment {
         tie_value = view.findViewById(R.id.tie_value);
         tie_rangeValue = view.findViewById(R.id.tie_rangeValue);
         iv_and = view.findViewById(R.id.iv_and);
+
+        btn_next = view.findViewById(R.id.btn_next);
+        btn_back = view.findViewById(R.id.btn_back);
     }
 
     private void InitVars() {
@@ -165,7 +171,6 @@ public class CreateRuleFragment_1 extends Fragment {
                     tie_value.setVisibility(View.VISIBLE);
                     break;
 
-
             }
             parentActivity.rule.setAttributeValue(0, act_operator.getText().toString(),"null");
 
@@ -207,6 +212,20 @@ public class CreateRuleFragment_1 extends Fragment {
         });
 
         setValue(parentActivity.chose);
+
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.changeTab(0);
+            }
+        });
+
+        btn_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.changeTab(2);
+            }
+        });
     }
     private void setValue(String chose) {
         if(chose != null){
@@ -317,6 +336,28 @@ public class CreateRuleFragment_1 extends Fragment {
 
             }
             act_operator.setAdapter(adapter);
+
+            switch (act_operator.getText().toString()){
+                case "Is true":
+                case "Is false":
+                case "Has no value":
+                case "Has a value":
+                    tie_value.setVisibility(View.GONE);
+                    break;
+                case "Between":
+                case "Is not between":
+                    tie_value.setText(ruleValue.value);
+                    tie_value.setVisibility(View.VISIBLE);
+                    tie_rangeValue.setText(ruleValue.rangeValue);
+                    tie_rangeValue.setVisibility(View.VISIBLE);
+                    iv_and.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    tie_value.setText(ruleValue.value);
+                    tie_value.setVisibility(View.VISIBLE);
+                    break;
+
+            }
 
 
         }
