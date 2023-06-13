@@ -1,6 +1,7 @@
 package com.ixxc.uiot;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,6 +27,8 @@ public class CreateRuleActivity extends AppCompatActivity {
     FragmentManager fm;
     int currentTabIndex = 0;
 
+    public String chose;
+
     public CreateRuleReq rule = new CreateRuleReq();
 
     Handler handler = new Handler(msg -> {
@@ -43,10 +46,16 @@ public class CreateRuleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_rule);
 
+        Intent intent = getIntent();
+        chose = intent.getStringExtra("CHOSE");
+        Log.d("AAA", "chose: " + chose);
+
+        new Thread(APIManager::getDeviceModels).start();
+
         fm = getSupportFragmentManager();
         fm.beginTransaction().replace(R.id.fragment_wizard, create_0).commit();
 
-        btn_next = findViewById(R.id.btn_next);
+        /*btn_next = findViewById(R.id.btn_next);
         btn_back = findViewById(R.id.btn_back);
 
         btn_next.setOnClickListener(v -> {
@@ -69,10 +78,10 @@ public class CreateRuleActivity extends AppCompatActivity {
             } else {
                 finish();
             }
-        });
+        });*/
     }
 
-    private void changeTab(int newTabIndex) {
+    public void changeTab(int newTabIndex) {
 
         switch (newTabIndex) {
             case 0:
@@ -87,7 +96,7 @@ public class CreateRuleActivity extends AppCompatActivity {
         }
     }
 
-    private void createRule(CreateRuleReq rule) {
+    public void createRule(CreateRuleReq rule) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", 0);
         jsonObject.addProperty("type", "realm");

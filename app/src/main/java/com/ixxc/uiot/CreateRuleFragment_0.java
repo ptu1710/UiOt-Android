@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -15,13 +16,17 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.JsonObject;
+import com.ixxc.uiot.Model.Rule;
 
 import java.util.Objects;
 
 public class CreateRuleFragment_0 extends Fragment {
     CreateRuleActivity parentActivity;
+    Button btn_next, btn_back;
 
-    public CreateRuleFragment_0() { }
+    public CreateRuleFragment_0() {
+    }
+
     public CreateRuleFragment_0(CreateRuleActivity parentActivity) {
         this.parentActivity = parentActivity;
     }
@@ -50,7 +55,7 @@ public class CreateRuleFragment_0 extends Fragment {
         });
 
         til_name.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if(i == EditorInfo.IME_ACTION_DONE) {
+            if (i == EditorInfo.IME_ACTION_DONE) {
                 textView.clearFocus();
                 // TODO: Hide keyboard
             }
@@ -71,5 +76,26 @@ public class CreateRuleFragment_0 extends Fragment {
 
         RadioGroup rg_trigger = view.findViewById(R.id.rg_trigger);
         rg_trigger.setOnCheckedChangeListener((radioGroup, i) -> til_name.clearFocus());
+
+        if (parentActivity.chose != null) {
+            til_name.setText(Rule.rule_selected.getName());
+        }
+
+        btn_next = view.findViewById(R.id.btn_next);
+        btn_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.changeTab(1);
+            }
+        });
+
+        btn_back = view.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.finish();
+            }
+        });
     }
+
 }

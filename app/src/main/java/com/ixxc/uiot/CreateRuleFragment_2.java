@@ -54,7 +54,7 @@ public class CreateRuleFragment_2 extends Fragment {
     LinearLayout layout_4,layout_4_1;
     RelativeLayout layout_value;
 
-    Button btn_message;
+    Button btn_message,btn_back,btn_save;
 
     List<String> list_unlock = Arrays.asList("REQUEST START","REQUEST REPEATING","REQUEST CANCEL","READY","COMPLETED","RUNNING","CANCELLED");
     List<String> list_connector_type = Arrays.asList("YAZAKI","MENNEKES","LE GRAND","CHADEMO","COMBO","SCHUKO","ENERGYLOCK");
@@ -113,6 +113,9 @@ public class CreateRuleFragment_2 extends Fragment {
         layout_4_1 = view.findViewById(R.id.layout_4_1);
         layout_4 = view.findViewById(R.id.layout_4);
         layout_value =view.findViewById(R.id.layout_value);
+
+        btn_save = view.findViewById(R.id.btn_save);
+        btn_back = view.findViewById(R.id.btn_back);
     }
 
     private void InitVars() {
@@ -177,7 +180,7 @@ public class CreateRuleFragment_2 extends Fragment {
             //parentActivity.rule.setTargetIds("USER_ID");
 
             selectedModel = models.get(i);
-            switch (selectedModel){
+            switch (selectedModel) {
                 case "Email":
                 case "Push Notification":
                     parentActivity.rule.setRuleAction("notification");
@@ -325,6 +328,20 @@ public class CreateRuleFragment_2 extends Fragment {
             @Override
             public void onClick(View view) {
                 OpenMessageDialog();
+            }
+        });
+
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.changeTab(1);
+            }
+        });
+
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.createRule(parentActivity.rule);
             }
         });
 

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,9 @@ import com.ixxc.uiot.Adapter.DeviceArrayAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.DeviceModel;
+import com.ixxc.uiot.Model.Model;
+import com.ixxc.uiot.Model.Rule;
+import com.ixxc.uiot.Model.RuleValue;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +40,8 @@ public class CreateRuleFragment_1 extends Fragment {
     String selectedModel, selectedValueType;
 
     TextInputEditText tie_value,tie_rangeValue;
+
+    Button btn_next, btn_back;
 
     public CreateRuleFragment_1() { }
 
@@ -61,6 +67,8 @@ public class CreateRuleFragment_1 extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+
+
     private void InitViews(View view) {
         iv_add = view.findViewById(R.id.iv_add);
         act_devices = view.findViewById(R.id.act_devices);
@@ -70,6 +78,9 @@ public class CreateRuleFragment_1 extends Fragment {
         tie_value = view.findViewById(R.id.tie_value);
         tie_rangeValue = view.findViewById(R.id.tie_rangeValue);
         iv_and = view.findViewById(R.id.iv_and);
+
+        btn_next = view.findViewById(R.id.btn_next);
+        btn_back = view.findViewById(R.id.btn_back);
     }
 
     private void InitVars() {
@@ -163,7 +174,6 @@ public class CreateRuleFragment_1 extends Fragment {
                     tie_value.setVisibility(View.VISIBLE);
                     break;
 
-
             }
             parentActivity.rule.setAttributeValue(0, act_operator.getText().toString(),"null");
 
@@ -204,7 +214,156 @@ public class CreateRuleFragment_1 extends Fragment {
             Log.d(GlobalVars.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
         });
 
+        setValue(parentActivity.chose);
 
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.changeTab(0);
+            }
+        });
+
+        btn_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                parentActivity.changeTab(2);
+            }
+        });
+    }
+    private void setValue(String chose) {
+        if(chose != null){
+            RuleValue ruleValue = new RuleValue(Rule.rule_selected.rules);
+            Log.d(GlobalVars.LOG_TAG,"Types: " + ruleValue.types);
+            int i_model = models.indexOf(ruleValue.types);
+
+            selectedModel = models.get(i_model);
+
+            /// E L E N N
+            setDeviceAdapter(selectedModel);
+
+            act_models.setText(Utils.formatString(act_models.getAdapter().getItem(i_model).toString()));
+
+            Device device = new Device(selectedModel);
+            iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
+
+            Device device1 = devices.stream().filter(d -> d.id.equals(ruleValue.ids)).findFirst().orElse(null);
+            if (device1 == null) {
+                act_devices.setText(act_devices.getAdapter().getItem(0).toString());
+            } else {
+                act_devices.setText(device1.name);
+            }
+
+            attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
+
+            List<String> attributeNames = attributes.stream()
+                    .map(attribute -> Utils.formatString(attribute.getName()))
+                    .collect(Collectors.toList());
+            int i_attribute = attributeNames.indexOf(Utils.capitalizeFirst(ruleValue.attribute));
+            ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
+            act_attribute.setHint(R.string.attribute);
+            act_attribute.setText(attributeNames.get(i_attribute));
+            act_attribute.setAdapter(adapter1);
+
+
+            selectedValueType =  attributes.get(i_attribute).getType();
+
+            List<String> operators = parentActivity.getRuleOperator(parentActivity, selectedValueType);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, operators);
+            act_operator.setHint(R.string.operator);
+            if(ruleValue.operator != null){
+                if(ruleValue.negate == null || !ruleValue.negate){
+                    if(ruleValue.operator.equals("LESS_EQUALS") || ruleValue.operator.equals("GREATER_EQUALS")){
+                        act_operator.setText(Utils.capitalizeFirst(ruleValue.operator).split(" ")[0] + " than or equal to");
+                    }
+                    else {
+                        act_operator.setText(Utils.capitalizeFirst(ruleValue.operator));
+                    }
+
+                }
+                else if(ruleValue.negate) {
+                    switch (ruleValue.operator){
+                        case "BETWEEN":
+                            act_operator.setText("Is not between");
+                            break;
+                        case "EQUALS":
+                            act_operator.setText("Not equals");
+                            break;
+                    }
+                }
+            }
+            else {
+                if(ruleValue.predicateType.equals("boolean")){
+                    if(ruleValue.value.equals("true")){
+                        act_operator.setText("Is true");
+                    }
+                    else {
+                        act_operator.setText("Is false");
+                    }
+                }
+                else if(ruleValue.predicateType.equals("value-empty")){
+                    if(ruleValue.negate == null){
+                        act_operator.setText("Has no value");
+                    }
+                    else {
+                        act_operator.setText("Has a value");
+                    }
+                }
+                else if (ruleValue == null || !ruleValue.negate){
+                    switch (ruleValue.match){
+                        case "BEGIN":
+                            act_operator.setText("Starts with");
+                            break;
+                        case "CONTAINS":
+                            act_operator.setText("Contains");
+                            break;
+                        case "END":
+                            act_operator.setText("Ends with");
+                            break;
+
+                    }
+                }
+                else {
+                    switch (ruleValue.match){
+                        case "BEGIN":
+                            act_operator.setText("Does not start with");
+                            break;
+                        case "CONTAINS":
+                            act_operator.setText("Does not contain");
+                            break;
+                        case "END":
+                            act_operator.setText("Does not end with");
+                            break;
+
+                    }
+                }
+
+            }
+            act_operator.setAdapter(adapter);
+
+            switch (act_operator.getText().toString()){
+                case "Is true":
+                case "Is false":
+                case "Has no value":
+                case "Has a value":
+                    tie_value.setVisibility(View.GONE);
+                    break;
+                case "Between":
+                case "Is not between":
+                    tie_value.setText(ruleValue.value);
+                    tie_value.setVisibility(View.VISIBLE);
+                    tie_rangeValue.setText(ruleValue.rangeValue);
+                    tie_rangeValue.setVisibility(View.VISIBLE);
+                    iv_and.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    tie_value.setText(ruleValue.value);
+                    tie_value.setVisibility(View.VISIBLE);
+                    break;
+
+            }
+
+
+        }
     }
     // TODO: remove asset
     private void setDeviceAdapter(String deviceType) {

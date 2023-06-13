@@ -39,7 +39,12 @@ public class RulesActivity extends AppCompatActivity {
             adapter = new RuleAdapter(this, ruleList, new RecyclerViewItemListener() {
                 @Override
                 public void onItemClicked(View v, int pos) {
-                    Log.d(GlobalVars.LOG_TAG, "onItemClicked: " + ruleList.get(pos).getName());
+                    Rule.rule_selected = ruleList.get(pos);
+                    Log.d(GlobalVars.LOG_TAG, "onItemClicked: " + Rule.rule_selected.getName());
+                    Intent intent = new Intent(RulesActivity.this, CreateRuleActivity.class);
+                    intent.putExtra("CHOSE","true");
+                    startActivity(intent);
+                    finish();
                 }
 
                 @Override
