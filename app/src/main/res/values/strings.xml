@@ -108,6 +108,9 @@
     <string name="device_name">Device Name</string>
     <string name="add">Add</string>
     <string name="add_optional_attributes">Add optional attributes</string>
+    <string name="agent">Agent</string>
+    <string name="asset">Asset</string>
+    <string name="all">All</string>
 
     <string-array name="timeframe">
         <item>Hour</item>

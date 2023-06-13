@@ -22,11 +22,13 @@ public class DeviceArrayAdapter extends ArrayAdapter<String> {
     Context ctx;
     private final List<String> itemsAll;
     private final List<String> suggestions;
+    private final boolean isCamelCase;
 
-    public DeviceArrayAdapter(@NonNull Context context, int resource, @NonNull List<String> list) {
+    public DeviceArrayAdapter(@NonNull Context context, int resource, @NonNull List<String> list, boolean isCamelCase) {
         super(context, resource, list);
 
         this.ctx = context;
+        this.isCamelCase = isCamelCase;
         this.itemsAll = new ArrayList<>(list);
         this.suggestions = new ArrayList<>();
     }
@@ -39,7 +41,7 @@ public class DeviceArrayAdapter extends ArrayAdapter<String> {
 
         TextView tv_name = view.findViewById(R.id.tv_name);
         ImageView iv_icon = view.findViewById(R.id.iv_icon);
-        tv_name.setText(Utils.formatString(name));
+        tv_name.setText(isCamelCase ? Utils.formatString(name) : name);
         iv_icon.setImageDrawable(new Device(name).getIconDrawable(ctx));
 
         return view;

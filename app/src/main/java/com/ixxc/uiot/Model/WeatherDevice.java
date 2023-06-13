@@ -12,6 +12,9 @@ public class WeatherDevice extends Device {
     public Attribute windDirection;
     public Attribute rainfall;
     public Attribute uVIndex;
+    public Attribute maxTemperature;
+    public Attribute minTemperature;
+    public Attribute description;
 
     public WeatherDevice() {
         super();
@@ -38,10 +41,13 @@ public class WeatherDevice extends Device {
         this.name = device.name;
 
         this.temperature = new Gson().fromJson(device.attributes.get("temperature"), Attribute.class);
+        this.maxTemperature = new Gson().fromJson(device.attributes.get("highestTemperature"), Attribute.class);
+        this.minTemperature = new Gson().fromJson(device.attributes.get("lowestTemperature"), Attribute.class);
         this.humidity = new Gson().fromJson(device.attributes.get("humidity"), Attribute.class);
         this.rainfall = new Gson().fromJson(device.attributes.get("rainfall"), Attribute.class);
         this.uVIndex = new Gson().fromJson(device.attributes.get("uVIndex"), Attribute.class);
         this.windDirection = new Gson().fromJson(device.attributes.get("windDirection"), Attribute.class);
         this.windSpeed = new Gson().fromJson(device.attributes.get("windSpeed"), Attribute.class);
+        this.description = new Gson().fromJson(device.attributes.get("weatherDescription"), Attribute.class);
     }
 }

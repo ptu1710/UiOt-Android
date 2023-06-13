@@ -7,7 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="darker_grey">#A9a9a9</color>
+    <color name="white_alpha">#10FFFFFF</color>
+    <color name="medium_grey">#F2F2F2</color>
+    <color name="dark_grey">#A9a9a9</color>
+    <color name="darker_grey">#858585</color>
     <color name="lightBlue_20">#039BE5</color>
     <color name="lightBlue_10">#01579B</color>
     //

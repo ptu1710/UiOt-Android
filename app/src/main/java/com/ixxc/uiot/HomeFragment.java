@@ -122,12 +122,18 @@ public class HomeFragment extends Fragment {
 
         TextView tv_dow = layout_top.findViewById(R.id.tv_dow);
         TextView tv_temper = layout_top.findViewById(R.id.tv_temper);
+        TextView tv_weather_desc = layout_top.findViewById(R.id.tv_weather_desc);
+        TextView tv_max_min_temper = layout_top.findViewById(R.id.tv_max_min_temper);
 
         String dow = Utils.formatString(DayOfWeek.from(java.time.LocalDate.now()).toString().toLowerCase());
         String temper = String.join("", defaultDevice.temperature.getValueString(), getResources().getString(R.string.celsius));
+//        String weather_desc = Utils.formatString(defaultDevice.description.getValueString());
+//        String max_min_temper = String.join(" / ", defaultDevice.minTemperature.getValueString(), defaultDevice.minTemperature.getValueString());
 
         tv_dow.setText(dow);
         tv_temper.setText(temper);
+//        tv_weather_desc.setText(weather_desc);
+//        tv_max_min_temper.setText(max_min_temper);
     }
 
     public void InitWidgets() {
@@ -139,7 +145,6 @@ public class HomeFragment extends Fragment {
 
         // Get saved preferences for widgets
         // One widget info is stored in one string, example: "5zI6XqkQVSfdgOrZ1MyWEf-humidity"
-
         String widgetString = Utils.getPreferences(parentActivity, GlobalVars.WIDGET_KEY);
 
         int count = 1;
@@ -147,7 +152,6 @@ public class HomeFragment extends Fragment {
         smallWidParams.weight = 1;
 
         LinearLayout mediumLayout = createMediumLayout();
-
         JsonArray widgetArray = TextUtils.isEmpty(widgetString) ? new JsonArray() : JsonParser.parseString(widgetString).getAsJsonArray();
         for (JsonElement widget : widgetArray) {
             String[] widgetInfo = widget.getAsString().split("-");

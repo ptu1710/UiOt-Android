@@ -468,12 +468,8 @@ public class EditAttributeActivity extends AppCompatActivity {
             }
         });
 
-        if (!type.equals("text") && !type.equals("positiveInteger")) {
-            et1.setLayoutParams(params1);
-        }
-
+        if (!type.equals("text") && !type.equals("positiveInteger")) { et1.setLayoutParams(params1); }
         til1.addView(et1);
-
         return til1;
     }
 

@@ -96,10 +96,10 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
         holder.ib_delete.setEnabled(attr.isOptional());
         holder.ib_delete.setImageTintList(ColorStateList.valueOf(color));
-        holder.ib_delete.setImageTintList(ColorStateList.valueOf(attr.isOptional() ? color : Utils.getColor(ctx, R.color.darker_grey)));
+        holder.ib_delete.setImageTintList(ColorStateList.valueOf(attr.isOptional() ? color : Utils.getColor(ctx, R.color.dark_grey)));
 
         holder.ib_star.setEnabled(attr.canShowValue(type));
-        holder.ib_star.setImageTintList(ColorStateList.valueOf(attr.canShowValue(type) ? color : Utils.getColor(ctx, R.color.darker_grey)));
+        holder.ib_star.setImageTintList(ColorStateList.valueOf(attr.canShowValue(type) ? color : Utils.getColor(ctx, R.color.dark_grey)));
         holder.ib_star.setImageResource(attr.isInWidgets(ctx, deviceId) ? R.drawable.ic_star_fill : R.drawable.ic_star_border);
 
         holder.tv_name.setText(name);

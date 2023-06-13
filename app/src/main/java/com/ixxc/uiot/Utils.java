@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.text.InputType;
+import android.text.TextUtils;
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -12,6 +13,8 @@ public class Utils {
 
     // Format camel case back to normal string
     public static String formatString(String s) {
+        if (TextUtils.isEmpty(s)) return s;
+
         char first = Character.toUpperCase(s.charAt(0));
         return first + s.substring(1).replaceAll(
                 String.format("%s|%s|%s",

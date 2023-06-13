@@ -76,9 +76,10 @@ public class CreateRuleFragment_1 extends Fragment {
         models = DeviceModel.getModelList().stream().map(model -> (model.assetDescriptor.get("name").getAsString())).collect(Collectors.toList());
         //models.add("PVSolarAsset");
         models.add("Time");
+        Collections.sort(models);
         //models.sort(Comparator.comparing(o -> o.assetDescriptor.get("name").getAsString()));
 
-        DeviceArrayAdapter adapter = new DeviceArrayAdapter(parentActivity, R.layout.dropdown_item_1, models);
+        DeviceArrayAdapter adapter = new DeviceArrayAdapter(parentActivity, R.layout.dropdown_item_1, models, true);
         act_models.setHint(R.string.choose_device);
         act_models.setAdapter(adapter);
     }
@@ -169,7 +170,7 @@ public class CreateRuleFragment_1 extends Fragment {
             // TODO: get value after typing enter
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    Log.d("AAA", "Value_attr " + Objects.requireNonNull(tie_value.getText()).toString());
+                    Log.d("AAA", "Value_attr " + Objects.requireNonNull(tie_value.getText()));
                     parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
             });
@@ -185,7 +186,7 @@ public class CreateRuleFragment_1 extends Fragment {
 
             tie_rangeValue.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    Log.d("AAA", "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()).toString());
+                    Log.d("AAA", "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()));
                     parentActivity.rule.setRange_value(Double.parseDouble(tie_rangeValue.getText().toString()));
                     parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
