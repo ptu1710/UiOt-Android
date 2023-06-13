@@ -20,7 +20,6 @@ import com.ixxc.uiot.Adapter.DeviceArrayAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.DeviceModel;
-import com.ixxc.uiot.Model.Model;
 import com.ixxc.uiot.Model.Rule;
 import com.ixxc.uiot.Model.RuleValue;
 
@@ -216,19 +215,9 @@ public class CreateRuleFragment_1 extends Fragment {
 
         setValue(parentActivity.chose);
 
-        btn_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                parentActivity.changeTab(0);
-            }
-        });
+        btn_back.setOnClickListener(view -> parentActivity.changeTab(0));
 
-        btn_next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                parentActivity.changeTab(2);
-            }
-        });
+        btn_next.setOnClickListener(view -> parentActivity.changeTab(2));
     }
     private void setValue(String chose) {
         if(chose != null){
@@ -253,7 +242,7 @@ public class CreateRuleFragment_1 extends Fragment {
                 act_devices.setText(device1.name);
             }
 
-            attributes = Model.getDeviceModel(selectedModel).attributeDescriptors;
+            attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
             List<String> attributeNames = attributes.stream()
                     .map(attribute -> Utils.formatString(attribute.getName()))
