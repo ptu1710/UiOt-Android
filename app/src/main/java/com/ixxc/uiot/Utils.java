@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import androidx.core.content.res.ResourcesCompat;
 
 public class Utils {
+    public static final int UPDATE_DEVICE = 1001;
+
     public static Handler delayHandler;
 
     // Format camel case back to normal string

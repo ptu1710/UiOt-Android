@@ -49,9 +49,6 @@ import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.Model.User;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,7 +63,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     CheckBox cb_public;
     AutoCompleteTextView act_parent;
     Button btn_add_attribute;
-    String device_id, selected_id;
+    String device_id, parent_id;
     Device current_device;
     DeviceModel current_model;
     List<Attribute> attributeList;
@@ -75,26 +72,31 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     List<MetaItem> metaItems, selectedMetaItems;
     User me;
     ActivityResultLauncher<Intent> launcher;
-    Dictionary<String, Attribute> changedAttributes = new Hashtable<>();
     int currentColor;
 
     @SuppressLint("NotifyDataSetChanged")
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
-        boolean isUpdated = bundle.getBoolean("UPDATE_DEVICE");
-        boolean isOK;
+        int updateCase = bundle.getInt("UPDATE_CASE");
+        boolean isOK = bundle.getBoolean("DEVICE_OK");
 
-        if (isUpdated) {
+        if (updateCase == 1 || updateCase == 2) {
+            et_name.clearFocus();
+            act_parent.clearFocus();
+
             boolean isUpdateOK = bundle.getBoolean("UPDATE_OK");
             if (isUpdateOK) {
                 attributesAdapter.notifyDataSetChanged();
-                Toast.makeText(this, "Updated!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Device updated!", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Failed to update this device!", Toast.LENGTH_LONG).show();
             }
 
-            isOK = isUpdateOK;
-        } else isOK = bundle.getBoolean("DEVICE_OK");
+            if (updateCase == 1) {
+                setResult(Utils.UPDATE_DEVICE);
+                finish();
+            }
+        }
 
         if (isOK) {
             current_model = DeviceModel.getDeviceModel(current_device.type);
@@ -107,8 +109,8 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             et_name.setText(current_device.name);
             cb_public.setChecked(current_device.accessPublicRead);
 
-            selected_id = current_device.getParentId();
-            act_parent.setText(selected_id);
+            parent_id = current_device.getParentId();
+            act_parent.setText(parent_id);
 
             act_parent.setAdapter(new ArrayAdapter<>(this, R.layout.dropdown_item, parentNames));
 
@@ -130,7 +132,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
                     Attribute attribute = new Gson().fromJson(data.getStringExtra("ATTRIBUTE"), Attribute.class);
                     attributeList.replaceAll(a -> a.getName().equals(attribute.getName()) ? attribute : a);
 
-                    updateDevice();
+                    updateDevice(2);
                 }
             }
         });
@@ -236,13 +238,13 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         });
 
         act_parent.setOnItemClickListener((adapterView, view, i, l) -> {
-            selected_id = getSelectedId(parentNames.get(i));
+            parent_id = getSelectedId(parentNames.get(i));
             act_parent.setSelection(0);
         });
 
         iv_clear_parent.setOnClickListener(view -> {
             act_parent.setText("");
-            selected_id = "";
+            parent_id = "";
             act_parent.clearFocus();
         });
     }
@@ -319,52 +321,51 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             Toast.makeText(this, "Device ID copied to clipboard", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.save) {
             // TODO: Save device info
-            Log.d(GlobalVars.LOG_TAG, "onOptionsItemSelected: Save menu item clicked");
+            updateDevice(1);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateDevice() {
-        et_name.setText(current_device.name);
-        rv_attribute.clearFocus();
-
+    private void updateDevice(int updateCase) {
         JsonObject body = new JsonObject();
 
-        current_device.path.clear();
-        current_device.path.add(current_device.id);
+        String device_name;
+        // Update attributes only
+        if (updateCase == 2) {
+            device_name = current_device.name;
 
-        if (!selected_id.equals("")) {
-            current_device.path.add(selected_id);
-            body.addProperty("parentId", selected_id);
+            for (Attribute a : attributeList) {
+                current_device.attributes.add(a.getName(), a.toJson());
+            }
+        } else {
+            // Update basic info
+            // Name changed
+            device_name = String.valueOf(et_name.getText());
+
+            // Parent changed
+            current_device.path.clear();
+            current_device.path.add(current_device.id);
+
+            if (!parent_id.equals("")) {
+                current_device.path.add(parent_id);
+                body.addProperty("parentId", parent_id);
+            }
         }
+
+        body.add("attributes", current_device.attributes);
 
         JsonElement path = new Gson().toJsonTree(current_device.path);
         body.add("path", path);
 
-        Enumeration<String> keys = changedAttributes.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
-            attributeList.add(changedAttributes.get(key));
-        }
+        body.addProperty("name", device_name);
 
         body.addProperty("id", current_device.id);
         body.addProperty("version", current_device.version);
         body.addProperty("createdOn", current_device.createdOn);
-
-        // Change name
-        body.addProperty("name", String.valueOf(et_name.getText()));
-
         body.addProperty("accessPublicRead", cb_public.isChecked());
         body.addProperty("realm", current_device.realm);
         body.addProperty("type", current_device.type);
-
-        // Change attributes
-        for (Attribute a : attributeList) {
-            current_device.attributes.add(a.getName(), a.toJson());
-        }
-
-        body.add("attributes", current_device.attributes);
 
         Log.d(GlobalVars.LOG_TAG, body.toString());
 
@@ -375,7 +376,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();
-            bundle.putBoolean("UPDATE_DEVICE", true);
+            bundle.putInt("UPDATE_CASE", updateCase);
             bundle.putBoolean("UPDATE_OK", updated);
             message.setData(bundle);
             handler.sendMessage(message);

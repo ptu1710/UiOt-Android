@@ -1,7 +1,5 @@
 package com.ixxc.uiot;
 
-import static android.app.Activity.RESULT_OK;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -94,9 +92,7 @@ public class DevicesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                refreshDevices();
-            }
+            if (result.getResultCode() == Utils.UPDATE_DEVICE) refreshDevices();
 
             parentActivity.homeFrag.InitWidgets();
         });

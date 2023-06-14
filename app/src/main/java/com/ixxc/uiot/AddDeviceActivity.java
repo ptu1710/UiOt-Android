@@ -1,7 +1,5 @@
 package com.ixxc.uiot;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -65,10 +63,9 @@ public class AddDeviceActivity extends AppCompatActivity {
         boolean createDevice = bundle.getBoolean("CREATE_DEV");
 
         if (createDevice) {
-            Intent returnIntent = new Intent();
-            setResult(Activity.RESULT_OK, returnIntent);
+            setResult(Utils.UPDATE_DEVICE);
             finish();
-            Toast.makeText(this, "Created!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Device created!", Toast.LENGTH_LONG).show();
         }
 
         return false;
