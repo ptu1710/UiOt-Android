@@ -15,36 +15,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
 
             <ImageButton
-                android:id="@+id/ibtn_ZoomIn"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="12dp"
-                app:layout_constraintBottom_toTopOf="@+id/ibtn_ZoomOut"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_zoom_in"
-                tools:ignore="SpeakableTextPresentCheck"
-                android:importantForAccessibility="no" />
+                android:id="@+id/ibtn_zoom_in"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_zoom_in"
+                android:background="@drawable/bg_zoom_in"
+                tools:ignore="SpeakableTextPresentCheck" />
 
             <ImageButton
-                android:id="@+id/ibtn_ZoomOut"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_zoom_out"
-                tools:ignore="SpeakableTextPresentCheck"
-                android:importantForAccessibility="no" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:id="@+id/ibtn_zoom_out"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:importantForAccessibility="no"
+                android:background="@drawable/bg_zoom_out"
+                android:src="@drawable/ic_zoom_out"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </LinearLayout>
 
     </com.mapbox.maps.MapView>
 

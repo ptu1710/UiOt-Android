@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,6 +33,8 @@ import com.mapbox.maps.MapView;
 import com.mapbox.maps.MapboxMap;
 import com.mapbox.maps.plugin.Plugin;
 import com.mapbox.maps.plugin.animation.CameraAnimationsPlugin;
+import com.mapbox.maps.plugin.animation.CameraAnimationsUtils;
+import com.mapbox.maps.plugin.animation.MapAnimationOptions;
 import com.mapbox.maps.plugin.annotation.AnnotationConfig;
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
 import com.mapbox.maps.plugin.annotation.AnnotationPluginImplKt;
@@ -48,8 +51,9 @@ import java.util.Objects;
 
 public class MapsFragment extends Fragment {
     HomeActivity parentActivity;
-    private MapView mapView;
+    MapView mapView;
     RecyclerView rv_attributes;
+    ImageButton ibtn_zoom_in, ibtn_zoom_out;
     public String lastSelectedId = "";
     private boolean firstTime = true;
 
@@ -95,9 +99,27 @@ public class MapsFragment extends Fragment {
     private void InitViews(View view) {
         mapView = view.findViewById(R.id.mapView);
         rv_attributes = view.findViewById(R.id.rv_attributes);
+        ibtn_zoom_in = view.findViewById(R.id.ibtn_zoom_in);
+        ibtn_zoom_out = view.findViewById(R.id.ibtn_zoom_out);
     }
 
-    private void InitEvents() { }
+    private void InitEvents() {
+        ibtn_zoom_in.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
+                new CameraOptions.Builder()
+                        .center(mapView.getMapboxMap().getCameraState().getCenter())
+                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() + 1)
+                        .build(),
+                new MapAnimationOptions.Builder().duration(320).build()
+        ));
+
+        ibtn_zoom_out.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
+                new CameraOptions.Builder()
+                        .center(mapView.getMapboxMap().getCameraState().getCenter())
+                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() - 1)
+                        .build(),
+                new MapAnimationOptions.Builder().duration(320).build()
+        ));
+    }
 
     private void setMapView() {
         Map mapData = Map.getMapObj();
