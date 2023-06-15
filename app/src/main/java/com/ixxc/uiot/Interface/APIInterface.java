@@ -176,4 +176,5 @@ public interface APIInterface {
 
     @DELETE("api/master/rules/realm/{ruleId}")
     Call<Void> deleteRule(@Path("ruleId") Integer id);
+
 }

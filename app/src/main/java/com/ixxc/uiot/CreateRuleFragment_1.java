@@ -108,7 +108,7 @@ public class CreateRuleFragment_1 extends Fragment {
 
         act_devices.setOnItemClickListener((adapterView, view, i, l) -> {
             if (i == 0) {
-                Log.d("AAA", selectedModel);
+                Log.d(GlobalVars.LOG_TAG, selectedModel);
                 attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
@@ -179,7 +179,7 @@ public class CreateRuleFragment_1 extends Fragment {
             // TODO: get value after typing enter
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    Log.d("AAA", "Value_attr " + Objects.requireNonNull(tie_value.getText()));
+                    Log.d(GlobalVars.LOG_TAG, "Value_attr " + Objects.requireNonNull(tie_value.getText()));
                     parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
             });
@@ -195,7 +195,7 @@ public class CreateRuleFragment_1 extends Fragment {
 
             tie_rangeValue.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    Log.d("AAA", "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()));
+                    Log.d(GlobalVars.LOG_TAG, "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()));
                     parentActivity.rule.setRange_value(Double.parseDouble(tie_rangeValue.getText().toString()));
                     parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
@@ -223,14 +223,12 @@ public class CreateRuleFragment_1 extends Fragment {
         if(chose != null){
             RuleValue ruleValue = new RuleValue(Rule.rule_selected.rules);
             Log.d(GlobalVars.LOG_TAG,"Types: " + ruleValue.types);
-            int i_model = models.indexOf(ruleValue.types);
 
-            selectedModel = models.get(i_model);
+            selectedModel = ruleValue.types;
 
-            /// E L E N N
             setDeviceAdapter(selectedModel);
 
-            act_models.setText(Utils.formatString(act_models.getAdapter().getItem(i_model).toString()));
+            act_models.setText(Utils.formatString(selectedModel));
 
             Device device = new Device(selectedModel);
             iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
@@ -241,6 +239,7 @@ public class CreateRuleFragment_1 extends Fragment {
             } else {
                 act_devices.setText(device1.name);
             }
+            setDeviceAdapter(selectedModel);
 
             attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 

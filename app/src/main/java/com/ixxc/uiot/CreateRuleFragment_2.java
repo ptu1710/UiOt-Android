@@ -32,6 +32,8 @@ import com.ixxc.uiot.Adapter.DeviceArrayAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.DeviceModel;
+import com.ixxc.uiot.Model.Rule;
+import com.ixxc.uiot.Model.RuleValue;
 import com.ixxc.uiot.Model.User;
 
 import java.util.ArrayList;
@@ -47,6 +49,9 @@ public class CreateRuleFragment_2 extends Fragment {
     List<String> models;
     String selectedModel, selectedValueType;
     ImageView iv_add;
+
+    String value;
+    String message;
 
     List<Attribute> attributes;
     List<Device> devices;
@@ -345,6 +350,49 @@ public class CreateRuleFragment_2 extends Fragment {
             }
         });
 
+        setValue(parentActivity.chose);
+
+    }
+
+    private void setValue(String chose) {
+        if(chose != null){
+            RuleValue ruleValue = new RuleValue(Rule.rule_selected.rules);
+            Log.d(GlobalVars.LOG_TAG,"Types then: " + ruleValue.types_then);
+            DeviceArrayAdapter adapter = new DeviceArrayAdapter(parentActivity, R.layout.dropdown_item_1, models, true);
+            act_actions.setText(Utils.formatString(ruleValue.types_then));
+            act_actions.setAdapter(adapter);
+
+            selectedModel = ruleValue.types_then;
+            Device device = new Device(selectedModel);
+            iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
+
+            setDeviceAdapter(selectedModel);
+
+            Device device1 = devices.stream().filter(d -> d.id.equals(ruleValue.ids)).findFirst().orElse(null);
+            if (device1 == null) {
+                act_devices.setText(act_devices.getAdapter().getItem(0).toString());
+            } else {
+                act_devices.setText(device1.name);
+            }
+            setDeviceAdapter(selectedModel);
+
+            attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
+
+            List<String> attributeNames = attributes.stream()
+                    .map(attribute -> Utils.formatString(attribute.getName()))
+                    .collect(Collectors.toList());
+            int i_attribute = attributeNames.indexOf(Utils.capitalizeFirst(ruleValue.attribute_then));
+            ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
+            act_attribute.setHint(R.string.attribute);
+            act_attribute.setText(attributeNames.get(i_attribute));
+            act_attribute.setAdapter(adapter1);
+
+            value = ruleValue.value_then;
+            setValueLayout(act_attribute.getText().toString());
+
+        }
+
+
     }
 
     private void OpenMessageDialog() {
@@ -404,6 +452,12 @@ public class CreateRuleFragment_2 extends Fragment {
             case "On Off":
             case "Presence":
             case "Cooling":
+                try{
+                    if(value.equals("true")){
+                        cb.setChecked(true);
+                    }
+                }catch (Exception e){}
+
                 cb.setVisibility(View.VISIBLE);
                 tie_value.setVisibility(View.GONE);
                 til_unlock.setVisibility(View.GONE);
@@ -412,6 +466,9 @@ public class CreateRuleFragment_2 extends Fragment {
             case "Force Charge":
                 til_unlock.setVisibility(View.VISIBLE);
                 ArrayAdapter<String> adapter2 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_unlock);
+                try {
+                    act_unlock.setText(value);
+                }catch (Exception e){}
                 act_unlock.setAdapter(adapter2);
                 cb.setVisibility(View.GONE);
                 tie_value.setVisibility(View.GONE);
@@ -419,6 +476,9 @@ public class CreateRuleFragment_2 extends Fragment {
             case "Connector Type":
                 til_unlock.setVisibility(View.VISIBLE);
                 ArrayAdapter<String> adapter3 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_connector_type);
+                try {
+                    act_unlock.setText(value);
+                }catch (Exception e){}
                 act_unlock.setAdapter(adapter3);
                 cb.setVisibility(View.GONE);
                 tie_value.setVisibility(View.GONE);
@@ -426,6 +486,9 @@ public class CreateRuleFragment_2 extends Fragment {
             case "Panel Orientation":
                 til_unlock.setVisibility(View.VISIBLE);
                 ArrayAdapter<String> adapter4 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_orientation);
+                try {
+                    act_unlock.setText(value);
+                }catch (Exception e){}
                 act_unlock.setAdapter(adapter4);
                 cb.setVisibility(View.GONE);
                 tie_value.setVisibility(View.GONE);
@@ -433,11 +496,18 @@ public class CreateRuleFragment_2 extends Fragment {
             case "Child Asset Type":
                 til_unlock.setVisibility(View.VISIBLE);
                 ArrayAdapter<String> adapter5 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_child_asset_type);
+                try {
+                    act_unlock.setText(value);
+                }catch (Exception e){}
                 act_unlock.setAdapter(adapter5);
                 cb.setVisibility(View.GONE);
                 tie_value.setVisibility(View.GONE);
                 break;
             default:
+                try {
+                    tie_value.setText(value);
+                }catch (Exception e){}
+
                 tie_value.setVisibility(View.VISIBLE);
                 til_unlock.setVisibility(View.GONE);
                 cb.setVisibility(View.GONE);

@@ -19,6 +19,12 @@ public class RuleValue {
     public String types;
     public String attribute;
 
+    public String types_then;
+    public String attribute_then;
+    public String ids_then;
+    public String value_then;
+
+
 
     public RuleValue(String rules) {
         JsonObject jsonObject = JsonParser.parseString(rules).getAsJsonObject();
@@ -72,6 +78,24 @@ public class RuleValue {
                     .get(0).getAsJsonObject().get("items").getAsJsonArray().get(0).getAsJsonObject().get("assets").getAsJsonObject().get("ids").getAsJsonArray().get(0).getAsString();
         }
         catch (Exception e){}
+
+        /// Then
+        JsonObject target = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray().get(0).getAsJsonObject().get("target").getAsJsonObject();
+        try {
+            this.types_then = target.get("assets").getAsJsonObject().get("types").getAsJsonArray().get(0).getAsString();
+            this.ids_then = target.get("assets").getAsJsonObject().get("ids").getAsJsonArray().get(0).getAsString();
+        }
+        catch (Exception e){
+            this.types_then = target.get("matchedAssets").getAsJsonObject().get("types").getAsJsonArray().get(0).getAsString();
+        }
+
+        this.attribute_then = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray()
+                .get(0).getAsJsonObject().get("attributeName").getAsString();
+
+        try {
+            this.value_then = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray()
+                    .get(0).getAsJsonObject().get("value").getAsString();
+        }catch (Exception e){}
 
 
     }

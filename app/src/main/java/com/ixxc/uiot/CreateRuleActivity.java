@@ -25,7 +25,6 @@ public class CreateRuleActivity extends AppCompatActivity {
     CreateRuleFragment_1 create_1 = new CreateRuleFragment_1(this);
     CreateRuleFragment_2 create_2 = new CreateRuleFragment_2(this);
     FragmentManager fm;
-    int currentTabIndex = 0;
 
     public String chose;
 
@@ -48,7 +47,7 @@ public class CreateRuleActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         chose = intent.getStringExtra("CHOSE");
-        Log.d("AAA", "chose: " + chose);
+        Log.d(GlobalVars.LOG_TAG, "chose: " + chose);
 
         new Thread(APIManager::getDeviceModels).start();
 
