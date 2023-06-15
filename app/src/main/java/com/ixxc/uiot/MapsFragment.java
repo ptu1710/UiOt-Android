@@ -2,6 +2,7 @@ package com.ixxc.uiot;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -107,7 +108,7 @@ public class MapsFragment extends Fragment {
         ibtn_zoom_in.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
                 new CameraOptions.Builder()
                         .center(mapView.getMapboxMap().getCameraState().getCenter())
-                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() + 1)
+                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() + 0.5)
                         .build(),
                 new MapAnimationOptions.Builder().duration(320).build()
         ));
@@ -115,7 +116,7 @@ public class MapsFragment extends Fragment {
         ibtn_zoom_out.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
                 new CameraOptions.Builder()
                         .center(mapView.getMapboxMap().getCameraState().getCenter())
-                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() - 1)
+                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() - 0.5)
                         .build(),
                 new MapAnimationOptions.Builder().duration(320).build()
         ));
@@ -216,12 +217,13 @@ public class MapsFragment extends Fragment {
             BottomSheetAdapter adapter = new BottomSheetAdapter(attributes);
             LinearLayoutManager layoutManager =  new LinearLayoutManager(parentActivity);
 
-            TextView tvAssetName = dialog.findViewById(R.id.tv_assetName);
-            ImageView ivIcon = dialog.findViewById(R.id.iv_assetIcon);
+            TextView tv_name = dialog.findViewById(R.id.tv_assetName);
+            ImageView iv_icon = dialog.findViewById(R.id.iv_assetIcon);
             ImageView iv_go = dialog.findViewById(R.id.iv_go_1);
             Button btn_chart = dialog.findViewById(R.id.btn_chart);
             RecyclerView rv_attributes = dialog.findViewById(R.id.rv_attributes);
 
+            iv_go.setImageTintList(ColorStateList.valueOf(device.getColorId(parentActivity)));
             iv_go.setOnClickListener(view -> {
                 // TODO: Change start activity animation
                 Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
@@ -230,6 +232,7 @@ public class MapsFragment extends Fragment {
                 dialog.dismiss();
             });
 
+            btn_chart.setBackgroundTintList(ColorStateList.valueOf(device.getColorId(parentActivity)));
             btn_chart.setOnClickListener(view -> {
                 // TODO: Change start activity animation
                 Intent intent = new Intent(parentActivity, ChartActivity.class);
@@ -238,8 +241,8 @@ public class MapsFragment extends Fragment {
                 dialog.dismiss();
             });
 
-            tvAssetName.setText(device.name);
-            ivIcon.setImageDrawable(device.getIconDrawable(parentActivity));
+            tv_name.setText(device.name);
+            iv_icon.setImageDrawable(device.getIconDrawable(parentActivity));
 
             rv_attributes.setHasFixedSize(true);
             rv_attributes.setLayoutManager(layoutManager);

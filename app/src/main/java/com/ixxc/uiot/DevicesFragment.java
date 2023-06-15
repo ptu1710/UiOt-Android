@@ -157,8 +157,6 @@ public class DevicesFragment extends Fragment {
             launcher.launch(intent);
         });
 
-        iv_cancel.setOnClickListener(view -> changeSelectedDevice(-1, null));
-
         srl_devices.setOnRefreshListener(this::refreshDevices);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -255,16 +253,13 @@ public class DevicesFragment extends Fragment {
 
         deviceTreeViewAdapter.setTreeNodeLongClickListener((treeNode, view) -> {
             searchView.clearFocus();
-
-            if (!me.canWriteDevices()) return false;
-            changeSelectedDevice(0, ((Device) treeNode.getValue()));
+            performLongClick(((Device) treeNode.getValue()));
             return true;
         });
     }
 
     private void showDevices() {
         rv_devices.setLayoutManager(new LinearLayoutManager(parentActivity));
-        rv_devices.setHasFixedSize(true);
 
         rv_devices.setAdapter(deviceTreeViewAdapter);
 
@@ -272,84 +267,77 @@ public class DevicesFragment extends Fragment {
         layout_shimmer.setVisibility(View.GONE);
     }
 
-    public void changeSelectedDevice(int index, Device device) {
-        if (index != -1) {
-            Dialog dialog = new Dialog(parentActivity);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.devices_bottom_dialog);
+    public void performLongClick(Device device) {
+        // TODO: if (!me.canWriteDevices()) return false;
 
-            ImageView iv_icon = dialog.findViewById(R.id.iv_icon);
-            TextView tv_name = dialog.findViewById(R.id.tv_name);
-            TextView tv_id = dialog.findViewById(R.id.tv_id);
-            LinearLayout layout_delete = dialog.findViewById(R.id.layout_delete);
-            LinearLayout layout_info = dialog.findViewById(R.id.layout_info);
-            LinearLayout layout_on_maps = dialog.findViewById(R.id.layout_on_maps);
+        Dialog dialog = new Dialog(parentActivity);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.devices_bottom_dialog);
 
-            iv_icon.setImageDrawable(device.getIconDrawable(parentActivity));
-            tv_name.setText(device.name);
-            tv_id.setText(device.id);
+        ImageView iv_icon = dialog.findViewById(R.id.iv_icon);
+        TextView tv_name = dialog.findViewById(R.id.tv_name);
+        TextView tv_id = dialog.findViewById(R.id.tv_id);
+        LinearLayout layout_delete = dialog.findViewById(R.id.layout_delete);
+        LinearLayout layout_info = dialog.findViewById(R.id.layout_info);
+        LinearLayout layout_on_maps = dialog.findViewById(R.id.layout_on_maps);
 
-            layout_info.setOnClickListener(view -> {
-                Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
-                intent.putExtra("DEVICE_ID", device.id);
-                launcher.launch(intent);
-                dialog.dismiss();
-            });
+        iv_icon.setImageDrawable(device.getIconDrawable(parentActivity));
+        tv_name.setText(device.name);
+        tv_id.setText(device.id);
 
-            layout_on_maps.setOnClickListener(view -> {
-                if (device.getPoint() == null) {
-                    Toast.makeText(parentActivity, "This device has no location on maps!", Toast.LENGTH_SHORT).show();
+        layout_info.setOnClickListener(view -> {
+            Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
+            intent.putExtra("DEVICE_ID", device.id);
+            launcher.launch(intent);
+            dialog.dismiss();
+        });
+
+        layout_on_maps.setOnClickListener(view -> {
+            if (device.getPoint() == null) {
+                Toast.makeText(parentActivity, "This device has no location on maps!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            parentActivity.navbar.selectTabAt(2, true);
+            Utils.delayHandler.postDelayed(() -> parentActivity.mapsFrag.setBottomSheet(device.id), 320);
+
+            dialog.dismiss();
+            Toast.makeText(parentActivity, "layout_on_maps", Toast.LENGTH_SHORT).show();
+        });
+
+        layout_delete.setOnClickListener(view -> {
+            String alertMsg = "Delete \"" + device.name + "\" ? This action cannot be undone!";
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity);
+            builder.setTitle("Warning!");
+            builder.setMessage(alertMsg);
+            builder.setPositiveButton("Delete", (dialogInterface, i) -> {
+                boolean hasChild = devicesList.stream().anyMatch(d -> d.getParentId().equals(device.id));
+                if (hasChild) {
+                    Toast.makeText(parentActivity, "Cannot be delete this device because it contains child device(s)!", Toast.LENGTH_LONG).show();
+                    refreshDevices();
                     return;
                 }
 
-                parentActivity.navbar.selectTabAt(2, true);
-                Utils.delayHandler.postDelayed(() -> parentActivity.mapsFrag.setBottomSheet(device.id), 320);
-
-                dialog.dismiss();
-                Toast.makeText(parentActivity, "layout_on_maps", Toast.LENGTH_SHORT).show();
+                new Thread(() -> {
+                    Message msg = handler.obtainMessage();
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("DELETE_DEVICE", APIManager.delDevice(device.id));
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
+                }).start();
             });
 
-            layout_delete.setOnClickListener(view -> {
-                String alertMsg = "Delete \"" + device.name + "\" ? This action cannot be undone!";
+            builder.setNegativeButton("Cancel", (dialogInterface, i) -> { });
+            builder.show();
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity);
-                builder.setTitle("Warning!");
-                builder.setMessage(alertMsg);
-                builder.setPositiveButton("Delete", (dialogInterface, i) -> {
-                    boolean hasChild = devicesList.stream().anyMatch(d -> d.getParentId().equals(device.id));
-                    if (hasChild) {
-                        Toast.makeText(parentActivity, "Cannot be delete this device because it contains child device(s)!", Toast.LENGTH_LONG).show();
-                        refreshDevices();
-                        return;
-                    }
+            dialog.dismiss();
+        });
 
-                    new Thread(() -> {
-                        Message msg = handler.obtainMessage();
-                        Bundle bundle = new Bundle();
-                        bundle.putBoolean("DELETE_DEVICE", APIManager.delDevice(device.id));
-                        msg.setData(bundle);
-                        handler.sendMessage(msg);
-                    }).start();
-                });
-
-                builder.setNegativeButton("Cancel", (dialogInterface, i) -> { });
-                builder.show();
-
-                dialog.dismiss();
-            });
-
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-            dialog.getWindow().setGravity(Gravity.BOTTOM);
-            dialog.show();
-
-        } else {
-            if (!me.canWriteDevices()) iv_add.setVisibility(View.GONE);
-            else iv_add.setVisibility(View.VISIBLE);
-
-//            devicesAdapter.notifyItemChanged(devicesAdapter.checkedPos);
-//            devicesAdapter.checkedPos = index;
-        }
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.show();
     }
 }

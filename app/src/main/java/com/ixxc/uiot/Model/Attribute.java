@@ -23,7 +23,6 @@ public class Attribute {
     private boolean isExpanded = false;
 
     public String getUnits() { return String.join(" ", units); }
-
     public String getName() { return name; }
     public String getType() { return type; }
     public void setMeta(JsonObject meta) { this.meta = meta; }

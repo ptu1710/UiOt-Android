@@ -5,12 +5,14 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -21,6 +23,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -44,16 +47,18 @@ public class ChartActivity extends AppCompatActivity {
     Toolbar toolbar;
     LineChart lineChart;
     AutoCompleteTextView act_attributeName, act_ending, act_timeframe;
+    TextInputLayout til_attributeName;
     Button btn_show_chart;
     LinearLayout layout_timeframe;
-    String device_id;
-    String selectedAttribute, interval;
+    Device current_device;
+    String selectedAttribute =  "", interval;
     String date, dateTime;
     Long timestampMillis, dis;
     List<String> attributes;
     Calendar calendar;
     SimpleDateFormat sdf;
-    JsonArray dataPoints = new JsonArray();
+    JsonArray dataPoints;
+    int current_color;
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -73,16 +78,20 @@ public class ChartActivity extends AppCompatActivity {
         initVars();
         initEvent();
 
+        toolbar.setBackgroundColor(current_color);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Chart");
+
+        btn_show_chart.setBackgroundColor(current_color);
     }
 
     private void initView() {
         lineChart = findViewById(R.id.lineChart);
         btn_show_chart = findViewById(R.id.btn_showChart);
+        til_attributeName = findViewById(R.id.til_attributeName);
         act_attributeName = findViewById(R.id.act_attributeName);
         act_timeframe = findViewById(R.id.act_timeFrame);
         act_ending = findViewById(R.id.act_ending);
@@ -91,10 +100,10 @@ public class ChartActivity extends AppCompatActivity {
     }
 
     private void initVars() {
-        device_id = getIntent().getStringExtra("DEVICE_ID");
-        Device device = Device.getDeviceById(device_id);
-        assert device != null;
-        attributes = device.getStoredAttributes().stream().map(Utils::formatString).collect(Collectors.toList());
+        String device_id = getIntent().getStringExtra("DEVICE_ID");
+        current_device = Device.getDeviceById(device_id);
+        assert current_device != null;
+        attributes = current_device.getStoredAttributes().stream().map(Utils::formatString).collect(Collectors.toList());
 
         calendar = Calendar.getInstance();
         sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault(Locale.Category.FORMAT));
@@ -104,6 +113,9 @@ public class ChartActivity extends AppCompatActivity {
         timestampMillis = dateToMillisTimestamp(dateTime);
         dis = 24 * 3600 * 1000L;
         interval = "HOUR";
+
+        assert current_device != null;
+        current_color = current_device.getColorId(this);
     }
 
     private void initEvent() {
@@ -147,21 +159,29 @@ public class ChartActivity extends AppCompatActivity {
             }
         });
 
-        btn_show_chart.setOnClickListener(view -> new Thread(()-> {
-            JsonObject body = new JsonObject();
-            body.addProperty("type", "lttb");
-            body.addProperty("amountOfPoints", 100);
-            body.addProperty("fromTimestamp", timestampMillis - dis);
-            body.addProperty("toTimestamp", timestampMillis);
+        btn_show_chart.setOnClickListener(view -> {
+            if (selectedAttribute.equals("")) {
+                til_attributeName.setError("Please select an attribute");
+                return;
+            } else til_attributeName.setError(null);
 
-            dataPoints = APIManager.getDatapoint(device_id, selectedAttribute, body);
+            new Thread(() -> {
+                JsonObject body = new JsonObject();
+                body.addProperty("type", "lttb");
+                body.addProperty("amountOfPoints", 100);
+                body.addProperty("fromTimestamp", timestampMillis - dis);
+                body.addProperty("toTimestamp", timestampMillis);
 
-            Message msg = handler.obtainMessage();
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("CALL_OK", true);
-            msg.setData(bundle);
-            handler.sendMessage(msg);
-        }).start());
+                dataPoints = APIManager.getDatapoint(current_device.id, selectedAttribute, body);
+                if (dataPoints == null) dataPoints = new JsonArray();
+
+                Message msg = handler.obtainMessage();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("CALL_OK", true);
+                msg.setData(bundle);
+                handler.sendMessage(msg);
+            }).start();
+        });
 
         act_ending.setOnClickListener(view -> dateTimeDialog());
 
@@ -279,5 +299,15 @@ public class ChartActivity extends AppCompatActivity {
         lineChart.animateXY(800, 1000);
         lineChart.invalidate();
         lineChart.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -185,7 +185,6 @@ public class EditAttributeActivity extends AppCompatActivity {
     }
 
     private void addMetaItem(MetaItem item, String value) {
-
         switch (item.getType()) {
             case "boolean":
                 attributeMeta.addProperty(item.getName(), !TextUtils.isEmpty(value) && Boolean.parseBoolean(value));
@@ -194,7 +193,7 @@ public class EditAttributeActivity extends AppCompatActivity {
                 attributeMeta.addProperty(item.getName(), value);
                 break;
             default:
-                attributeMeta.add(item.getName(), TextUtils.isEmpty(value) ? new JsonObject() : JsonParser.parseString(value).getAsJsonObject());
+                attributeMeta.add(item.getName(), TextUtils.isEmpty(value) ? new JsonObject() : JsonParser.parseString(value));
                 break;
         }
 
