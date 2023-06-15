@@ -64,7 +64,7 @@ public class RuleAdapter extends RecyclerView.Adapter<RuleAdapter.ViewHolder> {
             tv_name = itemView.findViewById(R.id.tv_name);
             layout = itemView.findViewById(R.id.layout);
 
-            layout.setOnClickListener(view -> ruleListener.onItemClicked(view, getAbsoluteAdapterPosition()));
+            layout.setOnClickListener(view -> ruleListener.onItemClicked(view, ruleList.get(getAbsoluteAdapterPosition())));
         }
     }
 }

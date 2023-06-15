@@ -27,7 +27,6 @@ import java.util.List;
 public class DeviceTreeViewAdapter extends TreeViewAdapter {
     List<TreeNode> treeNodes = new ArrayList<>();
     List<Device> deviceList;
-    public static int selectedPosition = -1;
 
     public DeviceTreeViewAdapter(TreeViewHolderFactory factory, List<Device> devices) {
         super(factory);

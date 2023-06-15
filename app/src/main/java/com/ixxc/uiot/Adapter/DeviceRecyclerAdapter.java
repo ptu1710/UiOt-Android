@@ -12,9 +12,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ixxc.uiot.Interface.RecyclerViewItemListener;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.R;
 
@@ -27,15 +27,13 @@ public class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAd
     private final List<Device> devices;
     private final List<Device> filteredDevices;
     private final Context ctx;
-    private final int normalColor;
-    public int checkedPos = -1;
+    private final RecyclerViewItemListener listener;
 
-    public DeviceRecyclerAdapter(Context context, List<Device> devices) {
+    public DeviceRecyclerAdapter(Context context, List<Device> devices, RecyclerViewItemListener listener) {
         this.ctx = context;
         this.devices = new ArrayList<>(devices);
         this.filteredDevices = new ArrayList<>();
-
-        this.normalColor = ResourcesCompat.getColor(ctx.getResources(), R.color.white, null);
+        this.listener = listener;
     }
 
     @NonNull
@@ -101,18 +99,16 @@ public class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAd
         void bind(Device device) {
             if (device == null) return;
 
-            if (checkedPos == -1) cv_device.setCardBackgroundColor(normalColor);
-            else {
-                if (checkedPos == getAbsoluteAdapterPosition()) {
-                    cv_device.setCardBackgroundColor(normalColor);
-                } else {
-                    cv_device.setCardBackgroundColor(normalColor);
-                }
-            }
-
             tv_name.setText(device.name);
             iv_icon.setImageDrawable(device.getIconDrawable(ctx));
             iv_expand.setVisibility(View.GONE);
+
+            cv_device.setOnClickListener(v -> listener.onItemClicked(v, filteredDevices.get(getAbsoluteAdapterPosition())));
+
+            cv_device.setOnLongClickListener(v -> {
+                listener.onItemLongClicked(v, filteredDevices.get(getAbsoluteAdapterPosition()));
+                return true;
+            });
         }
     }
 

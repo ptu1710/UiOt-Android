@@ -37,6 +37,7 @@ import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.DeviceRecyclerAdapter;
 import com.ixxc.uiot.Adapter.DeviceTreeViewAdapter;
+import com.ixxc.uiot.Interface.RecyclerViewItemListener;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.User;
 
@@ -234,20 +235,31 @@ public class DevicesFragment extends Fragment {
 
         devicesList = Device.getDeviceList();
 
-        deviceRecyclerAdapter = new DeviceRecyclerAdapter(parentActivity, devicesList);
+        deviceRecyclerAdapter = new DeviceRecyclerAdapter(parentActivity, devicesList, new RecyclerViewItemListener() {
+            @Override
+            public void onItemClicked(View v, Object item) {
+                searchView.clearFocus();
+                Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
+                intent.putExtra("DEVICE_ID", ((Device) item).id);
+                launcher.launch(intent);
+            }
+
+            @Override
+            public void onItemLongClicked(View v, Object item) {
+                searchView.clearFocus();
+                performLongClick(((Device) item));
+            }
+        });
 
         TreeViewHolderFactory factory = (v, layout) -> new DeviceTreeViewAdapter.MyViewHolder(v, parentActivity);
         deviceTreeViewAdapter = new DeviceTreeViewAdapter(factory, devicesList);
 
         deviceTreeViewAdapter.setTreeNodeClickListener((treeNode, view) -> {
             searchView.clearFocus();
-
             if (treeNode.getChildren().size() == 0) {
                 Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
                 intent.putExtra("DEVICE_ID", ((Device) treeNode.getValue()).id);
                 launcher.launch(intent);
-            } else if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
-                DeviceTreeViewAdapter.selectedPosition = deviceTreeViewAdapter.getTreeNodes().indexOf(treeNode);
             }
         });
 

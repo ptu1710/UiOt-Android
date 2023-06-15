@@ -100,23 +100,23 @@ public class UsersActivity extends AppCompatActivity {
 
     private void showUsers() {
         userList = User.getUsersList();
-        for (User user : userList) userNameList.add(user.getDisplayName());
 
-        userAdapter = new UserAdapter(userNameList, new RecyclerViewItemListener() {
+        userAdapter = new UserAdapter(userList, new RecyclerViewItemListener() {
             final MenuItem item = actionbarMenu.findItem(R.id.delete);
             final MenuItem item1 = actionbarMenu.findItem(R.id.cancel);
             @Override
-            public void onItemClicked(View v, int pos) {
+            public void onItemClicked(View v, Object obj) {
                 item.setVisible(false);
                 item1.setVisible(false);
 
                 Intent intent = new Intent(UsersActivity.this, UserInfoActivity.class);
-                intent.putExtra("USER_ID", userList.get(pos).id);
+                intent.putExtra("USER_ID", ((User) obj).id);
                 startActivity(intent);
             }
 
+            // TODO: Old version of this UI, need to be updated
             @Override
-            public void onItemLongClicked(View v, int pos) {
+            public void onItemLongClicked(View v, Object obj) {
                 item.setIconTintList(UsersActivity.this.getColorStateList(R.color.white));
                 item1.setIconTintList(UsersActivity.this.getColorStateList(R.color.white));
                 item.setVisible(true);

@@ -38,9 +38,8 @@ public class RulesActivity extends AppCompatActivity {
         if (isOK) {
             adapter = new RuleAdapter(this, ruleList, new RecyclerViewItemListener() {
                 @Override
-                public void onItemClicked(View v, int pos) {
-                    Rule.rule_selected = ruleList.get(pos);
-                    Log.d(GlobalVars.LOG_TAG, "onItemClicked: " + Rule.rule_selected.getName());
+                public void onItemClicked(View v, Object item) {
+                    Rule.rule_selected = (Rule) item;
                     Intent intent = new Intent(RulesActivity.this, CreateRuleActivity.class);
                     intent.putExtra("CHOSE","true");
                     startActivity(intent);
@@ -48,7 +47,7 @@ public class RulesActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onItemLongClicked(View v, int pos) { }
+                public void onItemLongClicked(View v, Object item) { }
             });
 
             rv_rules.setLayoutManager(new LinearLayoutManager(this));
