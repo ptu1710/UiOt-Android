@@ -162,7 +162,7 @@ public class CreateRuleReq {
         JsonObject message = new JsonObject();
         if(type.equals("Email")){
             message.addProperty("type", "email");
-            message.addProperty("subject", "Subject Email");
+            message.addProperty("subject", "");
             message.addProperty("html", mess);
         } else if (type.equals("Push Notification")) {
             JsonObject action = new JsonObject();
@@ -174,17 +174,17 @@ public class CreateRuleReq {
 
             JsonObject buttons_1= new JsonObject();
             buttons_1.add("action",action_btn1);
-            buttons_1.addProperty("title","action button");
+            buttons_1.addProperty("title","");
 
             JsonObject buttons_2= new JsonObject();
-            buttons_2.addProperty("title","decline button");
+            buttons_2.addProperty("title","");
 
             JsonArray buttons = new JsonArray();
             buttons.add(buttons_1);
             buttons.add(buttons_2);
 
             message.addProperty("type", "push");
-            message.addProperty("title", "Title Notification");
+            message.addProperty("title", "");
             message.addProperty("body", mess);
             message.add("action",action);
             message.add("buttons",buttons);

@@ -23,6 +23,12 @@ public class RuleValue {
     public String attribute_then;
     public String ids_then;
     public String value_then;
+    public String action_then;
+    public String notification_type;
+    public String message_body;
+
+
+
 
 
 
@@ -80,21 +86,44 @@ public class RuleValue {
         catch (Exception e){}
 
         /// Then
-        JsonObject target = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray().get(0).getAsJsonObject().get("target").getAsJsonObject();
+        JsonObject target = new JsonObject();
+        try {
+             target = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray().get(0).getAsJsonObject().get("target").getAsJsonObject();
+        }catch (Exception e){}
+
         try {
             this.types_then = target.get("assets").getAsJsonObject().get("types").getAsJsonArray().get(0).getAsString();
             this.ids_then = target.get("assets").getAsJsonObject().get("ids").getAsJsonArray().get(0).getAsString();
         }
-        catch (Exception e){
-            this.types_then = target.get("matchedAssets").getAsJsonObject().get("types").getAsJsonArray().get(0).getAsString();
-        }
+        catch (Exception e){}
 
-        this.attribute_then = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray()
-                .get(0).getAsJsonObject().get("attributeName").getAsString();
+        try {
+            this.types_then = target.get("matchedAssets").getAsJsonObject().get("types").getAsJsonArray().get(0).getAsString();
+        }catch (Exception e){}
+
+        try {
+            this.attribute_then = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray()
+                    .get(0).getAsJsonObject().get("attributeName").getAsString();
+        }catch (Exception e){}
 
         try {
             this.value_then = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray()
                     .get(0).getAsJsonObject().get("value").getAsString();
+        }catch (Exception e){}
+
+        try {
+            this.action_then = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray()
+                    .get(0).getAsJsonObject().get("action").getAsString();
+        }catch (Exception e){}
+
+        try {
+            this.notification_type = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray()
+                    .get(0).getAsJsonObject().get("notification").getAsJsonObject().get("message").getAsJsonObject().get("type").getAsString();
+        }catch (Exception e){}
+
+        try {
+            this.message_body = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray()
+                    .get(0).getAsJsonObject().get("notification").getAsJsonObject().get("message").getAsJsonObject().get("body").getAsString();
         }catch (Exception e){}
 
 
