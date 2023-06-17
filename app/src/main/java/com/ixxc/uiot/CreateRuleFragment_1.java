@@ -276,6 +276,8 @@ public class CreateRuleFragment_1 extends Fragment {
                         case "EQUALS":
                             act_operator.setText("Not equals");
                             break;
+                        default:
+                            act_operator.setText(Utils.capitalizeFirst(ruleValue.operator));
                     }
                 }
             }

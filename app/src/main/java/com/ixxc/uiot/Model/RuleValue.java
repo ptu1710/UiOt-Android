@@ -126,6 +126,11 @@ public class RuleValue {
                     .get(0).getAsJsonObject().get("notification").getAsJsonObject().get("message").getAsJsonObject().get("body").getAsString();
         }catch (Exception e){}
 
+        try {
+            this.message_body = jsonObject.get("rules").getAsJsonArray().get(0).getAsJsonObject().get("then").getAsJsonArray()
+                    .get(0).getAsJsonObject().get("notification").getAsJsonObject().get("message").getAsJsonObject().get("html").getAsString();
+        }catch (Exception e){}
+
 
     }
 

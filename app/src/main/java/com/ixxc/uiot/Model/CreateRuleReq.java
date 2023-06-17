@@ -267,6 +267,7 @@ public class CreateRuleReq {
         JsonArray then = new JsonArray();
         JsonObject thenObject = new JsonObject();
         thenObject.addProperty("action", ruleAction);
+        if (ruleAction.equals("notification")) target.remove("matchedAssets");
         thenObject.add("target", target);
         thenObject.add("notification",notification);
         thenObject.addProperty("value",value_then);
