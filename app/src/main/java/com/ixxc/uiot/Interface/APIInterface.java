@@ -31,10 +31,10 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface APIInterface {
-    // Get token
+    // Get user token
     @FormUrlEncoded
     @POST("auth/realms/master/protocol/openid-connect/token")
-    Call<Token> getToken(@Field("grant_type") String type, @Field("code") String code, @Field("client_id") String client, @Field("redirect_uri") String redirect);
+    Call<Token> getUserToken(@Field("grant_type") String type, @Field("client_id") String client, @Field("username") String username, @Field("password") String password);
 
     // Get user info
     @GET("api/master/user/user")
@@ -174,6 +174,6 @@ public interface APIInterface {
     @GET("api/master/rules/realm/for/master?fullyPopulate=true&language=JSON")
     Call<List<Rule>> queryRules();
 
-    @DELETE("api/master/rules/realm/{ruleId}")
-    Call<Void> deleteRule(@Path("ruleId") Integer id);
+//    @DELETE("api/master/rules/realm/{ruleId}")
+//    Call<Void> deleteRule(@Path("ruleId") Integer id);
 }

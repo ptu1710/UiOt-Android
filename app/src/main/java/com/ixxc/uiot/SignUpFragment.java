@@ -2,7 +2,6 @@ package com.ixxc.uiot;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
-import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -33,16 +31,16 @@ public class SignUpFragment extends Fragment {
     EditText et_usr, et_email, et_pwd, et_re_pwd;
     ProgressBar pb_loading;
     ImageView iv_logo;
-    LoginActivity loginActivity;
+    LoginActivity parentActivity;
 
     WebView webView;
 
-    Handler loginHandler = new Handler(message -> {
+    Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
         boolean isOK = bundle.getBoolean("SIGNUP");
         if (isOK) {
-            startActivity(new Intent(loginActivity, HomeActivity.class));
-            loginActivity.finish();
+            startActivity(new Intent(parentActivity, HomeActivity.class));
+            parentActivity.finish();
         }
 
         return false;
@@ -51,7 +49,7 @@ public class SignUpFragment extends Fragment {
     public SignUpFragment() { }
 
     public SignUpFragment(LoginActivity activity) {
-        this.loginActivity = activity;
+        this.parentActivity = activity;
     }
 
     @Override
@@ -102,7 +100,7 @@ public class SignUpFragment extends Fragment {
             }
         });
 
-        btn_back.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.welcome));
+        btn_back.setOnClickListener(view -> parentActivity.replaceFragment(parentActivity.welcome));
 
         btn_resend.setOnClickListener(view -> {
             String script = "document.getElementsByTagName('a')[1].click();";
@@ -112,27 +110,22 @@ public class SignUpFragment extends Fragment {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void getToken(String usr, String email, String pwd, String rePwd) {
-        CookieManager cm = CookieManager.getInstance();
-        cm.removeAllCookies(null);
-        // TODO: removeAllCookie() is deprecated
+        CookieManager.getInstance().removeAllCookies(null);
 
         webView = new WebView(getContext());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-
-                if (url.contains("openid-connect/auth") && url.contains("state=AAAA")) {
-                    String redirect = "document.getElementsByTagName('a')[1].click();";
-                    view.evaluateJavascript(redirect, null);
-                } else if (url.contains("login-actions/registration")) {
+                if (url.contains("openid-connect/registrations")) {
                     String script = "document.getElementsByClassName('helper-text')[0].getAttribute('data-error');";
                     String script1 = "document.getElementsByClassName('red-text')[1].innerText;";
                     view.evaluateJavascript(script, s -> {
                         if (s.equals("null")) {
                             view.evaluateJavascript(script1, s1 -> {
                                 if (s1.equals("null")) {
-                                    Log.d(GlobalVars.LOG_TAG, "onPageFinished: KO");
+                                    Log.d(GlobalVars.LOG_TAG, "onPageFinished: Fill form");
+
                                     String usrScript = "document.getElementById('username').value='" + usr + "';";
                                     String emailScript = "document.getElementById('email').value='" + email + "';";
                                     String pwdScript = "document.getElementById('password').value='" + pwd + "';";
@@ -143,47 +136,35 @@ public class SignUpFragment extends Fragment {
                                     view.evaluateJavascript(pwdScript, null);
                                     view.evaluateJavascript(rePwdScript, null);
                                     view.evaluateJavascript("document.getElementsByTagName('form')[0].submit();", null);
-                                } else {
-                                    signUpError(s1);
-                                }
+                                } else signUpError(s1);
                             });
-                        } else {
-                            signUpError(s);
-                        }
+                        } else signUpError(s);
                     });
-                } else if (url.contains("VERIFY_EMAIL")) {
-                    Log.d(GlobalVars.LOG_TAG, "onPageFinished: VERIFY_EMAIL");
-                    verifyEmail(email);
-                } else {
-                    if (url.contains("&code=")) {
-                        String code = url.split("&code=")[1];
-                        Log.d(GlobalVars.LOG_TAG, "onPageStarted: " + code);
-                        getTokenByCode(code);
-                    }
+                }
+                else if (url.contains("VERIFY_EMAIL")) verifyEmail(email);
+                else if (url.contains("/manager/")) {
+                    getUserToken(usr, pwd);
+                    webView.stopLoading();
+                    webView.destroy();
                 }
 
                 super.onPageFinished(view, url);
-            }
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-//                handler.proceed();
             }
         });
 
         webView.loadUrl(GlobalVars.signUpUrl);
     }
 
-    private void getTokenByCode(String code) {
-        final Message msg = loginHandler.obtainMessage();
+    private void getUserToken(String usr, String pwd) {
+        final Message msg = handler.obtainMessage();
         final Bundle bundle = new Bundle();
 
         new Thread(() -> {
-            APIManager.getToken(code);
+            APIManager.getUserToken(usr, pwd);
 
             bundle.putBoolean("SIGNUP", true);
             msg.setData(bundle);
-            loginHandler.sendMessage(msg);
+            handler.sendMessage(msg);
         }).start();
     }
 
@@ -210,6 +191,6 @@ public class SignUpFragment extends Fragment {
         pb_loading.setVisibility(View.GONE);
         btn_sign_up.setVisibility(View.VISIBLE);
         btn_sign_up.setEnabled(true);
-        Toast.makeText(loginActivity, msg.replace("\"", ""), Toast.LENGTH_LONG).show();
+        Toast.makeText(parentActivity, msg.replace("\"", ""), Toast.LENGTH_LONG).show();
     }
 }

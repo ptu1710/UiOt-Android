@@ -1,9 +1,6 @@
 package com.ixxc.uiot;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.http.SslError;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,14 +9,9 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -29,18 +21,15 @@ import com.ixxc.uiot.API.APIManager;
 public class SignInFragment extends Fragment {
     Button btn_sign_in, btn_back;
     EditText et_usr, et_pwd;
-
     ProgressBar pb_loading;
-
-    LoginActivity loginActivity;
-    WebView webView;
+    LoginActivity parentActivity;
 
     Handler loginHandler = new Handler(message -> {
         Bundle bundle = message.getData();
         boolean isOK = bundle.getBoolean("LOGIN");
         if (isOK) {
-            startActivity(new Intent(loginActivity, HomeActivity.class));
-            loginActivity.finish();
+            startActivity(new Intent(parentActivity, HomeActivity.class));
+            parentActivity.finish();
         }
 
         return false;
@@ -49,7 +38,7 @@ public class SignInFragment extends Fragment {
     public SignInFragment() { }
 
     public SignInFragment(LoginActivity activity) {
-        this.loginActivity = activity;
+        this.parentActivity = activity;
     }
 
     @Override
@@ -88,54 +77,18 @@ public class SignInFragment extends Fragment {
             view.setVisibility(View.GONE);
             String usr = String.valueOf(et_usr.getText());
             String pwd = String.valueOf(et_pwd.getText());
-            getToken(usr, pwd);
+            getUserToken(usr, pwd);
         });
 
-        btn_back.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.welcome));
+        btn_back.setOnClickListener(view -> parentActivity.replaceFragment(parentActivity.welcome));
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
-    private void getToken(String usr, String pwd) {
-        CookieManager cm = CookieManager.getInstance();
-        cm.removeAllCookies(null);
-
-        webView = new WebView(getContext());
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                if (url.contains("&code=")) {
-                    String code = url.split("&code=")[1];
-                    getTokenByCode(code);
-                }
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                String usrScript = "document.getElementById('username').value='" + usr + "';";
-                String pwdScript = "document.getElementById('password').value='" + pwd + "';";
-                view.evaluateJavascript(usrScript, null);
-                view.evaluateJavascript(pwdScript, null);
-                view.evaluateJavascript("document.getElementsByTagName('form')[0].submit();", null);
-                super.onPageFinished(view, url);
-            }
-
-            @SuppressLint("WebViewClientOnReceivedSslError")
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
-        });
-
-        webView.loadUrl(GlobalVars.getCodeUrl);
-    }
-
-    private void getTokenByCode(String code) {
-        final Message msg = loginHandler.obtainMessage();
-        final Bundle bundle = new Bundle();
+    private void getUserToken(String usr, String pwd) {
+        Message msg = loginHandler.obtainMessage();
+        Bundle bundle = new Bundle();
 
         new Thread(() -> {
-            APIManager.getToken(code);
+            APIManager.getUserToken(usr, pwd);
 
             bundle.putBoolean("LOGIN", true);
             msg.setData(bundle);

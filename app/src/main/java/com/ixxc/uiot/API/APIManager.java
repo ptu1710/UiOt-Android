@@ -1,5 +1,6 @@
 package com.ixxc.uiot.API;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -28,25 +29,27 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class APIManager {
-    public static APIInterface userAI = new APIClient().getClient().create(APIInterface.class);
+    // TODO: Remove all static methods and variables
+    static APIInterface apiInterface = new APIClient().getClient().create(APIInterface.class);
 
-    public static void getToken(String code) {
-        Call<Token> call =  userAI.getToken(GlobalVars.authType, code, GlobalVars.client, GlobalVars.oauth2Redirect);
+    public static void getUserToken(String username, String password) {
+        Call<Token> call =  apiInterface.getUserToken(GlobalVars.authType, GlobalVars.client, username, password);
         try {
             Response<Token> response = call.execute();
             if (response.isSuccessful()) {
                 Token token = response.body();
                 assert token != null;
-                APIClient.UserToken = token.access_token;
+                APIClient.userToken = TextUtils.isEmpty(token.access_token) ? "" : token.access_token;
+            } else {
+                Log.d("API LOG", "getUserToken: Not successful, code = " + response.code());
             }
-            else { Log.d("API LOG", "getToken: Not Successful"); }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void getUserInfo() {
-        Call<User> call = userAI.getUserInfo();
+        Call<User> call = apiInterface.getUserInfo();
 
         try {
             Response<User> response = call.execute();
@@ -56,7 +59,7 @@ public class APIManager {
     }
 
     public static void getUserRoles() {
-        Call<List<Role>> call = userAI.getUserRoles();
+        Call<List<Role>> call = apiInterface.getUserRoles();
 
         try {
             Response<List<Role>> response = call.execute();
@@ -67,8 +70,19 @@ public class APIManager {
 
     }
 
+    public static void getDeviceModels() {
+        Call<List<DeviceModel>> call = apiInterface.getDeviceModels();
+
+        try {
+            Response<List<DeviceModel>> response = call.execute();
+            if (response.isSuccessful()) {
+                DeviceModel.setModelList(response.body());
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
     public static void queryDevices(JsonObject body) {
-        Call<List<Device>> call = userAI.queryDevices(body);
+        Call<List<Device>> call = apiInterface.queryDevices(body);
         try {
             Response<List<Device>> response = call.execute();
             if (response.isSuccessful() && response.code() == 200) {
@@ -81,19 +95,8 @@ public class APIManager {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    public static void getDeviceModels() {
-        Call<List<DeviceModel>> call = userAI.getDeviceModels();
-
-        try {
-            Response<List<DeviceModel>> response = call.execute();
-            if (response.isSuccessful()) {
-                DeviceModel.setModelList(response.body());
-            }
-        } catch (IOException e) { e.printStackTrace(); }
-    }
-
     public static boolean delDevice(String deviceId){
-        Call<String> call = userAI.delDevice(deviceId);
+        Call<String> call = apiInterface.delDevice(deviceId);
         try {
             Response<String> response = call.execute();
             return response.isSuccessful();
@@ -106,7 +109,7 @@ public class APIManager {
 
     public static boolean updateDevice(String deviceId, JsonObject requestBody){
 
-        Call<String> call = userAI.updateDevice(deviceId, requestBody);
+        Call<String> call = apiInterface.updateDevice(deviceId, requestBody);
         try {
             Response<String> response = call.execute();
             return response.isSuccessful();
@@ -118,7 +121,7 @@ public class APIManager {
     }
 
     public static Device getDevice(String deviceId){
-        Call<Device> call = userAI.getDevice(deviceId);
+        Call<Device> call = apiInterface.getDevice(deviceId);
         Device device = new Device();
         try {
             Response<Device> response = call.execute();
@@ -134,7 +137,7 @@ public class APIManager {
     }
 
     public static void createDevice(JsonObject reqBody) {
-        Call<CreateDeviceRes> call = userAI.createDevice(reqBody);
+        Call<CreateDeviceRes> call = apiInterface.createDevice(reqBody);
 
         try {
             Response<CreateDeviceRes> response = call.execute();
@@ -147,7 +150,7 @@ public class APIManager {
     }
 
     public static int queryUsers(JsonObject query) {
-        Call<List<User>> call = userAI.queryUsers(query);
+        Call<List<User>> call = apiInterface.queryUsers(query);
 
         int returnCode = 200;
         try {
@@ -166,7 +169,7 @@ public class APIManager {
     }
 
     public static User getUser(String userId){
-        Call<User> call = userAI.getUser(userId);
+        Call<User> call = apiInterface.getUser(userId);
         User user = new User();
         try {
             Response<User> response = call.execute();
@@ -180,7 +183,7 @@ public class APIManager {
     }
 
     public static void getRealm(){
-        Call<List<Realm>> call = userAI.getRealm();
+        Call<List<Realm>> call = apiInterface.getRealm();
 
         try {
             Response<List<Realm>> response = call.execute();
@@ -191,7 +194,7 @@ public class APIManager {
     }
 
     public static void getRoles(){
-        Call<List<Role>> call = userAI.getRoles();
+        Call<List<Role>> call = apiInterface.getRoles();
 
         try {
             Response<List<Role>> response = call.execute();
@@ -200,7 +203,7 @@ public class APIManager {
     }
 
     public static List<Role> getRoles(String userId){
-        Call<List<Role>> call = userAI.getRoles(userId);
+        Call<List<Role>> call = apiInterface.getRoles(userId);
 
         List<Role> roles = new ArrayList<>();
         try {
@@ -216,7 +219,7 @@ public class APIManager {
     }
 
     public static void setRoles(String userId, JsonArray body){
-        Call<String> call = userAI.setRoles(userId, body);
+        Call<String> call = apiInterface.setRoles(userId, body);
 
         try {
             call.execute();
@@ -227,7 +230,7 @@ public class APIManager {
     }
 
     public static List<Role> getRealmRoles(String userId){
-        Call<List<Role>> call = userAI.getRealmRoles(userId);
+        Call<List<Role>> call = apiInterface.getRealmRoles(userId);
 
         List<Role> roles = new ArrayList<>();
         try {
@@ -243,7 +246,7 @@ public class APIManager {
     }
 
     public static void setRealmRoles(String userId, JsonArray body){
-        Call<String> call = userAI.setRealmRoles(userId, body);
+        Call<String> call = apiInterface.setRealmRoles(userId, body);
 
         try {
             call.execute();
@@ -254,7 +257,7 @@ public class APIManager {
     }
 
     public static int updateRole(JsonArray requestBody){
-        Call<String> call = userAI.updateRole(requestBody);
+        Call<String> call = apiInterface.updateRole(requestBody);
 
         int code = -1;
         try {
@@ -268,7 +271,7 @@ public class APIManager {
     }
     
     public static List<LinkedDevice> getLinkedDevices(String userId){
-        Call<List<LinkedDevice>> call = userAI.getLinkedDevices("master", userId);
+        Call<List<LinkedDevice>> call = apiInterface.getLinkedDevices("master", userId);
 
         List<LinkedDevice> devices = new ArrayList<>();
         try {
@@ -284,7 +287,7 @@ public class APIManager {
     }
 
     public static void setLinkedDevices(JsonArray body){
-        Call<String> call = userAI.setLinkedDevices(body);
+        Call<String> call = apiInterface.setLinkedDevices(body);
 
         try {
             call.execute();
@@ -294,7 +297,7 @@ public class APIManager {
     }
 
     public static void setUnlinkedDevices(JsonArray body){
-        Call<String> call = userAI.setUnlinkedDevices(body);
+        Call<String> call = apiInterface.setUnlinkedDevices(body);
 
         try {
             call.execute();
@@ -305,7 +308,7 @@ public class APIManager {
     }
 
     public static int deleteUser(String id) {
-        Call<String> call = userAI.deleteUser(id);
+        Call<String> call = apiInterface.deleteUser(id);
 
         int returnCode = -1;
         try {
@@ -317,7 +320,7 @@ public class APIManager {
     }
 
     public static int updateUserInfo(JsonObject query) {
-        Call<User> call = userAI.updateUserInfo(query);
+        Call<User> call = apiInterface.updateUserInfo(query);
 
         int returnCode = -1;
         try {
@@ -329,7 +332,7 @@ public class APIManager {
     }
 
     public static void updatePassword(String id, JsonObject query) {
-        Call<String> call = userAI.updatePassword(id, query);
+        Call<String> call = apiInterface.updatePassword(id, query);
 
         try {
             call.execute();
@@ -338,7 +341,7 @@ public class APIManager {
     }
 
     public static String getNewSecret(String userId){
-        Call<ResponseBody> call = userAI.getNewSecret(userId);
+        Call<ResponseBody> call = apiInterface.getNewSecret(userId);
 
         try {
             Response<ResponseBody> response = call.execute();
@@ -351,7 +354,7 @@ public class APIManager {
     }
 
     public static int createRealm(JsonObject body){
-        Call<String> call = userAI.createRealm(body);
+        Call<String> call = apiInterface.createRealm(body);
 
         int returnCode = -1;
         try {
@@ -363,7 +366,7 @@ public class APIManager {
     }
 
     public static int updateRealm(String name, JsonObject body){
-        Call<String> call = userAI.updateRealm(name, body);
+        Call<String> call = apiInterface.updateRealm(name, body);
 
         int code = -1;
         try {
@@ -377,7 +380,7 @@ public class APIManager {
     }
 
     public static int deleteRealm(String realmName){
-        Call<String> call = userAI.deleteRealm(realmName);
+        Call<String> call = apiInterface.deleteRealm(realmName);
 
         int code = -1;
         try {
@@ -389,7 +392,7 @@ public class APIManager {
     }
 
     public static void getMetaItem(String parentId){
-        Call<List<MetaItem>> call = userAI.getMetaItem(parentId);
+        Call<List<MetaItem>> call = apiInterface.getMetaItem(parentId);
 
         try {
             Response<List<MetaItem>> response = call.execute();
@@ -399,7 +402,7 @@ public class APIManager {
     }
 
     public static void getMap() {
-        Call<Map> call = userAI.getMap();
+        Call<Map> call = apiInterface.getMap();
         try {
             Response<Map> response = call.execute();
             if (response.isSuccessful()) { Map.setMapObj(response.body()); }
@@ -417,13 +420,13 @@ public class APIManager {
 
                 JsonObject body = register.toJson(token);
 
-                Call<RegisterDevice> call2 = userAI.registerDevice(body);
+                Call<RegisterDevice> call2 = apiInterface.registerDevice(body);
                 call2.execute();
 
             } else {
                 RegisterDevice register1 = new RegisterDevice("Android Browser");
 
-                Call<RegisterDevice> call1 = userAI.registerDevice(register1.toJson(""));
+                Call<RegisterDevice> call1 = apiInterface.registerDevice(register1.toJson(""));
 
                 Response<RegisterDevice> response1 = call1.execute();
 
@@ -438,7 +441,7 @@ public class APIManager {
 
                     Log.d(GlobalVars.LOG_TAG, "register2: " + body2);
 
-                    Call<RegisterDevice> call2 = userAI.registerDevice(body2);
+                    Call<RegisterDevice> call2 = apiInterface.registerDevice(body2);
                     call2.execute();
 
                 } else {
@@ -450,7 +453,7 @@ public class APIManager {
     }
 
     public static JsonArray getDatapoint(String assetId, String attributeName, JsonObject body){
-        Call<JsonArray> call = userAI.getDataPoint(assetId, attributeName, body);
+        Call<JsonArray> call = apiInterface.getDataPoint(assetId, attributeName, body);
 
         try {
             Response<JsonArray> response = call.execute();
@@ -461,7 +464,7 @@ public class APIManager {
     }
 
     public static int createRule(JsonObject body){
-        Call<Integer> call = userAI.createRule(body);
+        Call<Integer> call = apiInterface.createRule(body);
 
         try {
             Response<Integer> response = call.execute();
@@ -474,7 +477,7 @@ public class APIManager {
     }
 
     public static List<Rule> queryRules() {
-        Call<List<Rule>> call = userAI.queryRules();
+        Call<List<Rule>> call = apiInterface.queryRules();
         try {
             Response<List<Rule>> response = call.execute();
             if (response.isSuccessful() && response.code() == 200) {
@@ -486,16 +489,15 @@ public class APIManager {
         return new ArrayList<>();
     }
 
-    public static int deleteRule(Integer id) {
-        Call<Void> call = userAI.deleteRule(id);
-
-        int returnCode = -1;
-        try {
-            Response<Void> response = call.execute();
-            returnCode = response.code();
-        } catch (IOException e) { e.printStackTrace(); }
-
-        return returnCode;
-    }
-
+//    public static int deleteRule(Integer id) {
+//        Call<Void> call = apiInterface.deleteRule(id);
+//
+//        int returnCode = -1;
+//        try {
+//            Response<Void> response = call.execute();
+//            returnCode = response.code();
+//        } catch (IOException e) { e.printStackTrace(); }
+//
+//        return returnCode;
+//    }
 }

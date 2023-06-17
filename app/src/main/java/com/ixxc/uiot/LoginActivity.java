@@ -1,6 +1,5 @@
 package com.ixxc.uiot;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,11 +7,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-
 public class LoginActivity extends AppCompatActivity {
     public static boolean isDefaultPage;
     public Fragment welcome, sign_in, sign_up;
-    SharedPreferences sharedPref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,25 +19,6 @@ public class LoginActivity extends AppCompatActivity {
         InitVars();
         InitViews();
         InitEvent();
-
-//        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-
-//        String baseUrl = sharedPref.getString("baseUrl", "");
-//        Log.d(GlobalVars.LOG_TAG, "onCreate: " + baseUrl);
-
-//        SharedPreferences.Editor editor = sharedPref.edit();
-
-//        if (baseUrl.contains("orssl")) {
-//            GlobalVars.baseUrl = GlobalVars.baseUrl1;
-//            GlobalVars.redirect_url = GlobalVars.baseUrl.replace(":", "%3A").replace("/", "%2F");
-//            GlobalVars.getCodeUrl = GlobalVars.baseUrl + "auth/realms/master/protocol/openid-connect/auth?response_type=code&client_id=openremote&redirect_uri=" + GlobalVars.redirect_url + "swagger%2Foauth2-redirect.html&state=AAAA";
-//            Log.d(GlobalVars.LOG_TAG, "onCreate: " + GlobalVars.redirect_url);
-//        }
-//
-//        editor.putString("baseUrl", GlobalVars.baseUrl);
-//        editor.apply();
-//
-//        APIManager.userAI = new APIClient().getClient().create(APIInterface.class);
 
         replaceFragment(welcome);
     }

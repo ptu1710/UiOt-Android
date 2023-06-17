@@ -10,9 +10,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIClient {
-    public static String UserToken = "";
+    public static String userToken = "";
 
-    public static OkHttpClient getUnsafeOkHttpClient() {
+    OkHttpClient getOkHttpClient() {
         try {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
@@ -25,7 +25,7 @@ public class APIClient {
             builder.addInterceptor(chain -> {
                 Request newRequest = chain.request()
                         .newBuilder()
-                        .addHeader("Authorization", "Bearer " + UserToken)
+                        .addHeader("Authorization", "Bearer " + userToken)
                         .build();
 
                 return chain.proceed(newRequest);
@@ -38,11 +38,10 @@ public class APIClient {
     }
 
     public Retrofit getClient() {
-        OkHttpClient client = getUnsafeOkHttpClient();
         return new Retrofit.Builder()
                 .baseUrl(GlobalVars.baseUrl)
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().serializeNulls().create()))
-                .client(client)
+                .client(getOkHttpClient())
                 .build();
     }
 }

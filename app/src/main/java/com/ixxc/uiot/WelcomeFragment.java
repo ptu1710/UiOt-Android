@@ -14,12 +14,12 @@ import android.widget.Button;
 public class WelcomeFragment extends Fragment {
     Button btn_sign_in, btn_sign_up, btn_with_google;
 
-    LoginActivity loginActivity;
+    LoginActivity parentActivity;
 
     public WelcomeFragment() { }
 
     public WelcomeFragment(LoginActivity activity) {
-        this.loginActivity = activity;
+        this.parentActivity = activity;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class WelcomeFragment extends Fragment {
         InitViews(view);
         InitEvent();
 
-        btn_sign_in.performClick();
+//        btn_sign_in.performClick();
     }
 
     private void InitViews(View v) {
@@ -48,7 +48,7 @@ public class WelcomeFragment extends Fragment {
     }
 
     private void InitEvent() {
-        btn_sign_in.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.sign_in));
-        btn_sign_up.setOnClickListener(view -> loginActivity.replaceFragment(loginActivity.sign_up));
+        btn_sign_in.setOnClickListener(view -> parentActivity.replaceFragment(parentActivity.sign_in));
+        btn_sign_up.setOnClickListener(view -> parentActivity.replaceFragment(parentActivity.sign_up));
     }
 }
