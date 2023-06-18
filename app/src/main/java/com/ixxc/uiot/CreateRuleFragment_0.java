@@ -85,6 +85,7 @@ public class CreateRuleFragment_0 extends Fragment {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 parentActivity.changeTab(1);
             }
         });

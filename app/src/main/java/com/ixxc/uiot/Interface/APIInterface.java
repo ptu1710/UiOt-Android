@@ -174,6 +174,7 @@ public interface APIInterface {
     @GET("api/master/rules/realm/for/master?fullyPopulate=true&language=JSON")
     Call<List<Rule>> queryRules();
 
-//    @DELETE("api/master/rules/realm/{ruleId}")
-//    Call<Void> deleteRule(@Path("ruleId") Integer id);
+    @DELETE("api/master/rules/realm/{ruleId}")
+    Call<Void> deleteRule(@Path("ruleId") Integer id);
+
 }
