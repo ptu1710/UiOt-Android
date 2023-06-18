@@ -172,7 +172,7 @@ public class ChartActivity extends AppCompatActivity {
                 body.addProperty("fromTimestamp", timestampMillis - dis);
                 body.addProperty("toTimestamp", timestampMillis);
 
-                dataPoints = APIManager.getDatapoint(current_device.id, selectedAttribute, body);
+                dataPoints = new APIManager().getDatapoint(current_device.id, selectedAttribute, body);
                 if (dataPoints == null) dataPoints = new JsonArray();
 
                 Message msg = handler.obtainMessage();

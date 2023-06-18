@@ -57,6 +57,7 @@ public class DevicesFragment extends Fragment {
     DeviceTreeViewAdapter deviceTreeViewAdapter;
     DeviceRecyclerAdapter deviceRecyclerAdapter;
     User me;
+    APIManager api = new APIManager();
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -219,7 +220,7 @@ public class DevicesFragment extends Fragment {
         new Thread(() -> {
             String queryString = "{ \"realm\": { \"name\": \"master\" }}";
             JsonObject query = (JsonObject) JsonParser.parseString(queryString);
-            APIManager.queryDevices(query);
+            api.queryDevices(query);
 
             InitDevicesAdapter();
 
@@ -334,7 +335,7 @@ public class DevicesFragment extends Fragment {
                 new Thread(() -> {
                     Message msg = handler.obtainMessage();
                     Bundle bundle = new Bundle();
-                    bundle.putBoolean("DELETE_DEVICE", APIManager.delDevice(device.id));
+                    bundle.putBoolean("DELETE_DEVICE", api.delDevice(device.id));
                     msg.setData(bundle);
                     handler.sendMessage(msg);
                 }).start();

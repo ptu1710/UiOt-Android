@@ -39,6 +39,7 @@ public class UsersActivity extends AppCompatActivity {
 
     List<String> userNameList;
     UserAdapter userAdapter;
+    APIManager api = new APIManager();
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -78,7 +79,7 @@ public class UsersActivity extends AppCompatActivity {
             String queryString = "{\"realmPredicate\": {\"name\": \"master\"}}";
             JsonObject query = (JsonObject) JsonParser.parseString(queryString);
 
-            int code = APIManager.queryUsers(query);
+            int code = api.queryUsers(query);
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -151,7 +152,7 @@ public class UsersActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.delete) {
             new Thread(() -> {
                 Log.d(GlobalVars.LOG_TAG, "onOptionsItemSelected: " + userList.get(userAdapter.checkedPos).id);
-                int code = APIManager.deleteUser(userList.get(userAdapter.checkedPos).id);
+                int code = api.deleteUser(userList.get(userAdapter.checkedPos).id);
 
                 Message message = handler.obtainMessage();
                 Bundle bundle = new Bundle();

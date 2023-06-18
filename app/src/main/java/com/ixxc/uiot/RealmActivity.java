@@ -40,6 +40,7 @@ public class RealmActivity extends AppCompatActivity {
     ProgressBar pb_loading;
     LinearLayout add_realm_layout;
     List<Realm> realmList;
+    APIManager api = new APIManager();
     boolean isModified = false;
 
     Handler handler = new Handler(message -> {
@@ -71,7 +72,7 @@ public class RealmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_realm);
 
         new Thread(() -> {
-            APIManager.getRealm();
+            api.getRealm();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -85,6 +86,7 @@ public class RealmActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Realms");
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
@@ -94,6 +96,7 @@ public class RealmActivity extends AppCompatActivity {
         RealmItemAdapter adapter = new RealmItemAdapter(this, realmList);
         adapter.setClickListener((view, position, realm) -> expandRoleLayout(view, realm));
         rv_realm.setAdapter(adapter);
+        // TODO: Check if this is the best way to do this
         adapter.notifyDataSetChanged();
     }
 
@@ -143,7 +146,7 @@ public class RealmActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Warning!");
             builder.setMessage("Delete this Realm?");
-            builder.setPositiveButton("Delete", (dialogInterface, i) -> { deleteRealm(realm.name); });
+            builder.setPositiveButton("Delete", (dialogInterface, i) -> deleteRealm(realm.name));
             builder.setNegativeButton("Cancel", (dialogInterface, i) -> { });
 
             builder.show();
@@ -189,10 +192,10 @@ public class RealmActivity extends AppCompatActivity {
             et_f_name.setText("");
             btn_add_realm.setEnabled(true);
             pb_loading.setVisibility(View.GONE);
-            btn_add_realm.setText("Create new");
+            btn_add_realm.setText(R.string.create_new);
             UserInfoActivity.collapse(add_realm_layout);
         } else {
-            btn_add_realm.setText("Save");
+            btn_add_realm.setText(R.string.save);
             UserInfoActivity.expand(add_realm_layout);
         }
     }
@@ -208,8 +211,8 @@ public class RealmActivity extends AppCompatActivity {
             Realm newRealm = new Realm(name, f_name, isEn);
 
             new Thread(() -> {
-                int code = APIManager.createRealm(newRealm.toJsonMin());
-                APIManager.getRealm();
+                int code = api.createRealm(newRealm.toJsonMin());
+                api.getRealm();
 
                 Message msg = handler.obtainMessage();
                 Bundle bundle = new Bundle();
@@ -231,8 +234,8 @@ public class RealmActivity extends AppCompatActivity {
             body.addProperty("enabled", isEn);
 
             new Thread(() -> {
-                int code = APIManager.updateRealm(realm.name, body);
-                APIManager.getRealm();
+                int code = api.updateRealm(realm.name, body);
+                api.getRealm();
 
                 Message msg = handler.obtainMessage();
                 Bundle bundle = new Bundle();
@@ -247,8 +250,8 @@ public class RealmActivity extends AppCompatActivity {
 
     private void deleteRealm(String realmName) {
         new Thread(() -> {
-            int code = APIManager.deleteRealm(realmName);
-            APIManager.getRealm();
+            int code = api.deleteRealm(realmName);
+            api.getRealm();
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();

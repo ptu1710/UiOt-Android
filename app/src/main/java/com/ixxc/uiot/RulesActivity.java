@@ -35,6 +35,7 @@ public class RulesActivity extends AppCompatActivity {
         boolean isOK = bundle.getBoolean("GET_RULES");
         boolean isUpdated = bundle.getBoolean("UPDATE_RULES");
 
+        // TODO: Optimize this
         if (isOK) {
             adapter = new RuleAdapter(this, ruleList, new RecyclerViewItemListener() {
                 @Override
@@ -70,27 +71,11 @@ public class RulesActivity extends AppCompatActivity {
             if (result != null && result.getResultCode() == RESULT_OK) {
                 Log.d(GlobalVars.LOG_TAG, "onCreate: HERE");
                 srl_rules.setRefreshing(true);
-                new Thread(() -> {
-                    ruleList = APIManager.queryRules();
-
-                    Message message = handler.obtainMessage();
-                    Bundle bundle = new Bundle();
-                    bundle.putBoolean("UPDATE_RULES", true);
-                    message.setData(bundle);
-                    handler.sendMessage(message);
-                }).start();
+                queryRules("UPDATE_RULES");
             }
         });
 
-        new Thread(() -> {
-            ruleList = APIManager.queryRules();
-
-            Message message = handler.obtainMessage();
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("GET_RULES", true);
-            message.setData(bundle);
-            handler.sendMessage(message);
-        }).start();
+        queryRules("GET_RULES");
 
         rv_rules = findViewById(R.id.rv_rules);
         iv_add = findViewById(R.id.iv_add);
@@ -102,5 +87,17 @@ public class RulesActivity extends AppCompatActivity {
         });
 
         srl_rules.setOnRefreshListener(() -> srl_rules.setRefreshing(false));
+    }
+
+    private void queryRules(String key) {
+        new Thread(() -> {
+            ruleList = new APIManager().queryRules();
+
+            Message message = handler.obtainMessage();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(key, true);
+            message.setData(bundle);
+            handler.sendMessage(message);
+        }).start();
     }
 }

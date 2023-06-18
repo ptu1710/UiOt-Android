@@ -66,7 +66,7 @@ public class HomeActivity extends AppCompatActivity {
                     // Get new FCM registration token
                     String token = task.getResult();
 
-                    new Thread(() -> APIManager.registerDevice(token)).start();
+                    new Thread(() -> new APIManager().registerDevice(token)).start();
 
                     Log.d(GlobalVars.LOG_TAG, "FCM token: " + token);
                 });

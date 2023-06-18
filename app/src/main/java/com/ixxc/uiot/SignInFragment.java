@@ -88,7 +88,7 @@ public class SignInFragment extends Fragment {
         Bundle bundle = new Bundle();
 
         new Thread(() -> {
-            APIManager.getUserToken(usr, pwd);
+            new APIManager().getUserToken(usr, pwd);
 
             bundle.putBoolean("LOGIN", true);
             msg.setData(bundle);

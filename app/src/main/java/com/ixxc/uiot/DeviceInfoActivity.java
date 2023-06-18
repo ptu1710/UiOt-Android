@@ -72,6 +72,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     List<MetaItem> metaItems, selectedMetaItems;
     User me;
     ActivityResultLauncher<Intent> launcher;
+    APIManager api = new APIManager();
     int currentColor;
 
     @SuppressLint("NotifyDataSetChanged")
@@ -155,8 +156,8 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         parentNames = Device.getDeviceNames();
 
         new Thread(() -> {
-            current_device = APIManager.getDevice(device_id);
-            APIManager.getMetaItem(null);
+            current_device = api.getDevice(device_id);
+            api.getMetaItem(null);
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -371,8 +372,8 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
 
         // Commit device changes here
         new Thread(() -> {
-            boolean updated = APIManager.updateDevice(device_id, body);
-            current_device = APIManager.getDevice(device_id);
+            boolean updated = api.updateDevice(device_id, body);
+            current_device = api.getDevice(device_id);
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();

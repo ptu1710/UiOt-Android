@@ -53,7 +53,6 @@ public class AddDeviceActivity extends AppCompatActivity {
     ArrayAdapter<String> typeAdapter;
     DeviceArrayAdapter devicesAdapter;
     ArrayAdapter<String> parentAdapter;
-
     String parentId = "None";
     String selectedDevice = "";
 
@@ -193,7 +192,7 @@ public class AddDeviceActivity extends AppCompatActivity {
                 req.setParentId(parentId);
                 req.setAttributes(attributes);
 
-                APIManager.createDevice(req.getJsonObj());
+                new APIManager().createDevice(req.getJsonObj());
 
                 Message msg = handler.obtainMessage();
                 Bundle bundle = new Bundle();

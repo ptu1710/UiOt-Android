@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,12 +19,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CreateRuleActivity extends AppCompatActivity {
-    Button btn_next, btn_back;
     CreateRuleFragment_0 create_0 = new CreateRuleFragment_0(this);
     CreateRuleFragment_1 create_1 = new CreateRuleFragment_1(this);
     CreateRuleFragment_2 create_2 = new CreateRuleFragment_2(this);
     FragmentManager fm;
-
+    APIManager api = new APIManager();
     public String chose;
 
     public CreateRuleReq rule = new CreateRuleReq();
@@ -49,7 +47,7 @@ public class CreateRuleActivity extends AppCompatActivity {
         chose = intent.getStringExtra("CHOSE");
         Log.d(GlobalVars.LOG_TAG, "chose: " + chose);
 
-        new Thread(APIManager::getDeviceModels).start();
+        new Thread(api::getDeviceModels).start();
 
         fm = getSupportFragmentManager();
         fm.beginTransaction().replace(R.id.fragment_wizard, create_0).commit();
@@ -105,7 +103,7 @@ public class CreateRuleActivity extends AppCompatActivity {
         jsonObject.addProperty("rules", rule.toJson().toString());
 
         new Thread(() -> {
-            int ruleId = APIManager.createRule(jsonObject);
+            int ruleId = api.createRule(jsonObject);
 
             Log.d(GlobalVars.LOG_TAG, "Rule ID: " + ruleId);
 

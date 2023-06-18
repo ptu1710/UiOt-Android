@@ -48,7 +48,7 @@ public class HomeFragment extends Fragment {
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
-        boolean isOK = bundle.getBoolean("IS_OK");
+        boolean isOK = bundle.getBoolean("OK");
         if (!isOK) return false;
 
         showBasicInfo();
@@ -85,23 +85,25 @@ public class HomeFragment extends Fragment {
         shimmerFrameLayout.startShimmer();
 
         new Thread(() -> {
+            APIManager api = new APIManager();
             if (User.getMe() == null) {
-                APIManager.getUserInfo();
-                APIManager.getUserRoles();
+                api.getUserInfo();
+                api.getUserRoles();
             }
 
-            APIManager.getDeviceModels();
+            api.getDeviceModels();
+
             if (Device.getDeviceList() == null || Device.getDeviceList().size() == 0) {
                 String queryString = "{ \"realm\": { \"name\": \"master\" }}";
                 JsonObject query = JsonParser.parseString(queryString).getAsJsonObject();
-                APIManager.queryDevices(query);
+                api.queryDevices(query);
             }
 
-            APIManager.getMap();
+//            api.getMap();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
-            bundle.putBoolean("IS_OK", true);
+            bundle.putBoolean("OK", true);
             msg.setData(bundle);
             handler.sendMessage(msg);
         }).start();

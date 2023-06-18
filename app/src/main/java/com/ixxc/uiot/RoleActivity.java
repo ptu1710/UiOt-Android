@@ -1,18 +1,10 @@
 package com.ixxc.uiot;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
@@ -24,6 +16,13 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -43,6 +42,7 @@ public class RoleActivity extends AppCompatActivity {
     LinearLayout add_role_layout;
     List<Role> roleSetList;
     Role newRoleSet;
+    APIManager api = new APIManager();
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -69,7 +69,7 @@ public class RoleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_role);
         new Thread(()->{
-            APIManager.getRoles();
+            api.getRoles();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -84,6 +84,7 @@ public class RoleActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setTitle("Roles");
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
@@ -100,13 +101,9 @@ public class RoleActivity extends AppCompatActivity {
     }
 
     private void InitEvent() {
-        btn_add_role.setOnClickListener(v -> {
-            addRoleSet();
-        });
+        btn_add_role.setOnClickListener(v -> addRoleSet());
 
-        btn_cancel.setOnClickListener(view -> {
-            cancelAdd(true);
-        });
+        btn_cancel.setOnClickListener(view -> cancelAdd(true));
     }
 
     private void InitVars() {
@@ -118,6 +115,7 @@ public class RoleActivity extends AppCompatActivity {
         RoleItemAdapter adapter = new RoleItemAdapter(this, roleSetList);
         adapter.setClickListener((view, position, role) -> expandRoleLayout(view, role));
         rv_role.setAdapter(adapter);
+        // TODO: Check if this is the best way to do this
         adapter.notifyDataSetChanged();
     }
 
@@ -172,9 +170,7 @@ public class RoleActivity extends AppCompatActivity {
 
         for (Role r : Role.getRoleList()) {
             if (layout.findViewWithTag(r.id) == null) {
-                LayoutInflater vi = getLayoutInflater();
-                View v = vi.inflate(R.layout.role_item, null);
-
+                View v = View.inflate(this, R.layout.role_item, null);
                 CheckBox cb = v.findViewById(R.id.checkbox);
                 cb.setText(r.name);
                 cb.setTag(r.id);
@@ -231,8 +227,8 @@ public class RoleActivity extends AppCompatActivity {
             }
 
             new Thread(() -> {
-                int code = APIManager.updateRole(body);
-                APIManager.getRoles();
+                int code = api.updateRole(body);
+                api.getRoles();
 
                 Message msg = handler.obtainMessage();
                 Bundle bundle = new Bundle();
@@ -258,10 +254,10 @@ public class RoleActivity extends AppCompatActivity {
             et_desc.setText("");
             btn_add_role.setEnabled(true);
             pb_loading.setVisibility(View.GONE);
-            btn_add_role.setText("Create new");
+            btn_add_role.setText(R.string.create_new);
             UserInfoActivity.collapse(add_role_layout);
         } else {
-            btn_add_role.setText("Save");
+            btn_add_role.setText(R.string.save);
             UserInfoActivity.expand(add_role_layout);
         }
     }

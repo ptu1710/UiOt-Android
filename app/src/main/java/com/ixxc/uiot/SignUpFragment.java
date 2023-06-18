@@ -160,7 +160,7 @@ public class SignUpFragment extends Fragment {
         final Bundle bundle = new Bundle();
 
         new Thread(() -> {
-            APIManager.getUserToken(usr, pwd);
+            new APIManager().getUserToken(usr, pwd);
 
             bundle.putBoolean("SIGNUP", true);
             msg.setData(bundle);
