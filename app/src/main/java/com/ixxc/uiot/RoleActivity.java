@@ -243,7 +243,7 @@ public class RoleActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "No permissions have been checked!", Toast.LENGTH_LONG).show();
         }
 
-        Log.d(GlobalVars.LOG_TAG, body.toString());
+        Log.d(Utils.LOG_TAG, body.toString());
     }
 
     private void cancelAdd(boolean isCancel) {

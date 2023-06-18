@@ -151,7 +151,7 @@ public class UsersActivity extends AppCompatActivity {
             userAdapter.checkedPos = -1;
         } else if (item.getItemId() == R.id.delete) {
             new Thread(() -> {
-                Log.d(GlobalVars.LOG_TAG, "onOptionsItemSelected: " + userList.get(userAdapter.checkedPos).id);
+                Log.d(Utils.LOG_TAG, "onOptionsItemSelected: " + userList.get(userAdapter.checkedPos).id);
                 int code = api.deleteUser(userList.get(userAdapter.checkedPos).id);
 
                 Message message = handler.obtainMessage();

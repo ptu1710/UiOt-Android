@@ -368,7 +368,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         body.addProperty("realm", current_device.realm);
         body.addProperty("type", current_device.type);
 
-        Log.d(GlobalVars.LOG_TAG, body.toString());
+        Log.d(Utils.LOG_TAG, body.toString());
 
         // Commit device changes here
         new Thread(() -> {

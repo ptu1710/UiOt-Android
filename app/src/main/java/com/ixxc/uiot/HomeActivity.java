@@ -68,7 +68,7 @@ public class HomeActivity extends AppCompatActivity {
 
                     new Thread(() -> new APIManager().registerDevice(token)).start();
 
-                    Log.d(GlobalVars.LOG_TAG, "FCM token: " + token);
+                    Log.d(Utils.LOG_TAG, "FCM token: " + token);
                 });
 
         askNotificationPermission();

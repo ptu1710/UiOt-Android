@@ -7,7 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.Utils;
 
 import java.util.ArrayList;
@@ -169,7 +168,7 @@ public class Attribute {
     }
 
     public boolean isInWidgets(Context ctx, String deviceId) {
-        String widgetString = Utils.getPreferences(ctx, GlobalVars.WIDGET_KEY);
+        String widgetString = Utils.getPreferences(ctx, Utils.WIDGET_KEY);
         JsonArray widgets = TextUtils.isEmpty(widgetString) ? new JsonArray() : JsonParser.parseString(widgetString).getAsJsonArray();
         return widgets.contains(JsonParser.parseString(String.join("-", deviceId, name)));
     }

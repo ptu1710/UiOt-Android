@@ -192,10 +192,10 @@ public class DevicesFragment extends Fragment {
             popupMenu.setOnMenuItemClickListener(item -> {
                 int id = item.getItemId();
                 if (id == R.id.itemAToZ) {
-                    Log.d(GlobalVars.LOG_TAG, "InitEvents: A to Z");
+                    Log.d(Utils.LOG_TAG, "InitEvents: A to Z");
 //                    devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.name.toLowerCase()));
                 } else if (id ==  R.id.itemTimeCreated) {
-                    Log.d(GlobalVars.LOG_TAG, "InitEvents: Item Time Created");
+                    Log.d(Utils.LOG_TAG, "InitEvents: Item Time Created");
 //                     devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.createdOn));
                 } else {
                     return false;

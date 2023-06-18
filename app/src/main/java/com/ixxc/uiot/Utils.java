@@ -9,8 +9,14 @@ import android.text.TextUtils;
 import androidx.core.content.res.ResourcesCompat;
 
 public class Utils {
+    // TODO: Reduce the number of static variables and methods
+
+    public static String LOG_TAG = "API_LOG";
+    public static String WIDGET_KEY = "WIDGET";
+    public static String baseUrl = "https://uiot.ixxc.dev/";
     public static final int UPDATE_DEVICE = 1001;
 
+    // Delay handler for post delayed tasks
     public static Handler delayHandler;
 
     // Format camel case back to normal string
@@ -28,13 +34,13 @@ public class Utils {
         );
     }
 
-    public static  String capitalizeFirst(String s){
+    // TODO: Check if this is needed
+    public static String capitalizeFirst(String s){
         if (s != null){
             s = s.replace("_"," ");
             return String.valueOf(s.charAt(0)).toUpperCase() + s.substring(1).toLowerCase();
         }
         return null;
-
     }
 
     // Convert dp to px
@@ -43,6 +49,7 @@ public class Utils {
         return Math.round((float) dp * density);
     }
 
+    // Get input type for edit text based on data type
     public static int getInputType(String type) {
         switch (type) {
             case "JSONObject":
@@ -88,6 +95,12 @@ public class Utils {
         }
     }
 
+    // Get color
+    public static int getColor(Context context, int colorRes) {
+        return ResourcesCompat.getColor(context.getResources(), colorRes, null);
+    }
+
+    // Edit saved preferences
     public static void savePreferences(Context context, String key, String value) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -100,10 +113,5 @@ public class Utils {
         SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 //        sharedPreferences.edit().clear().apply();
         return sharedPreferences.getString(key, "");
-    }
-
-    // Get color
-    public static int getColor(Context context, int colorRes) {
-        return ResourcesCompat.getColor(context.getResources(), colorRes, null);
     }
 }

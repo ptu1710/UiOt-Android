@@ -173,7 +173,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 act_attribute.setAdapter(adapter2);
 
                 parentActivity.rule.setDeviceIds(Collections.singletonList(device.id));
-                Log.d(GlobalVars.LOG_TAG, "setDeviceIds: " + device.id);
+                Log.d(Utils.LOG_TAG, "setDeviceIds: " + device.id);
             }
         });
     }
@@ -245,7 +245,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 act_attribute.setAdapter(adapter);
 
                 parentActivity.rule.setDeviceIds(Collections.singletonList(device.id));
-                Log.d(GlobalVars.LOG_TAG, "setDeviceIds: " + device.id);
+                Log.d(Utils.LOG_TAG, "setDeviceIds: " + device.id);
             }
         });
 
@@ -255,22 +255,19 @@ public class CreateRuleFragment_2 extends Fragment {
             selectedValueType = attributes.get(i).getType();
             setValueLayout(act_attribute.getText().toString());
 
-            cb.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(cb.isChecked()){
-                        parentActivity.rule.setValue_then("true");
-                    }
-                    else{
-                        parentActivity.rule.setValue_then("false");
-                    }
+            cb.setOnClickListener(view12 -> {
+                if(cb.isChecked()){
+                    parentActivity.rule.setValue_then("true");
+                }
+                else{
+                    parentActivity.rule.setValue_then("false");
                 }
             });
 
             // TODO: get value after typing enter
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    Log.d("AAA", "Value_then " + tie_value.getText().toString());
+                    Log.d("AAA", "Value_then " + tie_value.getText());
                     parentActivity.rule.setValue_then(Objects.requireNonNull(tie_value.getText()).toString());
                 }
 
@@ -286,38 +283,18 @@ public class CreateRuleFragment_2 extends Fragment {
             });
 
 
-            act_unlock.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    parentActivity.rule.setValue_then(list_unlock.get(i).replaceAll(" ","_"));
-                }
-            });
+            act_unlock.setOnItemClickListener((adapterView1, view13, i1, l1) -> parentActivity.rule.setValue_then(list_unlock.get(i1).replaceAll(" ","_")));
 
             //parentActivity.rule.setAttributeName(attributes.get(i).getName());
             parentActivity.rule.setAttributeName_then(attributes.get(i).getName());
-            Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
+            Log.d(Utils.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
         });
 
-        btn_message.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                OpenMessageDialog();
-            }
-        });
+        btn_message.setOnClickListener(view -> OpenMessageDialog());
 
-        btn_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                parentActivity.changeTab(1);
-            }
-        });
+        btn_back.setOnClickListener(view -> parentActivity.changeTab(1));
 
-        btn_save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                parentActivity.createRule(parentActivity.rule);
-            }
-        });
+        btn_save.setOnClickListener(view -> parentActivity.createRule(parentActivity.rule));
 
         setValue(parentActivity.chose);
 
@@ -363,7 +340,7 @@ public class CreateRuleFragment_2 extends Fragment {
     private void setValue(String chose) {
         if(chose != null){
             RuleValue ruleValue = new RuleValue(Rule.rule_selected.rules);
-            Log.d(GlobalVars.LOG_TAG,"Types then: " + ruleValue.types_then);
+            Log.d(Utils.LOG_TAG,"Types then: " + ruleValue.types_then);
 
             selectedModel = ruleValue.types_then;
             if(ruleValue.action_then.equals("notification")){
@@ -449,21 +426,13 @@ public class CreateRuleFragment_2 extends Fragment {
 
         if(message != null) edt_mess.setText(message);
 
-        btn_Cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
+        btn_Cancel.setOnClickListener(view -> dialog.dismiss());
 
-        btn_OK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("AAA", edt_mess.getText().toString());
-                parentActivity.rule.setMessageObj(selectedModel,edt_mess.getText().toString());
-                dialog.dismiss();
+        btn_OK.setOnClickListener(view -> {
+            Log.d("AAA", edt_mess.getText().toString());
+            parentActivity.rule.setMessageObj(selectedModel,edt_mess.getText().toString());
+            dialog.dismiss();
 
-            }
         });
 
         dialog.show();
@@ -489,7 +458,7 @@ public class CreateRuleFragment_2 extends Fragment {
                     if(value.equals("true")){
                         cb.setChecked(true);
                     }
-                }catch (Exception e){}
+                } catch (Exception ignored) { }
 
                 cb.setVisibility(View.VISIBLE);
                 tie_value.setVisibility(View.GONE);
@@ -501,7 +470,8 @@ public class CreateRuleFragment_2 extends Fragment {
                 ArrayAdapter<String> adapter2 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_unlock);
                 try {
                     act_unlock.setText(value);
-                }catch (Exception e){}
+                } catch (Exception ignored) { }
+
                 act_unlock.setAdapter(adapter2);
                 cb.setVisibility(View.GONE);
                 tie_value.setVisibility(View.GONE);
@@ -511,7 +481,8 @@ public class CreateRuleFragment_2 extends Fragment {
                 ArrayAdapter<String> adapter3 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_connector_type);
                 try {
                     act_unlock.setText(value);
-                }catch (Exception e){}
+                } catch (Exception ignored) { }
+
                 act_unlock.setAdapter(adapter3);
                 cb.setVisibility(View.GONE);
                 tie_value.setVisibility(View.GONE);
@@ -521,7 +492,8 @@ public class CreateRuleFragment_2 extends Fragment {
                 ArrayAdapter<String> adapter4 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_orientation);
                 try {
                     act_unlock.setText(value);
-                }catch (Exception e){}
+                } catch (Exception ignored) { }
+
                 act_unlock.setAdapter(adapter4);
                 cb.setVisibility(View.GONE);
                 tie_value.setVisibility(View.GONE);
@@ -531,7 +503,8 @@ public class CreateRuleFragment_2 extends Fragment {
                 ArrayAdapter<String> adapter5 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, list_child_asset_type);
                 try {
                     act_unlock.setText(value);
-                }catch (Exception e){}
+                } catch (Exception ignored) { }
+
                 act_unlock.setAdapter(adapter5);
                 cb.setVisibility(View.GONE);
                 tie_value.setVisibility(View.GONE);
@@ -539,14 +512,13 @@ public class CreateRuleFragment_2 extends Fragment {
             default:
                 try {
                     tie_value.setText(value);
-                }catch (Exception e){}
+                } catch (Exception ignored) { }
 
                 tie_value.setVisibility(View.VISIBLE);
                 til_unlock.setVisibility(View.GONE);
                 cb.setVisibility(View.GONE);
 
                 break;
-
         }
     }
 

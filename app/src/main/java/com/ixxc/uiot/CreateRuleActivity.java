@@ -45,7 +45,7 @@ public class CreateRuleActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         chose = intent.getStringExtra("CHOSE");
-        Log.d(GlobalVars.LOG_TAG, "chose: " + chose);
+        Log.d(Utils.LOG_TAG, "chose: " + chose);
 
         new Thread(api::getDeviceModels).start();
 
@@ -105,7 +105,7 @@ public class CreateRuleActivity extends AppCompatActivity {
         new Thread(() -> {
             int ruleId = api.createRule(jsonObject);
 
-            Log.d(GlobalVars.LOG_TAG, "Rule ID: " + ruleId);
+            Log.d(Utils.LOG_TAG, "Rule ID: " + ruleId);
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();

@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.Interface.AttributeListener;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
@@ -117,7 +116,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         holder.ib_edit.setOnClickListener(view -> attributeListener.onEditClicked(holder.getBindingAdapterPosition()));
 
         holder.ib_star.setOnClickListener(view -> {
-            String widgetString = Utils.getPreferences(ctx, GlobalVars.WIDGET_KEY);
+            String widgetString = Utils.getPreferences(ctx, Utils.WIDGET_KEY);
             JsonArray widgets = TextUtils.isEmpty(widgetString) ? new JsonArray() : JsonParser.parseString(widgetString).getAsJsonArray();
             JsonElement widgetInfo = JsonParser.parseString(String.join("-", deviceId, attr.getName()));
 
@@ -132,7 +131,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 toastMsg = "New widget added!";
             }
 
-            Utils.savePreferences(ctx, GlobalVars.WIDGET_KEY, widgets.toString());
+            Utils.savePreferences(ctx, Utils.WIDGET_KEY, widgets.toString());
 
             Toast.makeText(ctx, toastMsg, Toast.LENGTH_SHORT).show();
         });

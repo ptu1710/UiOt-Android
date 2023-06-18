@@ -99,7 +99,7 @@ public class HomeFragment extends Fragment {
                 api.queryDevices(query);
             }
 
-//            api.getMap();
+            api.getMap();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -147,7 +147,7 @@ public class HomeFragment extends Fragment {
 
         // Get saved preferences for widgets
         // One widget info is stored in one string, example: "5zI6XqkQVSfdgOrZ1MyWEf-humidity"
-        String widgetString = Utils.getPreferences(parentActivity, GlobalVars.WIDGET_KEY);
+        String widgetString = Utils.getPreferences(parentActivity, Utils.WIDGET_KEY);
 
         int count = 1;
         LinearLayout.LayoutParams smallWidParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT);

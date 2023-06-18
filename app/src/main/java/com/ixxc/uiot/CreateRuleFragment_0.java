@@ -50,7 +50,7 @@ public class CreateRuleFragment_0 extends Fragment {
             if (!focused) {
                 String name = Objects.requireNonNull(til_name.getText()).toString();
                 parentActivity.rule.setRuleName(name);
-                Log.d(GlobalVars.LOG_TAG, "setRuleName: " + name);
+                Log.d(Utils.LOG_TAG, "setRuleName: " + name);
             }
         });
 
@@ -70,7 +70,7 @@ public class CreateRuleFragment_0 extends Fragment {
                 recurrence.addProperty("mins", 0);
 
                 parentActivity.rule.setRecurrence(recurrence);
-                Log.d(GlobalVars.LOG_TAG, "setRecurrence");
+                Log.d(Utils.LOG_TAG, "setRecurrence");
             }
         });
 
@@ -82,21 +82,10 @@ public class CreateRuleFragment_0 extends Fragment {
         }
 
         btn_next = view.findViewById(R.id.btn_next);
-        btn_next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                parentActivity.changeTab(1);
-            }
-        });
+        btn_next.setOnClickListener(view12 -> parentActivity.changeTab(1));
 
         btn_back = view.findViewById(R.id.btn_back);
-        btn_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                parentActivity.finish();
-            }
-        });
+        btn_back.setOnClickListener(view13 -> parentActivity.finish());
     }
 
 }

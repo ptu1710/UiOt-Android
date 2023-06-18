@@ -124,7 +124,7 @@ public class SignUpFragment extends Fragment {
                         if (s.equals("null")) {
                             view.evaluateJavascript(script1, s1 -> {
                                 if (s1.equals("null")) {
-                                    Log.d(GlobalVars.LOG_TAG, "onPageFinished: Fill form");
+                                    Log.d(Utils.LOG_TAG, "onPageFinished: Fill form");
 
                                     String usrScript = "document.getElementById('username').value='" + usr + "';";
                                     String emailScript = "document.getElementById('email').value='" + email + "';";
@@ -152,7 +152,9 @@ public class SignUpFragment extends Fragment {
             }
         });
 
-        webView.loadUrl(GlobalVars.signUpUrl);
+        String redirect_url = Utils.baseUrl.replace(":", "%3A").replace("/", "%2F");
+        String signUpUrl = Utils.baseUrl + "auth/realms/master/protocol/openid-connect/registrations?client_id=openremote&response_type=code&redirect_uri=" + redirect_url + "manager%2F";
+        webView.loadUrl(signUpUrl);
     }
 
     private void getUserToken(String usr, String pwd) {

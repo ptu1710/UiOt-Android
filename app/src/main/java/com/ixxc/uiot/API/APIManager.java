@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.ixxc.uiot.GlobalVars;
 import com.ixxc.uiot.Interface.APIInterface;
 import com.ixxc.uiot.Model.CreateDeviceRes;
 import com.ixxc.uiot.Model.Device;
@@ -19,6 +18,7 @@ import com.ixxc.uiot.Model.Role;
 import com.ixxc.uiot.Model.Rule;
 import com.ixxc.uiot.Model.Token;
 import com.ixxc.uiot.Model.User;
+import com.ixxc.uiot.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +32,10 @@ public class APIManager {
     APIInterface apiInterface = new APIClient().getClient().create(APIInterface.class);
 
     public void getUserToken(String username, String password) {
-        Call<Token> call =  apiInterface.getUserToken(GlobalVars.authType, GlobalVars.client, username, password);
+        String client = "openremote";
+        String authType = "password";
+
+        Call<Token> call =  apiInterface.getUserToken(authType, client, username, password);
         try {
             Response<Token> response = call.execute();
             if (response.isSuccessful()) {
@@ -159,7 +162,7 @@ public class APIManager {
                 User.setUsersList(users);
             } else {
                 returnCode = response.code();
-                Log.d(GlobalVars.LOG_TAG, "queryUsers: code "+ returnCode);
+                Log.d(Utils.LOG_TAG, "queryUsers: code "+ returnCode);
                 User.setUsersList(null);
             }
         } catch (IOException e) { e.printStackTrace(); }
@@ -438,13 +441,13 @@ public class APIManager {
 
                     JsonObject body2 = register2.toJson(token);
 
-                    Log.d(GlobalVars.LOG_TAG, "register2: " + body2);
+                    Log.d(Utils.LOG_TAG, "register2: " + body2);
 
                     Call<RegisterDevice> call2 = apiInterface.registerDevice(body2);
                     call2.execute();
 
                 } else {
-                    Log.d(GlobalVars.LOG_TAG, "Error: " + response1.message());
+                    Log.d(Utils.LOG_TAG, "Error: " + response1.message());
                 }
             }
 

@@ -69,7 +69,7 @@ public class RulesActivity extends AppCompatActivity {
 
         mGetContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result != null && result.getResultCode() == RESULT_OK) {
-                Log.d(GlobalVars.LOG_TAG, "onCreate: HERE");
+                Log.d(Utils.LOG_TAG, "onCreate: HERE");
                 srl_rules.setRefreshing(true);
                 queryRules("UPDATE_RULES");
             }

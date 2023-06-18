@@ -486,7 +486,7 @@ public class EditAttributeActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.done) {
             et_value.clearFocus();
             attribute.setMeta(attributeMeta);
-            Log.d(GlobalVars.LOG_TAG, "onOptionsItemSelected: " + attribute.toJson());
+            Log.d(Utils.LOG_TAG, "onOptionsItemSelected: " + attribute.toJson());
             setResult(RESULT_OK, new Intent().putExtra("ATTRIBUTE", String.valueOf(attribute.toJson())));
             finish();
             return true;

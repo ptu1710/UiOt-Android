@@ -103,12 +103,12 @@ public class CreateRuleFragment_1 extends Fragment {
             iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
 
             parentActivity.rule.setRuleTypes(selectedModel);
-            Log.d(GlobalVars.LOG_TAG, "setRuleTypes: " + selectedModel);
+            Log.d(Utils.LOG_TAG, "setRuleTypes: " + selectedModel);
         });
 
         act_devices.setOnItemClickListener((adapterView, view, i, l) -> {
             if (i == 0) {
-                Log.d(GlobalVars.LOG_TAG, selectedModel);
+                Log.d(Utils.LOG_TAG, selectedModel);
                 attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
@@ -136,7 +136,7 @@ public class CreateRuleFragment_1 extends Fragment {
                 act_attribute.setAdapter(adapter);
 
                 parentActivity.rule.setDeviceIds(Collections.singletonList(device.id));
-                Log.d(GlobalVars.LOG_TAG, "setDeviceIds: " + device.id);
+                Log.d(Utils.LOG_TAG, "setDeviceIds: " + device.id);
             }
         });
 
@@ -151,7 +151,7 @@ public class CreateRuleFragment_1 extends Fragment {
             act_operator.setAdapter(adapter);
 
             parentActivity.rule.setAttributeName(attributes.get(i).getName());
-            Log.d(GlobalVars.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
+            Log.d(Utils.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
         });
 
         act_operator.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -179,7 +179,7 @@ public class CreateRuleFragment_1 extends Fragment {
             // TODO: get value after typing enter
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    Log.d(GlobalVars.LOG_TAG, "Value_attr " + Objects.requireNonNull(tie_value.getText()));
+                    Log.d(Utils.LOG_TAG, "Value_attr " + Objects.requireNonNull(tie_value.getText()));
                     parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
             });
@@ -195,7 +195,7 @@ public class CreateRuleFragment_1 extends Fragment {
 
             tie_rangeValue.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    Log.d(GlobalVars.LOG_TAG, "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()));
+                    Log.d(Utils.LOG_TAG, "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()));
                     parentActivity.rule.setRange_value(Double.parseDouble(tie_rangeValue.getText().toString()));
                     parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
@@ -210,7 +210,7 @@ public class CreateRuleFragment_1 extends Fragment {
                 return false;
             });
 
-            Log.d(GlobalVars.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
+            Log.d(Utils.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
         });
 
         setValue(parentActivity.chose);
@@ -222,7 +222,7 @@ public class CreateRuleFragment_1 extends Fragment {
     private void setValue(String chose) {
         if(chose != null){
             RuleValue ruleValue = new RuleValue(Rule.rule_selected.rules);
-            Log.d(GlobalVars.LOG_TAG,"Types: " + ruleValue.types);
+            Log.d(Utils.LOG_TAG,"Types: " + ruleValue.types);
 
             selectedModel = ruleValue.types;
 
@@ -258,6 +258,7 @@ public class CreateRuleFragment_1 extends Fragment {
             List<String> operators = parentActivity.getRuleOperator(parentActivity, selectedValueType);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, operators);
             act_operator.setHint(R.string.operator);
+            // TODO: Check these warning
             if(ruleValue.operator != null){
                 if(ruleValue.negate == null || !ruleValue.negate){
                     if(ruleValue.operator.equals("LESS_EQUALS") || ruleValue.operator.equals("GREATER_EQUALS")){

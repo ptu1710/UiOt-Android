@@ -266,7 +266,7 @@ public class MapsFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         if (firstTime && Map.isReady && !hidden) {
             firstTime = false;
-            Utils.delayHandler.postDelayed(() -> mapView.setVisibility(View.VISIBLE), 240);
+            Utils.delayHandler.postDelayed(() -> mapView.setVisibility(View.VISIBLE), 200);
         }
         super.onHiddenChanged(hidden);
     }
