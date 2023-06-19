@@ -118,27 +118,27 @@ public class SignUpFragment extends Fragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 if (url.contains("openid-connect/registrations")) {
+                    Log.d(Utils.LOG_TAG, "onPageFinished: Fill form");
+
+                    String usrScript = "document.getElementById('username').value='" + usr + "';";
+                    String emailScript = "document.getElementById('email').value='" + email + "';";
+                    String pwdScript = "document.getElementById('password').value='" + pwd + "';";
+                    String rePwdScript = "document.getElementById('password-confirm').value='" + rePwd + "';";
+
+                    view.evaluateJavascript(usrScript, null);
+                    view.evaluateJavascript(emailScript, null);
+                    view.evaluateJavascript(pwdScript, null);
+                    view.evaluateJavascript(rePwdScript, null);
+                    view.evaluateJavascript("document.getElementsByTagName('form')[0].submit();", null);
+                } else if (url.contains("login-actions/registration")) {
                     String script = "document.getElementsByClassName('helper-text')[0].getAttribute('data-error');";
-                    String script1 = "document.getElementsByClassName('red-text')[1].innerText;";
                     view.evaluateJavascript(script, s -> {
-                        if (s.equals("null")) {
-                            view.evaluateJavascript(script1, s1 -> {
-                                if (s1.equals("null")) {
-                                    Log.d(Utils.LOG_TAG, "onPageFinished: Fill form");
+                        if (!s.equals("null")) signUpError(s);
+                    });
 
-                                    String usrScript = "document.getElementById('username').value='" + usr + "';";
-                                    String emailScript = "document.getElementById('email').value='" + email + "';";
-                                    String pwdScript = "document.getElementById('password').value='" + pwd + "';";
-                                    String rePwdScript = "document.getElementById('password-confirm').value='" + rePwd + "';";
-
-                                    view.evaluateJavascript(usrScript, null);
-                                    view.evaluateJavascript(emailScript, null);
-                                    view.evaluateJavascript(pwdScript, null);
-                                    view.evaluateJavascript(rePwdScript, null);
-                                    view.evaluateJavascript("document.getElementsByTagName('form')[0].submit();", null);
-                                } else signUpError(s1);
-                            });
-                        } else signUpError(s);
+                    String script1 = "document.getElementsByClassName('red-text')[1].innerText;";
+                    view.evaluateJavascript(script1, s -> {
+                        if (!s.equals("null")) signUpError(s);
                     });
                 }
                 else if (url.contains("VERIFY_EMAIL")) verifyEmail(email);
@@ -146,6 +146,8 @@ public class SignUpFragment extends Fragment {
                     getUserToken(usr, pwd);
                     webView.stopLoading();
                     webView.destroy();
+                } else {
+                    Log.d(Utils.LOG_TAG, "onPageFinished: " + url.replace("uiot.ixxc.dev/", ""));
                 }
 
                 super.onPageFinished(view, url);
@@ -190,6 +192,8 @@ public class SignUpFragment extends Fragment {
 }
 
     private void signUpError(String msg) {
+        Log.d(Utils.LOG_TAG, "signUpError: " + msg);
+
         pb_loading.setVisibility(View.GONE);
         btn_sign_up.setVisibility(View.VISIBLE);
         btn_sign_up.setEnabled(true);
