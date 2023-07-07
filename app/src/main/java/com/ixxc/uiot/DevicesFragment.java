@@ -47,7 +47,7 @@ public class DevicesFragment extends Fragment {
     HomeActivity parentActivity;
     ShimmerFrameLayout layout_shimmer;
     RecyclerView rv_devices;
-    ImageView iv_add, iv_cancel;
+    ImageView iv_add;
     SwipeRefreshLayout srl_devices;
     View rootView;
     SearchView searchView;
@@ -70,7 +70,6 @@ public class DevicesFragment extends Fragment {
 
             Utils.delayHandler.postDelayed(this::showDevices, 320);
 
-            iv_cancel.performClick();
             srl_devices.setRefreshing(false);
         } else {
             if (delete_device) {
@@ -111,6 +110,10 @@ public class DevicesFragment extends Fragment {
         InitViews(view);
         InitEvents();
 
+        if (me.canWriteDevices()) {
+            iv_add.setVisibility(View.VISIBLE);
+        }
+
         Utils.delayHandler.postDelayed(() -> layout_shimmer.setVisibility(View.VISIBLE), 320);
 
         // Wait to show all devices
@@ -118,7 +121,7 @@ public class DevicesFragment extends Fragment {
 
             while (!Device.devicesLoaded) {
                 try {
-                    Thread.sleep(240);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -146,7 +149,6 @@ public class DevicesFragment extends Fragment {
         layout_shimmer = v.findViewById(R.id.layout_shimmer);
         rv_devices = v.findViewById(R.id.rv_devices);
         iv_add = v.findViewById(R.id.iv_add);
-        iv_cancel = v.findViewById(R.id.iv_cancel);
         srl_devices = v.findViewById(R.id.srl_devices);
         searchView = v.findViewById(R.id.searchView);
         tv_sort = v.findViewById(R.id.tv_sort);
@@ -273,9 +275,7 @@ public class DevicesFragment extends Fragment {
 
     private void showDevices() {
         rv_devices.setLayoutManager(new LinearLayoutManager(parentActivity));
-
         rv_devices.setAdapter(deviceTreeViewAdapter);
-
         rv_devices.setVisibility(View.VISIBLE);
         layout_shimmer.setVisibility(View.GONE);
     }

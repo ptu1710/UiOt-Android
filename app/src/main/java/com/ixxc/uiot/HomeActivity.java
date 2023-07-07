@@ -80,6 +80,8 @@ public class HomeActivity extends AppCompatActivity {
 
         fragment = homeFrag;
         navbar.selectTabAt(0, false);
+
+//        startActivity(new Intent(this, AccountActivity.class));
     }
 
     private void InitVars() {

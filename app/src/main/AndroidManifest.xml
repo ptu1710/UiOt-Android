@@ -18,6 +18,9 @@
         android:theme="@style/Theme.UiOt"
         tools:targetApi="tiramisu">
         <activity
+            android:name=".AccountActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditAttributeActivity"
             android:exported="false" />
         <activity
@@ -26,6 +29,7 @@
         <activity
             android:name=".RulesActivity"
             android:exported="false" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_launcher_foreground" />
@@ -66,10 +70,11 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.MyUIT.Splash"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.MyUIT.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

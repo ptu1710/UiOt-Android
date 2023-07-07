@@ -176,21 +176,21 @@
     </string-array>
 
     <string-array name="http_agent_params">
-<!--        <item>Value Converter</item>-->
-<!--        <item>Write Value Converter</item>-->
-<!--        <item>Write Value</item>-->
-<!--        <item>Message Match Predicate</item>-->
-<!--        <item>Message Match Filters</item>-->
-<!--        <item>Update On Write</item>-->
-<!--        <item>Headers</item>-->
-<!--        <item>Query Parameters</item>-->
+        <!--        <item>Value Converter</item>-->
+        <!--        <item>Write Value Converter</item>-->
+        <!--        <item>Write Value</item>-->
+        <!--        <item>Message Match Predicate</item>-->
+        <!--        <item>Message Match Filters</item>-->
+        <!--        <item>Update On Write</item>-->
+        <!--        <item>Headers</item>-->
+        <!--        <item>Query Parameters</item>-->
         <item>pollingMillis</item>
         <item>path</item>
         <item>valueFilters</item>
-<!--        <item>Paging Mode</item>-->
-<!--        <item>Method</item>-->
-<!--        <item>Content Type</item>-->
-<!--        <item>Polling Attribute</item>-->
+        <!--        <item>Paging Mode</item>-->
+        <!--        <item>Method</item>-->
+        <!--        <item>Content Type</item>-->
+        <!--        <item>Polling Attribute</item>-->
     </string-array>
 
     <string-array name="mqtt_agent_params">

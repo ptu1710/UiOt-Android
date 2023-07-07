@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class User {
     public String realm;
@@ -51,8 +50,8 @@ public class User {
     }
 
     // Set roles and composite roles of a user's instance
-    private List<Role> roleList = new ArrayList<>();
-    private List<Role> compositeRoleList = new ArrayList<>();
+    private final List<Role> roleList = new ArrayList<>();
+    private final List<Role> compositeRoleList = new ArrayList<>();
     public void setUserRoles(List<Role> roles) {
         roleList.clear();
         compositeRoleList.clear();
@@ -105,23 +104,35 @@ public class User {
     }
 
     public boolean canReadDevices() {
-        List<Role> hasRole = roleList.stream().filter(role -> role.name.contains("read:assets") && role.assigned).collect(Collectors.toList());
-        return hasRole.size() > 0;
+        Role hasRole = roleList.stream()
+                .filter(role -> role.name.contains("read:assets") && role.assigned)
+                .findFirst().orElse(null);
+
+        return hasRole != null;
     }
 
     public boolean canWriteDevices() {
-        List<Role> hasRole = roleList.stream().filter(role -> role.name.contains("write:assets") && role.assigned).collect(Collectors.toList());
-        return hasRole.size() > 0;
+        Role hasRole = roleList.stream()
+                .filter(role -> role.name.contains("write:assets") && role.assigned)
+                .findFirst().orElse(null);
+
+        return hasRole != null;
     }
 
     public boolean canWriteUsers() {
-        List<Role> hasRole = roleList.stream().filter(role -> role.name.contains("write:user") && role.assigned).collect(Collectors.toList());
-        return hasRole.size() > 0;
+        Role hasRole = roleList.stream()
+                .filter(role -> role.name.contains("write:user") && role.assigned)
+                .findFirst().orElse(null);
+
+        return hasRole != null;
     }
 
     public boolean canWriteAdmin() {
-        List<Role> hasRole = roleList.stream().filter(role -> role.name.contains("write:admin") && role.assigned).collect(Collectors.toList());
-        return hasRole.size() > 0;
+        Role hasRole = roleList.stream()
+                .filter(role -> role.name.contains("write:admin") && role.assigned)
+                .findFirst().orElse(null);
+
+        return hasRole != null;
     }
 
     public JsonObject toJson() {

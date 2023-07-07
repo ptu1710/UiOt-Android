@@ -57,7 +57,7 @@ public class SignInFragment extends Fragment {
         InitViews(view);
         InitEvent();
 
-        btn_sign_in.performClick();
+//        btn_sign_in.performClick();
     }
 
     private void InitViews(View v) {
