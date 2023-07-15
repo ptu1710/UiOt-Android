@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.ixxc.uiot.API.APIManager;
@@ -31,7 +32,6 @@ public class HomeActivity extends AppCompatActivity {
     public MapsFragment mapsFrag;
     public AdminFragment userFrag;
     private Fragment fragment = null;
-    int selectedIndex;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -44,8 +44,9 @@ public class HomeActivity extends AppCompatActivity {
                 int selectedIndex = navbar.getSelectedIndex();
                 if (selectedIndex == 0) {
                     finish();
+                } else {
+                    navbar.selectTabAt(0, true);
                 }
-                navbar.selectTabAt(0, true);
             }
         });
 
@@ -73,20 +74,18 @@ public class HomeActivity extends AppCompatActivity {
 
         askNotificationPermission();
 
-        fm.beginTransaction().add(R.id.main_frame, mapsFrag, "map").commit();
-        fm.beginTransaction().hide(mapsFrag).commit();
+        fm.beginTransaction()
+//                .add(R.id.main_frame, mapsFrag, "2")
+                .add(R.id.main_frame, fragment = homeFrag, "0")
+//                .hide(mapsFrag)
+                .commit();
 
-        fm.beginTransaction().add(R.id.main_frame, homeFrag, "home").commit();
-
-        fragment = homeFrag;
         navbar.selectTabAt(0, false);
 
 //        startActivity(new Intent(this, AccountActivity.class));
     }
 
     private void InitVars() {
-        selectedIndex = 0;
-
         fm = getSupportFragmentManager();
 
         homeFrag = new HomeFragment(this);
@@ -105,39 +104,30 @@ public class HomeActivity extends AppCompatActivity {
         navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
             @Override
             public void onTabSelected(int lastIndex, @Nullable AnimatedBottomBar.Tab lastTab, int newIndex, @NonNull AnimatedBottomBar.Tab newTab) {
+                fm.beginTransaction().hide(fragment).commit();
+
+                String tag = String.valueOf(newIndex);
+
                 switch (newIndex) {
                     case 0:
-                        if (homeFrag == null) { homeFrag = new HomeFragment(HomeActivity.this); }
-                        fm.beginTransaction().hide(fragment).commit();
                         fragment = homeFrag;
                         break;
                     case 1:
-                        if (fm.findFragmentByTag("devices") == null) {
-                            fm.beginTransaction().add(R.id.main_frame, devicesFrag, "devices").commit();
-                        }
-                        fm.beginTransaction().hide(fragment).commit();
                         fragment = devicesFrag;
                         break;
                     case 2:
-                        if (fm.findFragmentByTag("map") == null) {
-                            fm.beginTransaction().add(R.id.main_frame, mapsFrag, "map").commit();
-                        }
-
-                        fm.beginTransaction().hide(fragment).commit();
                         fragment = mapsFrag;
                         break;
                     case 3:
-                        if (fm.findFragmentByTag("user") == null) {
-                            fm.beginTransaction().add(R.id.main_frame, userFrag, "user").commit();
-                        }
-                        fm.beginTransaction().hide(fragment).commit();
                         fragment = userFrag;
                         break;
                 }
 
-                fm.beginTransaction()
-                        .show(fragment)
-                        .commit();
+                if (fm.findFragmentByTag(tag) == null) {
+                    fm.beginTransaction().add(R.id.main_frame, fragment, tag).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                } else {
+                    fm.beginTransaction().show(fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                }
             }
 
             @Override

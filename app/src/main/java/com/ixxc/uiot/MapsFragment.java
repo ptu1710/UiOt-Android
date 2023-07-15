@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -58,6 +59,7 @@ public class MapsFragment extends Fragment {
     public String lastSelectedId = "";
     private boolean firstTime = true;
 
+
     public MapsFragment() { }
 
     public MapsFragment(HomeActivity parentActivity) {
@@ -78,10 +80,7 @@ public class MapsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        InitViews(view);
-        InitEvents();
-
-        mapView.setVisibility(View.INVISIBLE);
+        rv_attributes = view.findViewById(R.id.rv_attributes);
 
         new Thread(() -> {
             while (!Map.isReady) {
@@ -92,36 +91,14 @@ public class MapsFragment extends Fragment {
                 }
             }
 
-            parentActivity.runOnUiThread(this::setMapView);
+            Utils.delayHandler.postDelayed(this::setMapView, 180);
         }).start();
     }
 
-    private void InitViews(View view) {
-        mapView = view.findViewById(R.id.mapView);
-        rv_attributes = view.findViewById(R.id.rv_attributes);
-        ibtn_zoom_in = view.findViewById(R.id.ibtn_zoom_in);
-        ibtn_zoom_out = view.findViewById(R.id.ibtn_zoom_out);
-    }
-
-    private void InitEvents() {
-        ibtn_zoom_in.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
-                new CameraOptions.Builder()
-                        .center(mapView.getMapboxMap().getCameraState().getCenter())
-                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() + 0.5)
-                        .build(),
-                new MapAnimationOptions.Builder().duration(320).build()
-        ));
-
-        ibtn_zoom_out.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
-                new CameraOptions.Builder()
-                        .center(mapView.getMapboxMap().getCameraState().getCenter())
-                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() - 0.5)
-                        .build(),
-                new MapAnimationOptions.Builder().duration(320).build()
-        ));
-    }
-
     private void setMapView() {
+        mapView = (MapView) View.inflate(parentActivity, R.layout.device_info_map, null);
+        mapView.setVisibility(View.INVISIBLE);
+
         Map mapData = Map.getMapObj();
 
         // Get the scale bar plugin instance and disable it
@@ -201,6 +178,37 @@ public class MapsFragment extends Fragment {
         CameraAnimationsPlugin cameraAnimationsPlugin = mapView.getPlugin(Plugin.MAPBOX_CAMERA_PLUGIN_ID);
         assert cameraAnimationsPlugin != null;
 
+        ibtn_zoom_in = mapView.findViewById(R.id.ibtn_zoom_in);
+        ibtn_zoom_out = mapView.findViewById(R.id.ibtn_zoom_out);
+
+        ibtn_zoom_in.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
+                new CameraOptions.Builder()
+                        .center(mapView.getMapboxMap().getCameraState().getCenter())
+                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() + 0.5)
+                        .build(),
+                new MapAnimationOptions.Builder().duration(320).build()
+        ));
+
+        ibtn_zoom_out.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
+                new CameraOptions.Builder()
+                        .center(mapView.getMapboxMap().getCameraState().getCenter())
+                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() - 0.5)
+                        .build(),
+                new MapAnimationOptions.Builder().duration(320).build()
+        ));
+
+        // Set camera event listener
+        CameraAnimationsUtils.getCamera(mapView).addCameraZoomChangeListener(aDouble -> {
+            ibtn_zoom_in.setEnabled(!(aDouble >= mapData.getMaxZoom()));
+            ibtn_zoom_out.setEnabled(!(aDouble <= 15));
+
+            ibtn_zoom_in.setImageTintList(ColorStateList.valueOf(ibtn_zoom_in.isEnabled() ? Color.BLACK : Color.GRAY));
+            ibtn_zoom_out.setImageTintList(ColorStateList.valueOf(ibtn_zoom_out.isEnabled() ? Color.BLACK : Color.GRAY));
+        });
+
+        FrameLayout mapLayout = parentActivity.findViewById(R.id.map_container);
+        mapLayout.addView(mapView, 0);
+
         if (!isHidden()) onHiddenChanged(false);
     }
 
@@ -267,6 +275,7 @@ public class MapsFragment extends Fragment {
         if (firstTime && Map.isReady && !hidden) {
             firstTime = false;
             Utils.delayHandler.postDelayed(() -> mapView.setVisibility(View.VISIBLE), 200);
+            Utils.delayHandler.postDelayed(() -> parentActivity.findViewById(R.id.progressLayout).setVisibility(View.GONE), 4000);
         }
         super.onHiddenChanged(hidden);
     }
