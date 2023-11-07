@@ -24,9 +24,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.http.Body;
+import retrofit2.http.Path;
 
 public class APIManager {
     APIInterface apiInterface = new APIClient().getClient().create(APIInterface.class);
@@ -491,15 +495,29 @@ public class APIManager {
         return new ArrayList<>();
     }
 
-//    public int deleteRule(Integer id) {
-//        Call<Void> call = apiInterface.deleteRule(id);
-//
-//        int returnCode = -1;
-//        try {
-//            Response<Void> response = call.execute();
-//            returnCode = response.code();
-//        } catch (IOException e) { e.printStackTrace(); }
-//
-//        return returnCode;
-//    }
+    public JsonObject uploadImage(@Body RequestBody image){
+        Call<JsonObject> call = apiInterface.uploadImage(image);
+
+        try {
+            Response<JsonObject> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return null;
+    }
+
+    public Float getPredict(@Path("assetId") String assetId){
+        Call<Float> call = apiInterface.getPredict(assetId);
+
+        try {
+            Response<Float> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+
+        return -1f;
+    }
 }

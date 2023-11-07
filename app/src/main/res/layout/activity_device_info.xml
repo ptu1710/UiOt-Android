@@ -65,7 +65,7 @@
         android:layout_marginStart="16dp"
         android:text="@string/public_read"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_parent" />
+        app:layout_constraintTop_toBottomOf="@+id/til_predict" />
 
     <ImageView
         android:id="@+id/iv_clear_parent"
@@ -79,7 +79,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/til_parent"
         android:src="@drawable/ic_cancel"
-        app:tint="@color/black" />
+        app:tint="@color/bg" />
+
+    <ImageView
+        android:id="@+id/iv_get_predict"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/cancel"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_send"
+        app:layout_constraintBottom_toBottomOf="@+id/til_predict"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/til_predict"
+        app:tint="@color/bg" />
 
     <Button
         android:id="@+id/btn_add_attribute"
@@ -90,7 +104,7 @@
         android:text="@string/add_attribute"
         android:textColor="@color/bg"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_parent" />
+        app:layout_constraintTop_toBottomOf="@+id/til_predict" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_attribute"
@@ -100,5 +114,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_add_attribute" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_predict"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Predict"
+        app:layout_constraintEnd_toStartOf="@+id/iv_get_predict"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/act_predict"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="none"
+            android:singleLine="true"
+            tools:ignore="LabelFor" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

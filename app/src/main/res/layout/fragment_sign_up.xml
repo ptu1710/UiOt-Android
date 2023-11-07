@@ -152,7 +152,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="48dp"
         android:backgroundTint="@color/bg"
-        android:text="Back"
+        android:text="SCAN"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/et_re_pwd" />

@@ -57,20 +57,20 @@ public class HomeActivity extends AppCompatActivity {
         InitViews();
         InitEvents();
 
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.w("API LOG", "Fetching FCM registration token failed", task.getException());
-                        return;
-                    }
-
-                    // Get new FCM registration token
-                    String token = task.getResult();
-
-                    new Thread(() -> new APIManager().registerDevice(token)).start();
-
-                    Log.d(Utils.LOG_TAG, "FCM token: " + token);
-                });
+//        FirebaseMessaging.getInstance().getToken()
+//                .addOnCompleteListener(task -> {
+//                    if (!task.isSuccessful()) {
+//                        Log.w("API LOG", "Fetching FCM registration token failed", task.getException());
+//                        return;
+//                    }
+//
+//                    // Get new FCM registration token
+//                    String token = task.getResult();
+//
+//                    new Thread(() -> new APIManager().registerDevice(token)).start();
+//
+//                    Log.d(Utils.LOG_TAG, "FCM token: " + token);
+//                });
 
         askNotificationPermission();
 

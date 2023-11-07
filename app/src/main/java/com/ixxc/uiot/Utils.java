@@ -13,7 +13,7 @@ public class Utils {
 
     public static String LOG_TAG = "API_LOG";
     public static String WIDGET_KEY = "WIDGET";
-    public static String baseUrl = "https://uiot.ixxc.dev/";
+    public static String baseUrl = "https://103.82.39.202/";
     public static final int UPDATE_DEVICE = 1001;
 
     // Delay handler for post delayed tasks

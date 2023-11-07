@@ -1,10 +1,13 @@
 package com.ixxc.uiot;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +22,33 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.JsonObject;
 import com.ixxc.uiot.API.APIManager;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.http.Multipart;
 
 public class SignUpFragment extends Fragment {
     TextView tv_verify;
@@ -35,18 +60,30 @@ public class SignUpFragment extends Fragment {
 
     WebView webView;
 
+    int SELECT_PICTURE = 200;
+
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
         boolean isOK = bundle.getBoolean("SIGNUP");
         if (isOK) {
             startActivity(new Intent(parentActivity, HomeActivity.class));
             parentActivity.finish();
+        } else {
+            boolean isOCR = bundle.getBoolean("OCR");
+            if (isOCR) {
+                Toast toast = Toast.makeText(parentActivity, "OCR", Toast.LENGTH_LONG);
+                toast.show();
+
+                et_usr.setText(bundle.getString("USER"));
+                et_email.setText(bundle.getString("PASS"));
+            }
         }
 
         return false;
     });
 
-    public SignUpFragment() { }
+    public SignUpFragment() {
+    }
 
     public SignUpFragment(LoginActivity activity) {
         this.parentActivity = activity;
@@ -100,13 +137,72 @@ public class SignUpFragment extends Fragment {
             }
         });
 
-        btn_back.setOnClickListener(view -> parentActivity.replaceFragment(parentActivity.welcome));
+        btn_back.setOnClickListener(view -> {
+//            parentActivity.replaceFragment(parentActivity.welcome);
+
+//            Intent i = new Intent();
+//            i.setAction(Intent.ACTION_PICK);
+//            i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+//
+//            chooseImageLauncher.launch(i);
+
+            startActivity(new Intent(parentActivity, FillForm.class));
+            parentActivity.finish();
+        });
 
         btn_resend.setOnClickListener(view -> {
             String script = "document.getElementsByTagName('a')[1].click();";
             webView.evaluateJavascript(script, null);
         });
     }
+
+    ActivityResultLauncher<Intent> chooseImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    int resourceId = getResources().getIdentifier("card", "raw", this.getContext().getPackageName());
+
+
+                    if (data != null) {
+//                        File file = new File(data.getData().getPath());
+                        InputStream in;
+                        byte[] buf;
+                        try {
+                            in = getResources().openRawResource(resourceId);
+                            buf = new byte[in.available()];
+                            while (true) {
+                                if (in.read(buf) == -1) break;
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        RequestBody requestBody = RequestBody
+                                .create(MediaType.parse("image/*"), buf);
+
+                        new Thread(() -> {
+                            JsonObject stringResult = new APIManager().uploadImage(requestBody);
+                            String text = String.valueOf(stringResult.get("extract")).replace("\"", "").replace("\\n", "\n").trim();
+                            List<String> lines = new ArrayList<>();
+                            Arrays.asList(text.split("\\n")).forEach(line -> {
+                                if (!line.equals("")) {
+                                    lines.add(line);
+                                    Log.d(Utils.LOG_TAG, line);
+                                }
+                            });
+
+                            Message message = handler.obtainMessage();
+                            Bundle bundle = new Bundle();
+                            bundle.putBoolean("OCR", true);
+                            bundle.putString("USER", lines.get(3));
+                            bundle.putString("PASS", lines.get(5));
+                            message.setData(bundle);
+                            handler.sendMessage(message);
+                        }).start();
+                    }
+                }
+            });
 
     @SuppressLint("SetJavaScriptEnabled")
     private void getToken(String usr, String email, String pwd, String rePwd) {
@@ -140,8 +236,7 @@ public class SignUpFragment extends Fragment {
                     view.evaluateJavascript(script1, s -> {
                         if (!s.equals("null")) signUpError(s);
                     });
-                }
-                else if (url.contains("VERIFY_EMAIL")) verifyEmail(email);
+                } else if (url.contains("VERIFY_EMAIL")) verifyEmail(email);
                 else if (url.contains("/manager/")) {
                     getUserToken(usr, pwd);
                     webView.stopLoading();
@@ -189,7 +284,7 @@ public class SignUpFragment extends Fragment {
         et_re_pwd.setEnabled(false);
         btn_sign_up.setText(R.string.refresh);
         btn_sign_up.setTag("refresh");
-}
+    }
 
     private void signUpError(String msg) {
         Log.d(Utils.LOG_TAG, "signUpError: " + msg);
