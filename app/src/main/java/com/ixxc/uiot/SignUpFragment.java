@@ -76,7 +76,7 @@ public class SignUpFragment extends Fragment {
         btn_back = v.findViewById(R.id.btn_back);
         et_usr = v.findViewById(R.id.et_usr);
         et_email = v.findViewById(R.id.et_email);
-        et_pwd = v.findViewById(R.id.et_pwd);
+        et_pwd = v.findViewById(R.id.et_user);
         et_re_pwd = v.findViewById(R.id.et_re_pwd);
         pb_loading = v.findViewById(R.id.pb_loading);
         tv_verify = v.findViewById(R.id.tv_verify);

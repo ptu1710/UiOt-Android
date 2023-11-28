@@ -81,12 +81,12 @@
         android:paddingEnd="12dp"
         android:text="vajcong09@gmail.com"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/et_pwd"
+        app:layout_constraintBottom_toTopOf="@+id/et_user"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/et_pwd"
+        android:id="@+id/et_user"
         android:layout_width="320dp"
         android:layout_height="48dp"
         android:layout_marginBottom="16dp"

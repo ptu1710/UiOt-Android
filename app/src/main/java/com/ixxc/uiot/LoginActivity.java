@@ -9,7 +9,7 @@ import android.os.Bundle;
 
 public class LoginActivity extends AppCompatActivity {
     public static boolean isDefaultPage;
-    public Fragment welcome, sign_in, sign_up;
+    public Fragment welcome, sign_in, sign_up, reset_pwd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
         welcome = new WelcomeFragment(this);
         sign_in = new SignInFragment(this);
         sign_up = new SignUpFragment(this);
-
+        reset_pwd = new ResetPwdFragment(this);
         isDefaultPage = true;
     }
 

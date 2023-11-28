@@ -66,14 +66,12 @@ public class SignInFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         InitViews(view);
         InitEvent();
-
-        btn_sign_in.performClick();
     }
 
     private void InitViews(View v) {
         btn_sign_in = v.findViewById(R.id.btn_sign_up_2);
         btn_back = v.findViewById(R.id.btn_back);
-        et_usr = v.findViewById(R.id.et_pwd);
+        et_usr = v.findViewById(R.id.et_user);
         et_pwd = v.findViewById(R.id.et_re_pwd);
         pb_loading = v.findViewById(R.id.pb_loading);
     }
@@ -121,7 +119,7 @@ public class SignInFragment extends Fragment {
 
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-//                handler.proceed();
+                handler.proceed();
             }
         });
 

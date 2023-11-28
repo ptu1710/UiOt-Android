@@ -37,6 +37,7 @@ public class APIManager {
                 Token token = response.body();
                 assert token != null;
                 APIClient.UserToken = token.access_token;
+                Log.d("API LOG", "getToken: " + APIClient.UserToken);
             }
             else { Log.d("API LOG", "getToken: Not Successful"); }
         } catch (IOException e) {

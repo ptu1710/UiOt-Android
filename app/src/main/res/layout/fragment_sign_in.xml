@@ -13,13 +13,13 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="56dp"
-        app:layout_constraintBottom_toTopOf="@+id/et_pwd"
+        app:layout_constraintBottom_toTopOf="@+id/et_user"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_uit" />
 
     <EditText
-        android:id="@+id/et_pwd"
+        android:id="@+id/et_user"
         android:layout_width="280dp"
         android:layout_height="52dp"
         android:layout_marginStart="16dp"
