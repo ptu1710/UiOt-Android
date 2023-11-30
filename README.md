@@ -9,7 +9,6 @@
 **1. Đăng nhập / Đăng ký**
 
 ![Đăng nhập](https://github.com/ptu1710/UiOt/blob/master/img/1.png?raw=true)
-![Đăng ký](https://github.com/ptu1710/UiOt/blob/master/img/2.png?raw=true)
 
 **2. Màn hình chính**
 
@@ -17,7 +16,6 @@
 
 **3. Danh sách thiết bị**
 
-![Danh sách thiết bị](https://github.com/ptu1710/UiOt/blob/master/img/4.png?raw=true)
 ![Danh sách thiết bị](https://github.com/ptu1710/UiOt/blob/master/img/5.png?raw=true)
 
 **4. Thêm thiết bị mới**
