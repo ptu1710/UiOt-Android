@@ -406,10 +406,9 @@ public class APIManager {
     }
 
     public static void getMetaItem(String parentId){
-        Call<List<MetaItem>> call = userAI.getMetaItem(parentId);
-
+        Call<JsonObject> call = userAI.getMetaItem(parentId);
         try {
-            Response<List<MetaItem>> response = call.execute();
+            Response<JsonObject> response = call.execute();
             if (response.isSuccessful()) MetaItem.setMetaItemList(response.body());
             else MetaItem.setMetaItemList(null);
         } catch (IOException e) { e.printStackTrace(); }

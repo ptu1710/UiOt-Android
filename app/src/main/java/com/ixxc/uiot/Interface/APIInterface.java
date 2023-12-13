@@ -152,7 +152,7 @@ public interface APIInterface {
 
     // Get metaItemDescriptors
     @GET("api/master/model/metaItemDescriptors")
-    Call<List<MetaItem>> getMetaItem(@Query("parentId") String parentId);
+    Call<JsonObject> getMetaItem(@Query("parentId") String parentId);
 
     // Get Maps data
     @GET("api/master/map")
