@@ -59,9 +59,9 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
     RecyclerView rv_attribute;
     EditText et_name;
     TextInputLayout til_parent, til_name;
-    ImageView iv_clear_parent, iv_get_predict;
+    ImageView iv_clear_parent;
     CheckBox cb_public;
-    AutoCompleteTextView act_parent, act_predict;
+    AutoCompleteTextView act_parent;
     Button btn_add_attribute;
     String device_id, parent_id;
     Device current_device;
@@ -119,10 +119,6 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             showAttributes();
         }
 
-        if (predictOK) {
-            act_predict.setText(String.valueOf(bundle.getFloat("VALUE")));
-        }
-
         return false;
     });
 
@@ -177,11 +173,9 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         rv_attribute = findViewById(R.id.rv_attribute);
         et_name = findViewById(R.id.til_device_name);
         act_parent = findViewById(R.id.act_parent);
-        act_predict = findViewById(R.id.act_predict);
         til_name = findViewById(R.id.til_username);
         til_parent = findViewById(R.id.til_parent);
         iv_clear_parent = findViewById(R.id.iv_clear_parent);
-        iv_get_predict = findViewById(R.id.iv_get_predict);
         toolbar = findViewById(R.id.action_bar);
         cb_public = findViewById(R.id.cb_public);
         btn_add_attribute = findViewById(R.id.btn_add_attribute);
@@ -255,18 +249,6 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             act_parent.setText("");
             parent_id = "";
             act_parent.clearFocus();
-        });
-
-        iv_get_predict.setOnClickListener(view -> {
-            new Thread(() -> {
-                Float value = api.getPredict(device_id);
-                Message message = handler.obtainMessage();
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("PREDICT_OK", true);
-                bundle.putFloat("VALUE", value);
-                message.setData(bundle);
-                handler.sendMessage(message);
-            }).start();
         });
     }
 

@@ -8,10 +8,10 @@ import com.google.gson.JsonObject;
 import com.ixxc.uiot.Interface.APIInterface;
 import com.ixxc.uiot.Model.CreateDeviceRes;
 import com.ixxc.uiot.Model.Device;
+import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
 import com.ixxc.uiot.Model.MetaItem;
-import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.Realm;
 import com.ixxc.uiot.Model.RegisterDevice;
 import com.ixxc.uiot.Model.Role;
@@ -21,10 +21,12 @@ import com.ixxc.uiot.Model.User;
 import com.ixxc.uiot.Utils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -398,10 +400,10 @@ public class APIManager {
     }
 
     public void getMetaItem(String parentId){
-        Call<List<MetaItem>> call = apiInterface.getMetaItem(parentId);
+        Call<JsonObject> call = apiInterface.getMetaItem(parentId);
 
         try {
-            Response<List<MetaItem>> response = call.execute();
+            Response<JsonObject> response = call.execute();
             if (response.isSuccessful()) MetaItem.setMetaItemList(response.body());
         } catch (IOException e) { e.printStackTrace(); }
 
@@ -508,16 +510,42 @@ public class APIManager {
         return null;
     }
 
-    public Float getPredict(@Path("assetId") String assetId){
-        Call<Float> call = apiInterface.getPredict(assetId);
+    public String getPredict(@Path("assetId") String assetId){
+        // Get current time in ISO 8601 format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        LocalDateTime now = LocalDateTime.now();
+        String formattedNow = now.format(formatter);
+
+        // Get this time yesterday in ISO 8601 format
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        LocalDateTime yesterday = LocalDateTime.ofInstant(cal.toInstant(), cal.getTimeZone().toZoneId());
+        String formattedYesterday = yesterday.format(formatter);
+
+        // {
+        //  "fromTimestamp": 0,
+        //  "toTimestamp": 0,
+        //  "fromTime": "2023-12-13T10:55:37.466Z",
+        //  "toTime": "2023-12-13T10:55:37.466Z",
+        //  "type": "string"
+        //}
+
+        JsonObject body = new JsonObject();
+        body.addProperty("fromTimestamp", 0);
+        body.addProperty("toTimestamp", 0);
+        body.addProperty("fromTime", formattedYesterday);
+        body.addProperty("toTime", formattedNow);
+        body.addProperty("type", "string");
+
+        Call<String> call = apiInterface.getPredict(assetId, body);
 
         try {
-            Response<Float> response = call.execute();
+            Response<String> response = call.execute();
             if (response.isSuccessful()) {
                 return response.body();
             }
         } catch (IOException e) { e.printStackTrace(); }
 
-        return -1f;
+        return "-1";
     }
 }

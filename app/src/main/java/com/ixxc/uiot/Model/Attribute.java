@@ -2,6 +2,7 @@ package com.ixxc.uiot.Model;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -16,12 +17,17 @@ public class Attribute {
     private final String type;
     private JsonObject meta;
     private JsonElement value = JsonParser.parseString("");
-    private final ArrayList<String> units = new ArrayList<>();
+    private final ArrayList<String> units;
     private final long timestamp;
     private final boolean optional;
     private boolean isExpanded = false;
 
-    public String getUnits() { return String.join(" ", units); }
+    public String getUnits() {
+        if (units == null || units.isEmpty()) {
+            return "";
+        }
+        return String.join(" ", units);
+    }
     public String getName() { return name; }
     public String getType() { return type; }
     public void setMeta(JsonObject meta) { this.meta = meta; }
@@ -37,6 +43,7 @@ public class Attribute {
         this.type = type;
         this.optional = false;
         this.timestamp = System.currentTimeMillis();
+        this.units = new ArrayList<>();
     }
 
     public static String formatJsonValue(String text){

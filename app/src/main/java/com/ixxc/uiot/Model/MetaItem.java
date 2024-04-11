@@ -25,8 +25,11 @@ public class MetaItem {
 
     public static List<MetaItem> getMetaItemList() { return metaItemList; }
 
-    public static void setMetaItemList(List<MetaItem> list) {
-        metaItemList = list;
+    public static void setMetaItemList(JsonObject list) {
+        metaItemList.clear();
+        for (String key : list.keySet()) {
+            metaItemList.add(new MetaItem(key, list.get(key).getAsJsonObject().get("type").getAsString()));
+        }
     }
 
     // find the metaItem by name

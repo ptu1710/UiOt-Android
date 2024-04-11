@@ -154,7 +154,7 @@ public interface APIInterface {
 
     // Get metaItemDescriptors
     @GET("api/master/model/metaItemDescriptors")
-    Call<List<MetaItem>> getMetaItem(@Query("parentId") String parentId);
+    Call<JsonObject> getMetaItem(@Query("parentId") String parentId);
 
     // Get Maps data
     @GET("api/master/map")
@@ -184,6 +184,7 @@ public interface APIInterface {
     @POST("api/master/extract")
     Call<JsonObject> uploadImage(@Body RequestBody image);
 
-    @POST("api/master/asset/datapoint/predict/{assetId}")
-    Call<Float> getPredict(@Path("assetId") String assetId);
+    @POST("api/master/asset/predicted/{assetId}/attribute/abc")
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    Call<String> getPredict(@Path("assetId") String assetId, @Body JsonObject body);
 }

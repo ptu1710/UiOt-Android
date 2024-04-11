@@ -1,7 +1,7 @@
 package com.ixxc.uiot;
 
-import
-        android.os.Bundle;
+import android.content.res.ColorStateList;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -93,11 +94,17 @@ public class HomeFragment extends Fragment {
 
             api.getDeviceModels();
 
-            if (Device.getDeviceList() == null || Device.getDeviceList().size() == 0) {
+            if (Device.getDeviceList() == null || Device.getDeviceList().isEmpty()) {
                 String queryString = "{ \"realm\": { \"name\": \"master\" }}";
                 JsonObject query = JsonParser.parseString(queryString).getAsJsonObject();
                 api.queryDevices(query);
             }
+
+            Device device = Device.getDeviceById("3bPcjYOCowRm94FK9UNm1i");
+            if (device != null) defaultDevice = new WeatherDevice(device);
+            else defaultDevice = new WeatherDevice();
+//
+//            defaultDevice.rainPredictValue = api.getPredict(defaultDevice.id);
 
             api.getMap();
 
@@ -114,10 +121,6 @@ public class HomeFragment extends Fragment {
     private void showBasicInfo() {
         me = User.getMe();
 
-        Device device = Device.getDeviceById("5zI6XqkQVSfdgOrZ1MyWEf");
-        if (device != null) defaultDevice = new WeatherDevice(device);
-        else defaultDevice = new WeatherDevice();
-
         tv_username.setText(me.username);
         tv_username.setVisibility(View.VISIBLE);
         pb_username.setVisibility(View.GONE);
@@ -130,7 +133,7 @@ public class HomeFragment extends Fragment {
         String dow = Utils.formatString(DayOfWeek.from(java.time.LocalDate.now()).toString().toLowerCase());
         String temper = String.join("", defaultDevice.temperature.getValueString(), getResources().getString(R.string.celsius));
 //        String weather_desc = Utils.formatString(defaultDevice.description.getValueString());
-//        String max_min_temper = String.join(" / ", defaultDevice.minTemperature.getValueString(), defaultDevice.minTemperature.getValueString());
+//        String max_min_temper = String.join(" / ", defaultDevice.minTemperature.getValueString() + getResources().getString(R.string.celsius), defaultDevice.maxTemperature.getValueString() + getResources().getString(R.string.celsius));
 
         tv_dow.setText(dow);
         tv_temper.setText(temper);
@@ -144,6 +147,17 @@ public class HomeFragment extends Fragment {
         // Sun Widget
         View sunWid = LayoutInflater.from(parentActivity).inflate(R.layout.sun_widget, layout_main, false);
         layout_main.addView(sunWid);
+
+        View rainPredictWid = LayoutInflater.from(parentActivity).inflate(R.layout.rain_predict_widget, layout_main, false);
+        ImageView iv_WidIcon = rainPredictWid.findViewById(R.id.iv_icon);
+        iv_WidIcon.setImageDrawable(defaultDevice.getIconDrawable(parentActivity));
+
+        ProgressBar pb_rain = rainPredictWid.findViewById(R.id.pb_loading);
+        int colorId = defaultDevice.getColorId(parentActivity);
+        ColorStateList colorStateList = ColorStateList.valueOf(colorId);
+        pb_rain.setIndeterminateTintList(colorStateList);
+
+        layout_main.addView(rainPredictWid);
 
         // Get saved preferences for widgets
         // One widget info is stored in one string, example: "5zI6XqkQVSfdgOrZ1MyWEf-humidity"
@@ -169,7 +183,9 @@ public class HomeFragment extends Fragment {
             Attribute attribute = attributes.stream().filter(attr -> attr.getName().equals(attributeName)).findFirst().orElse(null);
             if (attribute == null) continue;
 
-            String unitString = DeviceModel.getDeviceModel(device.type).getAttributeModel(attributeName).getUnits();
+            DeviceModel deviceModel = DeviceModel.getDeviceModel(device.type);
+            Attribute attributeModel = deviceModel.getAttributeModel(attributeName);
+            String unitString = !attribute.getUnits().isEmpty() ? attribute.getUnits() : attributeModel != null ? attributeModel.getUnits() : "";
 
             View humWid = LayoutInflater.from(parentActivity).inflate(R.layout.humidity_widget, layout_main, false);
             ImageView iv_icon = humWid.findViewById(R.id.iv_icon);
@@ -196,6 +212,24 @@ public class HomeFragment extends Fragment {
         shimmerFrameLayout.setVisibility(View.GONE);
 
         scrollView.setVisibility(View.VISIBLE);
+
+        // Call Rain Prediction
+        new Thread(() -> {
+            APIManager api = new APIManager();
+            defaultDevice.rainPredictValue = api.getPredict(defaultDevice.id);
+            handler.post(this::initRainWidget);
+        }).start();
+    }
+
+    private void initRainWidget() {
+        // get view at index 1
+        View rainPredictWid = layout_main.getChildAt(1);
+        ImageView iv_rain = rainPredictWid.findViewById(R.id.imageView2);
+        iv_rain.setImageDrawable(ResourcesCompat.getDrawable(getResources(), defaultDevice.rainPredictValue.equals("0") ? R.drawable.cloudy : R.drawable.rain, null));
+        iv_rain.setVisibility(View.VISIBLE);
+
+        ProgressBar pb_rain = rainPredictWid.findViewById(R.id.pb_loading);
+        pb_rain.setVisibility(View.GONE);
     }
 
     private LinearLayout createMediumLayout() {

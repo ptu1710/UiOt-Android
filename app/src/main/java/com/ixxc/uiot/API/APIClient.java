@@ -68,6 +68,11 @@ public class APIClient {
                 return chain.proceed(newRequest);
             });
 
+            // Set timeout
+            builder.connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS);
+            builder.readTimeout(30, java.util.concurrent.TimeUnit.SECONDS);
+            builder.writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS);
+
             return builder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);
