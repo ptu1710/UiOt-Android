@@ -21,10 +21,10 @@ import com.ixxc.uiot.Model.User;
 import com.ixxc.uiot.Utils;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import okhttp3.RequestBody;
@@ -510,17 +510,11 @@ public class APIManager {
         return null;
     }
 
-    public String getPredict(@Path("assetId") String assetId){
-        // Get current time in ISO 8601 format
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        LocalDateTime now = LocalDateTime.now();
-        String formattedNow = now.format(formatter);
-
-        // Get this time yesterday in ISO 8601 format
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1);
-        LocalDateTime yesterday = LocalDateTime.ofInstant(cal.toInstant(), cal.getTimeZone().toZoneId());
-        String formattedYesterday = yesterday.format(formatter);
+    public String getPredictedRain(@Path("assetId") String assetId){
+        // Get UTC time in ISO 8601 format
+        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+        String formattedUtcTime = utc.format(DateTimeFormatter.ISO_INSTANT);
+        System.out.println(formattedUtcTime);
 
         // {
         //  "fromTimestamp": 0,
@@ -533,19 +527,19 @@ public class APIManager {
         JsonObject body = new JsonObject();
         body.addProperty("fromTimestamp", 0);
         body.addProperty("toTimestamp", 0);
-        body.addProperty("fromTime", formattedYesterday);
-        body.addProperty("toTime", formattedNow);
+        body.addProperty("fromTime", formattedUtcTime);
+        body.addProperty("toTime", formattedUtcTime);
         body.addProperty("type", "string");
 
-        Call<String> call = apiInterface.getPredict(assetId, body);
+        Call<String> call = apiInterface.getPredictedRain(assetId, body);
 
-        try {
+        /*try {
             Response<String> response = call.execute();
             if (response.isSuccessful()) {
                 return response.body();
             }
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) { e.printStackTrace(); }*/
 
-        return "-1";
+        return "0";
     }
 }

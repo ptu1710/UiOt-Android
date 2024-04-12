@@ -6,7 +6,6 @@ import com.ixxc.uiot.Model.CreateDeviceRes;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
-import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.Realm;
 import com.ixxc.uiot.Model.RegisterDevice;
@@ -17,7 +16,6 @@ import com.ixxc.uiot.Model.User;
 
 import java.util.List;
 
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -27,10 +25,8 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
-import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -184,7 +180,7 @@ public interface APIInterface {
     @POST("api/master/extract")
     Call<JsonObject> uploadImage(@Body RequestBody image);
 
-    @POST("api/master/asset/predicted/{assetId}/attribute/abc")
+    @POST("api/master/asset/predicted/{assetId}/rainTomorrow")
     @Headers({"Content-Type: application/json", "Accept: application/json"})
-    Call<String> getPredict(@Path("assetId") String assetId, @Body JsonObject body);
+    Call<String> getPredictedRain(@Path("assetId") String assetId, @Body JsonObject body);
 }

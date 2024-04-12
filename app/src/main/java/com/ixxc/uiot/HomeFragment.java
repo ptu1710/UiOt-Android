@@ -148,16 +148,16 @@ public class HomeFragment extends Fragment {
         View sunWid = LayoutInflater.from(parentActivity).inflate(R.layout.sun_widget, layout_main, false);
         layout_main.addView(sunWid);
 
-        View rainPredictWid = LayoutInflater.from(parentActivity).inflate(R.layout.rain_predict_widget, layout_main, false);
-        ImageView iv_WidIcon = rainPredictWid.findViewById(R.id.iv_icon);
+        View rainTomorrow = LayoutInflater.from(parentActivity).inflate(R.layout.rain_predict_widget, layout_main, false);
+        ImageView iv_WidIcon = rainTomorrow.findViewById(R.id.iv_icon);
         iv_WidIcon.setImageDrawable(defaultDevice.getIconDrawable(parentActivity));
 
-        ProgressBar pb_rain = rainPredictWid.findViewById(R.id.pb_loading);
+        ProgressBar pb_rain = rainTomorrow.findViewById(R.id.pb_loading);
         int colorId = defaultDevice.getColorId(parentActivity);
         ColorStateList colorStateList = ColorStateList.valueOf(colorId);
         pb_rain.setIndeterminateTintList(colorStateList);
 
-        layout_main.addView(rainPredictWid);
+        layout_main.addView(rainTomorrow);
 
         // Get saved preferences for widgets
         // One widget info is stored in one string, example: "5zI6XqkQVSfdgOrZ1MyWEf-humidity"
@@ -213,23 +213,35 @@ public class HomeFragment extends Fragment {
 
         scrollView.setVisibility(View.VISIBLE);
 
+        handler.post(this::initRainWidget);
+
         // Call Rain Prediction
-        new Thread(() -> {
+        /*new Thread(() -> {
             APIManager api = new APIManager();
-            defaultDevice.rainPredictValue = api.getPredict(defaultDevice.id);
-            handler.post(this::initRainWidget);
-        }).start();
+            defaultDevice.rainPredictValue = api.getPredictedRain(defaultDevice.id);
+        }).start();*/
     }
 
     private void initRainWidget() {
         // get view at index 1
         View rainPredictWid = layout_main.getChildAt(1);
         ImageView iv_rain = rainPredictWid.findViewById(R.id.imageView2);
-        iv_rain.setImageDrawable(ResourcesCompat.getDrawable(getResources(), defaultDevice.rainPredictValue.equals("0") ? R.drawable.cloudy : R.drawable.rain, null));
+
+        int rainPercent;
+        try {
+            rainPercent = Integer.parseInt(defaultDevice.rainTomorrow.getValueString());
+        } catch (Exception ex) {
+            rainPercent = 0;
+        }
+
+        iv_rain.setImageDrawable(ResourcesCompat.getDrawable(getResources(), rainPercent <= 50 ? R.drawable.cloudy : R.drawable.rain, null));
         iv_rain.setVisibility(View.VISIBLE);
 
         ProgressBar pb_rain = rainPredictWid.findViewById(R.id.pb_loading);
         pb_rain.setVisibility(View.GONE);
+
+        TextView tv_value = rainPredictWid.findViewById(R.id.tv_value);
+        tv_value.setText(String.valueOf(rainPercent));
     }
 
     private LinearLayout createMediumLayout() {
