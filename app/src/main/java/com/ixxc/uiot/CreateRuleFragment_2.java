@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -35,6 +34,7 @@ import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.Rule;
 import com.ixxc.uiot.Model.RuleValue;
 import com.ixxc.uiot.Model.User;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,7 +148,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.getName()))
+                        .map(attribute -> Util.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -164,7 +164,7 @@ public class CreateRuleFragment_2 extends Fragment {
                         .collect(Collectors.toList());
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.getName()))
+                        .map(attribute -> Util.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter2 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -173,7 +173,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 act_attribute.setAdapter(adapter2);
 
                 parentActivity.rule.setDeviceIds(Collections.singletonList(device.id));
-                Log.d(Utils.LOG_TAG, "setDeviceIds: " + device.id);
+                Log.d(Util.LOG_TAG, "setDeviceIds: " + device.id);
             }
         });
     }
@@ -221,7 +221,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.getName()))
+                        .map(attribute -> Util.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -237,7 +237,7 @@ public class CreateRuleFragment_2 extends Fragment {
                         .collect(Collectors.toList());
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.getName()))
+                        .map(attribute -> Util.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -245,7 +245,7 @@ public class CreateRuleFragment_2 extends Fragment {
                 act_attribute.setAdapter(adapter);
 
                 parentActivity.rule.setDeviceIds(Collections.singletonList(device.id));
-                Log.d(Utils.LOG_TAG, "setDeviceIds: " + device.id);
+                Log.d(Util.LOG_TAG, "setDeviceIds: " + device.id);
             }
         });
 
@@ -287,7 +287,7 @@ public class CreateRuleFragment_2 extends Fragment {
 
             //parentActivity.rule.setAttributeName(attributes.get(i).getName());
             parentActivity.rule.setAttributeName_then(attributes.get(i).getName());
-            Log.d(Utils.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
+            Log.d(Util.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
         });
 
         btn_message.setOnClickListener(view -> OpenMessageDialog());
@@ -340,7 +340,7 @@ public class CreateRuleFragment_2 extends Fragment {
     private void setValue(String chose) {
         if(chose != null){
             RuleValue ruleValue = new RuleValue(Rule.rule_selected.rules);
-            Log.d(Utils.LOG_TAG,"Types then: " + ruleValue.types_then);
+            Log.d(Util.LOG_TAG,"Types then: " + ruleValue.types_then);
 
             selectedModel = ruleValue.types_then;
             if(ruleValue.action_then.equals("notification")){
@@ -354,7 +354,7 @@ public class CreateRuleFragment_2 extends Fragment {
             }
 
             DeviceArrayAdapter adapter = new DeviceArrayAdapter(parentActivity, R.layout.dropdown_item_1, models, true);
-            act_actions.setText(Utils.formatString(selectedModel));
+            act_actions.setText(Util.formatString(selectedModel));
             act_actions.setAdapter(adapter);
 
 
@@ -384,9 +384,9 @@ public class CreateRuleFragment_2 extends Fragment {
                     attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
                     List<String> attributeNames = attributes.stream()
-                            .map(attribute -> Utils.formatString(attribute.getName()))
+                            .map(attribute -> Util.formatString(attribute.getName()))
                             .collect(Collectors.toList());
-                    int i_attribute = attributeNames.indexOf(Utils.capitalizeFirst(ruleValue.attribute_then));
+                    int i_attribute = attributeNames.indexOf(Util.formatString(ruleValue.attribute_then));
                     ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
                     act_attribute.setHint(R.string.attribute);
                     act_attribute.setText(attributeNames.get(i_attribute));
@@ -395,16 +395,11 @@ public class CreateRuleFragment_2 extends Fragment {
                     value = ruleValue.value_then;
                     setValueLayout(act_attribute.getText().toString());
             }
-
-
-
         }
-
-
     }
 
     private void OpenMessageDialog() {
-        final Dialog dialog = new Dialog(getContext());
+        final Dialog dialog = new Dialog(this.parentActivity);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.message_dialog_layout);
 

@@ -42,6 +42,7 @@ import com.ixxc.uiot.Adapter.ParamsAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.MetaItem;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,11 +74,11 @@ public class EditAttributeActivity extends AppCompatActivity {
 
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(Utils.formatString(attribute.getName()));
+        actionBar.setTitle(Util.formatString(attribute.getName()));
 
         tv_name.setText(attribute.getName());
         tv_type.setText(attribute.getType());
-        et_value.setInputType(Utils.getInputType(attribute.getType()));
+        et_value.setInputType(Util.getInputType(attribute.getType()));
         et_value.setText(attribute.getValueString());
 
         ibtn_copy.setImageTintList(ColorStateList.valueOf(currentColor));
@@ -213,7 +214,7 @@ public class EditAttributeActivity extends AppCompatActivity {
             case "boolean":
                 CheckBox cb = new CheckBox(this);
                 cb.setButtonTintList(ColorStateList.valueOf(currentColor));
-                cb.setText(Utils.formatString(name));
+                cb.setText(Util.formatString(name));
                 cb.setChecked(value.equals("true"));
                 cb.setLayoutParams(params);
                 cb.setTag(name);
@@ -246,12 +247,12 @@ public class EditAttributeActivity extends AppCompatActivity {
 
         TextInputLayout til = new TextInputLayout(this);
         til.setTag(param);
-        til.setHint(Utils.formatString(param));
+        til.setHint(Util.formatString(param));
         til.setLayoutParams(layoutParams);
 
         TextInputEditText et = new TextInputEditText(til.getContext());
         et.setTag("et_" + param);
-        et.setInputType(Utils.getInputType(param));
+        et.setInputType(Util.getInputType(param));
 
         switch (param) {
             case "valueFilters":
@@ -444,15 +445,15 @@ public class EditAttributeActivity extends AppCompatActivity {
 
         LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                Utils.dpToPx(this, 120)
+                Util.dpToPx(this, 120)
         );
 
-        til1.setHint(Utils.formatString(name));
+        til1.setHint(Util.formatString(name));
         til1.setTag(name);
         til1.setLayoutParams(params);
 
         TextInputEditText et1 = new TextInputEditText(til1.getContext());
-        et1.setInputType(Utils.getInputType(type));
+        et1.setInputType(Util.getInputType(type));
         et1.setText(value);
         et1.addTextChangedListener(new TextWatcher() {
             @Override
@@ -486,7 +487,7 @@ public class EditAttributeActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.done) {
             et_value.clearFocus();
             attribute.setMeta(attributeMeta);
-            Log.d(Utils.LOG_TAG, "onOptionsItemSelected: " + attribute.toJson());
+            Log.d(Util.LOG_TAG, "onOptionsItemSelected: " + attribute.toJson());
             setResult(RESULT_OK, new Intent().putExtra("ATTRIBUTE", String.valueOf(attribute.toJson())));
             finish();
             return true;

@@ -1,12 +1,9 @@
 package com.ixxc.uiot.API;
 
 import com.google.gson.GsonBuilder;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
 
-import java.io.InputStream;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -81,7 +78,7 @@ public class APIClient {
 
     public Retrofit getClient() {
         return new Retrofit.Builder()
-                .baseUrl(Utils.baseUrl)
+                .baseUrl(Util.baseUrl)
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().serializeNulls().create()))
                 .client(getOkHttpClient())
                 .build();

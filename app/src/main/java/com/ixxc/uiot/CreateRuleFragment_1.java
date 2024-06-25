@@ -22,6 +22,7 @@ import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.Rule;
 import com.ixxc.uiot.Model.RuleValue;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.Collections;
 import java.util.List;
@@ -103,16 +104,16 @@ public class CreateRuleFragment_1 extends Fragment {
             iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
 
             parentActivity.rule.setRuleTypes(selectedModel);
-            Log.d(Utils.LOG_TAG, "setRuleTypes: " + selectedModel);
+            Log.d(Util.LOG_TAG, "setRuleTypes: " + selectedModel);
         });
 
         act_devices.setOnItemClickListener((adapterView, view, i, l) -> {
             if (i == 0) {
-                Log.d(Utils.LOG_TAG, selectedModel);
+                Log.d(Util.LOG_TAG, selectedModel);
                 attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.getName()))
+                        .map(attribute -> Util.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -128,7 +129,7 @@ public class CreateRuleFragment_1 extends Fragment {
                         .collect(Collectors.toList());
 
                 List<String> attributeNames = attributes.stream()
-                        .map(attribute -> Utils.formatString(attribute.getName()))
+                        .map(attribute -> Util.formatString(attribute.getName()))
                         .collect(Collectors.toList());
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
@@ -136,7 +137,7 @@ public class CreateRuleFragment_1 extends Fragment {
                 act_attribute.setAdapter(adapter);
 
                 parentActivity.rule.setDeviceIds(Collections.singletonList(device.id));
-                Log.d(Utils.LOG_TAG, "setDeviceIds: " + device.id);
+                Log.d(Util.LOG_TAG, "setDeviceIds: " + device.id);
             }
         });
 
@@ -151,7 +152,7 @@ public class CreateRuleFragment_1 extends Fragment {
             act_operator.setAdapter(adapter);
 
             parentActivity.rule.setAttributeName(attributes.get(i).getName());
-            Log.d(Utils.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
+            Log.d(Util.LOG_TAG, "setAttributeName: " + attributes.get(i).getName());
         });
 
         act_operator.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -179,8 +180,8 @@ public class CreateRuleFragment_1 extends Fragment {
             // TODO: get value after typing enter
             tie_value.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    Log.d(Utils.LOG_TAG, "Value_attr " + Objects.requireNonNull(tie_value.getText()));
-                    parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
+                    Log.d(Util.LOG_TAG, "Value_attr " + Objects.requireNonNull(tie_value.getText()));
+                    parentActivity.rule.setAttributeValue(Util.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
             });
 
@@ -195,9 +196,9 @@ public class CreateRuleFragment_1 extends Fragment {
 
             tie_rangeValue.setOnFocusChangeListener((view1, focused) -> {
                 if(!focused){
-                    Log.d(Utils.LOG_TAG, "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()));
+                    Log.d(Util.LOG_TAG, "Value_range " + Objects.requireNonNull(tie_rangeValue.getText()));
                     parentActivity.rule.setRange_value(Double.parseDouble(tie_rangeValue.getText().toString()));
-                    parentActivity.rule.setAttributeValue(Utils.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
+                    parentActivity.rule.setAttributeValue(Util.getInputType(selectedValueType), act_operator.getText().toString(), Objects.requireNonNull(tie_value.getText()).toString());
                 }
             });
 
@@ -210,7 +211,7 @@ public class CreateRuleFragment_1 extends Fragment {
                 return false;
             });
 
-            Log.d(Utils.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
+            Log.d(Util.LOG_TAG, "setAttributeValue: " + selectedValueType + " - " + act_operator.getText());
         });
 
         setValue(parentActivity.chose);
@@ -222,13 +223,13 @@ public class CreateRuleFragment_1 extends Fragment {
     private void setValue(String chose) {
         if(chose != null){
             RuleValue ruleValue = new RuleValue(Rule.rule_selected.rules);
-            Log.d(Utils.LOG_TAG,"Types: " + ruleValue.types);
+            Log.d(Util.LOG_TAG,"Types: " + ruleValue.types);
 
             selectedModel = ruleValue.types;
 
             setDeviceAdapter(selectedModel);
 
-            act_models.setText(Utils.formatString(selectedModel));
+            act_models.setText(Util.formatString(selectedModel));
 
             Device device = new Device(selectedModel);
             iv_add.setImageDrawable(device.getIconDrawable(parentActivity));
@@ -244,9 +245,9 @@ public class CreateRuleFragment_1 extends Fragment {
             attributes = DeviceModel.getDeviceModel(selectedModel).attributeDescriptors;
 
             List<String> attributeNames = attributes.stream()
-                    .map(attribute -> Utils.formatString(attribute.getName()))
+                    .map(attribute -> Util.formatString(attribute.getName()))
                     .collect(Collectors.toList());
-            int i_attribute = attributeNames.indexOf(Utils.capitalizeFirst(ruleValue.attribute));
+            int i_attribute = attributeNames.indexOf(Util.capitalizeFirst(ruleValue.attribute));
             ArrayAdapter<String> adapter1 = new ArrayAdapter<>(parentActivity, android.R.layout.simple_spinner_dropdown_item, attributeNames);
             act_attribute.setHint(R.string.attribute);
             act_attribute.setText(attributeNames.get(i_attribute));
@@ -262,10 +263,10 @@ public class CreateRuleFragment_1 extends Fragment {
             if(ruleValue.operator != null){
                 if(ruleValue.negate == null || !ruleValue.negate){
                     if(ruleValue.operator.equals("LESS_EQUALS") || ruleValue.operator.equals("GREATER_EQUALS")){
-                        act_operator.setText(Utils.capitalizeFirst(ruleValue.operator).split(" ")[0] + " than or equal to");
+                        act_operator.setText(Util.capitalizeFirst(ruleValue.operator).split(" ")[0] + " than or equal to");
                     }
                     else {
-                        act_operator.setText(Utils.capitalizeFirst(ruleValue.operator));
+                        act_operator.setText(Util.capitalizeFirst(ruleValue.operator));
                     }
 
                 }
@@ -278,7 +279,7 @@ public class CreateRuleFragment_1 extends Fragment {
                             act_operator.setText("Not equals");
                             break;
                         default:
-                            act_operator.setText(Utils.capitalizeFirst(ruleValue.operator));
+                            act_operator.setText(Util.capitalizeFirst(ruleValue.operator));
                     }
                 }
             }

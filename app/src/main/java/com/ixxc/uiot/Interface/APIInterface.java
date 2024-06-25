@@ -161,7 +161,7 @@ public interface APIInterface {
     Call<RegisterDevice> registerDevice(@Body JsonObject body);
 
     // Get Data point
-    @POST("api/master/asset/datapoint/{assetId}/attribute/{attributeName}")
+    @POST("api/master/asset/datapoint/{assetId}/{attributeName}")
     @Headers("Content-Type: application/json")
     Call<JsonArray> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName, @Body JsonObject body);
 

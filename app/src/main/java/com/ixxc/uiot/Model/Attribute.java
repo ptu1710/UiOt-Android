@@ -2,13 +2,12 @@ package com.ixxc.uiot.Model;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.ArrayList;
 
@@ -175,7 +174,7 @@ public class Attribute {
     }
 
     public boolean isInWidgets(Context ctx, String deviceId) {
-        String widgetString = Utils.getPreferences(ctx, Utils.WIDGET_KEY);
+        String widgetString = Util.getPreferences(ctx, Util.WIDGET_KEY);
         JsonArray widgets = TextUtils.isEmpty(widgetString) ? new JsonArray() : JsonParser.parseString(widgetString).getAsJsonArray();
         return widgets.contains(JsonParser.parseString(String.join("-", deviceId, name)));
     }

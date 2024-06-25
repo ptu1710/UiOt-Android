@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -19,8 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.ixxc.uiot.API.APIManager;
+import com.ixxc.uiot.Utils.Util;
 
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
@@ -93,7 +91,7 @@ public class HomeActivity extends AppCompatActivity {
         mapsFrag = new MapsFragment(this);
         userFrag = new AdminFragment(this);
 
-        Utils.delayHandler = new Handler();
+        Util.delayHandler = new Handler();
     }
 
     private void InitViews() {

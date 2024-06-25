@@ -48,6 +48,7 @@ import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.Model.User;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,7 +96,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
             }
 
             if (updateCase == 1) {
-                setResult(Utils.UPDATE_DEVICE);
+                setResult(Util.UPDATE_DEVICE);
                 finish();
             }
         }
@@ -256,10 +257,11 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         toolbar.setBackgroundColor(currentColor);
         cb_public.setButtonTintList(ColorStateList.valueOf(currentColor));
         btn_add_attribute.setTextColor(currentColor);
+        iv_clear_parent.setColorFilter(currentColor);
     }
 
     private boolean addAttribute(String type, String name, String valueType) {
-        if (type.equals("Custom") && (name.equals("") || valueType.equals(""))) return false;
+        if (type.equals("Custom") && (name.isEmpty() || valueType.isEmpty())) return false;
 
         Attribute attribute;
         if (type.equals("Custom")) attribute = new Attribute(name, valueType);
@@ -370,7 +372,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements MetaItemLis
         body.addProperty("realm", current_device.realm);
         body.addProperty("type", current_device.type);
 
-        Log.d(Utils.LOG_TAG, body.toString());
+        Log.d(Util.LOG_TAG, body.toString());
 
         // Commit device changes here
         new Thread(() -> {

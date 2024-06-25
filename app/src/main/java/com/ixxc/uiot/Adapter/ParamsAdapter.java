@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.Interface.ParamItemListener;
 import com.ixxc.uiot.R;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +47,7 @@ public class ParamsAdapter extends RecyclerView.Adapter<ParamsAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ParamsAdapter.ViewHolder holder, int position) {
         String name = paramsKey.get(position);
-        holder.cb_item.setText(Utils.formatString(name));
+        holder.cb_item.setText(Util.formatString(name));
         holder.cb_item.setChecked(agentLinkObject.has(name));
         holder.cb_item.setButtonTintList(ColorStateList.valueOf(color));
         holder.cb_item.setOnClickListener(view -> onParamItemClick(holder.cb_item.isChecked(), name));

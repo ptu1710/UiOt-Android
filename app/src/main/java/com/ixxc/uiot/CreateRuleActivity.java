@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Model.CreateRuleReq;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +46,7 @@ public class CreateRuleActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         chose = intent.getStringExtra("CHOSE");
-        Log.d(Utils.LOG_TAG, "chose: " + chose);
+        Log.d(Util.LOG_TAG, "chose: " + chose);
 
         new Thread(api::getDeviceModels).start();
 
@@ -105,7 +106,7 @@ public class CreateRuleActivity extends AppCompatActivity {
         new Thread(() -> {
             int ruleId = api.createRule(jsonObject);
 
-            Log.d(Utils.LOG_TAG, "Rule ID: " + ruleId);
+            Log.d(Util.LOG_TAG, "Rule ID: " + ruleId);
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();

@@ -19,6 +19,7 @@ import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.RuleAdapter;
 import com.ixxc.uiot.Interface.RecyclerViewItemListener;
 import com.ixxc.uiot.Model.Rule;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class RulesActivity extends AppCompatActivity {
 
         mGetContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result != null && result.getResultCode() == RESULT_OK) {
-                Log.d(Utils.LOG_TAG, "onCreate: HERE");
+                Log.d(Util.LOG_TAG, "onCreate: HERE");
                 srl_rules.setRefreshing(true);
                 queryRules("UPDATE_RULES");
             }

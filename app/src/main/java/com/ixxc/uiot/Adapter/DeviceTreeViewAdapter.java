@@ -17,7 +17,7 @@ import com.amrdeveloper.treeview.TreeViewHolderFactory;
 import com.ixxc.uiot.DeviceInfoActivity;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.R;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -102,11 +102,11 @@ public class DeviceTreeViewAdapter extends TreeViewAdapter {
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    Utils.dpToPx(ctx, 54));
+                    Util.dpToPx(ctx, 54));
 
-            int left = Utils.dpToPx(ctx, 16 * (node.getLevel() + 1));
-            int right = Utils.dpToPx(ctx, 16);
-            int others = Utils.dpToPx(ctx, 6);
+            int left = Util.dpToPx(ctx, 16 * (node.getLevel() + 1));
+            int right = Util.dpToPx(ctx, 16);
+            int others = Util.dpToPx(ctx, 6);
 
             params.setMargins(left, others, right, others);
             cv_device.setLayoutParams(params);

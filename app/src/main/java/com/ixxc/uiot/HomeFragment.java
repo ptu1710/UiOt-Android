@@ -31,6 +31,7 @@ import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.User;
 import com.ixxc.uiot.Model.WeatherDevice;
+import com.ixxc.uiot.Utils.Util;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -130,7 +131,7 @@ public class HomeFragment extends Fragment {
         TextView tv_weather_desc = layout_top.findViewById(R.id.tv_weather_desc);
         TextView tv_max_min_temper = layout_top.findViewById(R.id.tv_max_min_temper);
 
-        String dow = Utils.formatString(DayOfWeek.from(java.time.LocalDate.now()).toString().toLowerCase());
+        String dow = Util.formatString(DayOfWeek.from(java.time.LocalDate.now()).toString().toLowerCase());
         String temper = String.join("", defaultDevice.temperature.getValueString(), getResources().getString(R.string.celsius));
 //        String weather_desc = Utils.formatString(defaultDevice.description.getValueString());
 //        String max_min_temper = String.join(" / ", defaultDevice.minTemperature.getValueString() + getResources().getString(R.string.celsius), defaultDevice.maxTemperature.getValueString() + getResources().getString(R.string.celsius));
@@ -161,7 +162,7 @@ public class HomeFragment extends Fragment {
 
         // Get saved preferences for widgets
         // One widget info is stored in one string, example: "5zI6XqkQVSfdgOrZ1MyWEf-humidity"
-        String widgetString = Utils.getPreferences(parentActivity, Utils.WIDGET_KEY);
+        String widgetString = Util.getPreferences(parentActivity, Util.WIDGET_KEY);
 
         int count = 1;
         LinearLayout.LayoutParams smallWidParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -250,7 +251,7 @@ public class HomeFragment extends Fragment {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        int sideMargin = Utils.dpToPx(parentActivity, 16);
+        int sideMargin = Util.dpToPx(parentActivity, 16);
 
         params.setMargins(sideMargin, 0, sideMargin, 0);
 

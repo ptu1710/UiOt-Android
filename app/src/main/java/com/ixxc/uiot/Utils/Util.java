@@ -1,14 +1,15 @@
-package com.ixxc.uiot;
+package com.ixxc.uiot.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Handler;
 import android.text.InputType;
 import android.text.TextUtils;
 
 import androidx.core.content.res.ResourcesCompat;
 
-public class Utils {
+public class Util {
     // TODO: Reduce the number of static variables and methods
 
     public static String LOG_TAG = "API_LOG";
@@ -113,5 +114,22 @@ public class Utils {
         SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 //        sharedPreferences.edit().clear().apply();
         return sharedPreferences.getString(key, "");
+    }
+
+    public static ColorStateList getColorStateList(int currentColor) {
+        return new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_enabled},
+                        new int[]{-android.R.attr.state_enabled},
+                        new int[]{-android.R.attr.state_checked},
+                        new int[]{android.R.attr.state_pressed}
+                },
+                new int[]{
+                        currentColor,
+                        currentColor,
+                        currentColor,
+                        currentColor
+                }
+        );
     }
 }

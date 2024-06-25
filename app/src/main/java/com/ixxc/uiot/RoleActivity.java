@@ -29,6 +29,7 @@ import com.google.gson.JsonObject;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.RoleItemAdapter;
 import com.ixxc.uiot.Model.Role;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.List;
 
@@ -243,7 +244,7 @@ public class RoleActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "No permissions have been checked!", Toast.LENGTH_LONG).show();
         }
 
-        Log.d(Utils.LOG_TAG, body.toString());
+        Log.d(Util.LOG_TAG, body.toString());
     }
 
     private void cancelAdd(boolean isCancel) {

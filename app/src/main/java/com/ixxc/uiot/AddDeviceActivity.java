@@ -28,6 +28,7 @@ import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.CreateDeviceReq;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.DeviceModel;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,7 +63,7 @@ public class AddDeviceActivity extends AppCompatActivity {
         boolean createDevice = bundle.getBoolean("CREATE_DEV");
 
         if (createDevice) {
-            setResult(Utils.UPDATE_DEVICE);
+            setResult(Util.UPDATE_DEVICE);
             finish();
             Toast.makeText(this, "Device created!", Toast.LENGTH_LONG).show();
         }
@@ -144,7 +145,7 @@ public class AddDeviceActivity extends AppCompatActivity {
         act_device.setOnItemClickListener((adapterView, view, i, l) -> {
             selectedOptional.clear();
             selectedDevice = adapterView.getAdapter().getItem(i).toString();
-            act_device.setText(Utils.formatString(selectedDevice));
+            act_device.setText(Util.formatString(selectedDevice));
             createOptionalViews();
         });
 
@@ -222,12 +223,12 @@ public class AddDeviceActivity extends AppCompatActivity {
         for (Attribute a: optionalAttributes) {
             Chip chip = new Chip(this);
 
-            chip.setText(Utils.formatString(a.getName()));
+            chip.setText(Util.formatString(a.getName()));
             chip.setCheckable(true);
 
-            chip.setTextStartPadding(Utils.dpToPx(this, 12));
-            chip.setTextEndPadding(Utils.dpToPx(this, 12));
-            chip.setIconStartPadding(Utils.dpToPx(this, 6));
+            chip.setTextStartPadding(Util.dpToPx(this, 12));
+            chip.setTextEndPadding(Util.dpToPx(this, 12));
+            chip.setIconStartPadding(Util.dpToPx(this, 6));
 
             chip.setCheckedIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_check, null));
             chip.setChipStrokeWidth(2);
@@ -239,10 +240,10 @@ public class AddDeviceActivity extends AppCompatActivity {
             chip.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (chip.isChecked()) {
                     selectedOptional.add(a);
-                    chip.setTextStartPadding(Utils.dpToPx(this, 6));
+                    chip.setTextStartPadding(Util.dpToPx(this, 6));
                 } else {
                     selectedOptional.remove(a);
-                    chip.setTextStartPadding(Utils.dpToPx(this, 12));
+                    chip.setTextStartPadding(Util.dpToPx(this, 12));
                 }
             });
 

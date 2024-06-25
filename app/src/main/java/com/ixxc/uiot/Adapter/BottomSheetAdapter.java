@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.JsonElement;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.R;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,7 +50,7 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
         if (attributeValues.get(position).isJsonNull()) value = "N/A";
         else value = attributeValues.get(position).getAsString();
 
-        holder.tvAssetAttr.setText(Utils.formatString(label));
+        holder.tvAssetAttr.setText(Util.formatString(label));
 
 //        String unit = Device.getUnit(key);
 //        if (unit.equals("")) {

@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.R;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class DeviceArrayAdapter extends ArrayAdapter<String> {
 
         TextView tv_name = view.findViewById(R.id.tv_name);
         ImageView iv_icon = view.findViewById(R.id.iv_icon);
-        tv_name.setText(isCamelCase ? Utils.formatString(name) : name);
+        tv_name.setText(isCamelCase ? Util.formatString(name) : name);
         iv_icon.setImageDrawable(new Device(name).getIconDrawable(ctx));
 
         return view;

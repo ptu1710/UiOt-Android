@@ -24,6 +24,7 @@ import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Adapter.UserAdapter;
 import com.ixxc.uiot.Interface.RecyclerViewItemListener;
 import com.ixxc.uiot.Model.User;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,7 +152,7 @@ public class UsersActivity extends AppCompatActivity {
             userAdapter.checkedPos = -1;
         } else if (item.getItemId() == R.id.delete) {
             new Thread(() -> {
-                Log.d(Utils.LOG_TAG, "onOptionsItemSelected: " + userList.get(userAdapter.checkedPos).id);
+                Log.d(Util.LOG_TAG, "onOptionsItemSelected: " + userList.get(userAdapter.checkedPos).id);
                 int code = api.deleteUser(userList.get(userAdapter.checkedPos).id);
 
                 Message message = handler.obtainMessage();

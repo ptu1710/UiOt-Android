@@ -29,6 +29,7 @@ import com.ixxc.uiot.Adapter.BottomSheetAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.Map;
+import com.ixxc.uiot.Utils.Util;
 import com.mapbox.maps.CameraBoundsOptions;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.MapView;
@@ -91,7 +92,7 @@ public class MapsFragment extends Fragment {
                 }
             }
 
-            Utils.delayHandler.postDelayed(this::setMapView, 180);
+            Util.delayHandler.postDelayed(this::setMapView, 180);
         }).start();
     }
 
@@ -256,7 +257,7 @@ public class MapsFragment extends Fragment {
             rv_attributes.setAdapter(adapter);
 
             if (attributes.size() > 8) {
-                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dpToPx(parentActivity, 480));
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, Util.dpToPx(parentActivity, 480));
             } else {
                 dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             }
@@ -274,8 +275,8 @@ public class MapsFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         if (firstTime && Map.isReady && !hidden) {
             firstTime = false;
-            Utils.delayHandler.postDelayed(() -> mapView.setVisibility(View.VISIBLE), 200);
-            Utils.delayHandler.postDelayed(() -> parentActivity.findViewById(R.id.progressLayout).setVisibility(View.GONE), 4000);
+            Util.delayHandler.postDelayed(() -> mapView.setVisibility(View.VISIBLE), 200);
+            Util.delayHandler.postDelayed(() -> parentActivity.findViewById(R.id.progressLayout).setVisibility(View.GONE), 4000);
         }
         super.onHiddenChanged(hidden);
     }

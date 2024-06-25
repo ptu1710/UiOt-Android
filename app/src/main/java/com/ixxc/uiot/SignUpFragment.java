@@ -3,11 +3,9 @@ package com.ixxc.uiot;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +20,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -32,23 +28,16 @@ import androidx.fragment.app.Fragment;
 
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.API.APIManager;
+import com.ixxc.uiot.Utils.Util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.http.Multipart;
 
 public class SignUpFragment extends Fragment {
     TextView tv_verify;
@@ -188,7 +177,7 @@ public class SignUpFragment extends Fragment {
                             Arrays.asList(text.split("\\n")).forEach(line -> {
                                 if (!line.equals("")) {
                                     lines.add(line);
-                                    Log.d(Utils.LOG_TAG, line);
+                                    Log.d(Util.LOG_TAG, line);
                                 }
                             });
 
@@ -214,7 +203,7 @@ public class SignUpFragment extends Fragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 if (url.contains("openid-connect/registrations")) {
-                    Log.d(Utils.LOG_TAG, "onPageFinished: Fill form");
+                    Log.d(Util.LOG_TAG, "onPageFinished: Fill form");
 
                     String usrScript = "document.getElementById('username').value='" + usr + "';";
                     String emailScript = "document.getElementById('email').value='" + email + "';";
@@ -242,15 +231,15 @@ public class SignUpFragment extends Fragment {
                     webView.stopLoading();
                     webView.destroy();
                 } else {
-                    Log.d(Utils.LOG_TAG, "onPageFinished: " + url.replace("uiot.ixxc.dev/", ""));
+                    Log.d(Util.LOG_TAG, "onPageFinished: " + url.replace("uiot.ixxc.dev/", ""));
                 }
 
                 super.onPageFinished(view, url);
             }
         });
 
-        String redirect_url = Utils.baseUrl.replace(":", "%3A").replace("/", "%2F");
-        String signUpUrl = Utils.baseUrl + "auth/realms/master/protocol/openid-connect/registrations?client_id=openremote&response_type=code&redirect_uri=" + redirect_url + "manager%2F";
+        String redirect_url = Util.baseUrl.replace(":", "%3A").replace("/", "%2F");
+        String signUpUrl = Util.baseUrl + "auth/realms/master/protocol/openid-connect/registrations?client_id=openremote&response_type=code&redirect_uri=" + redirect_url + "manager%2F";
         webView.loadUrl(signUpUrl);
     }
 
@@ -287,7 +276,7 @@ public class SignUpFragment extends Fragment {
     }
 
     private void signUpError(String msg) {
-        Log.d(Utils.LOG_TAG, "signUpError: " + msg);
+        Log.d(Util.LOG_TAG, "signUpError: " + msg);
 
         pb_loading.setVisibility(View.GONE);
         btn_sign_up.setVisibility(View.VISIBLE);

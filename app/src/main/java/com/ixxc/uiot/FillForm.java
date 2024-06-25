@@ -19,8 +19,8 @@ import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.API.APIManager;
+import com.ixxc.uiot.Utils.Util;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -114,7 +114,7 @@ public class FillForm extends AppCompatActivity {
                                     Arrays.asList(text.split("\\n")).forEach(line -> {
                                         if (!line.trim().equals("")) {
                                             lines.add(line);
-                                            Log.d(Utils.LOG_TAG, line);
+                                            Log.d(Util.LOG_TAG, line);
                                         }
                                     });
                                     bundle.putString("INFO1", lines.get(3));

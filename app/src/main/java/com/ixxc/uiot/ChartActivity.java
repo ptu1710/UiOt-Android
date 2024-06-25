@@ -2,6 +2,8 @@ package com.ixxc.uiot;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,16 +31,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.API.APIManager;
 import com.ixxc.uiot.Model.Device;
+import com.ixxc.uiot.Utils.Logger;
+import com.ixxc.uiot.Utils.Util;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -47,12 +49,11 @@ public class ChartActivity extends AppCompatActivity {
     Toolbar toolbar;
     LineChart lineChart;
     AutoCompleteTextView act_attributeName, act_ending, act_timeframe;
-    TextInputLayout til_attributeName;
+    TextInputLayout til_attributeName, til_timeFrame, til_ending;
     Button btn_show_chart;
     LinearLayout layout_timeframe;
     Device current_device;
     String selectedAttribute =  "", interval;
-    String date, dateTime;
     Long timestampMillis, dis;
     List<String> attributes;
     Calendar calendar;
@@ -86,12 +87,20 @@ public class ChartActivity extends AppCompatActivity {
         actionBar.setTitle("Chart");
 
         btn_show_chart.setBackgroundColor(current_color);
+        til_attributeName.setHintTextColor(ColorStateList.valueOf(current_color));
+        til_attributeName.setBoxStrokeColor(current_color);
+        til_timeFrame.setHintTextColor(ColorStateList.valueOf(current_color));
+        til_timeFrame.setBoxStrokeColor(current_color);
+        til_ending.setHintTextColor(ColorStateList.valueOf(current_color));
+        til_ending.setBoxStrokeColor(current_color);
     }
 
     private void initView() {
         lineChart = findViewById(R.id.lineChart);
         btn_show_chart = findViewById(R.id.btn_showChart);
         til_attributeName = findViewById(R.id.til_attributeName);
+        til_timeFrame = findViewById(R.id.til_timeFrame);
+        til_ending = findViewById(R.id.til_ending);
         act_attributeName = findViewById(R.id.act_attributeName);
         act_timeframe = findViewById(R.id.act_timeFrame);
         act_ending = findViewById(R.id.act_ending);
@@ -103,14 +112,14 @@ public class ChartActivity extends AppCompatActivity {
         String device_id = getIntent().getStringExtra("DEVICE_ID");
         current_device = Device.getDeviceById(device_id);
         assert current_device != null;
-        attributes = current_device.getStoredAttributes().stream().map(Utils::formatString).collect(Collectors.toList());
+        attributes = current_device.getStoredAttributes().stream().map(Util::formatString).collect(Collectors.toList());
 
         calendar = Calendar.getInstance();
         sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault(Locale.Category.FORMAT));
 
-        act_ending.setText(dateTime = sdf.format(calendar.getTime()));
+        act_ending.setText(sdf.format(calendar.getTime()));
 
-        timestampMillis = dateToMillisTimestamp(dateTime);
+        timestampMillis = calendar.getTimeInMillis();
         dis = 24 * 3600 * 1000L;
         interval = "HOUR";
 
@@ -160,10 +169,12 @@ public class ChartActivity extends AppCompatActivity {
         });
 
         btn_show_chart.setOnClickListener(view -> {
-            if (selectedAttribute.equals("")) {
+            if (selectedAttribute.isEmpty()) {
                 til_attributeName.setError("Please select an attribute");
                 return;
-            } else til_attributeName.setError(null);
+            } else {
+                til_attributeName.setError(null);
+            }
 
             new Thread(() -> {
                 JsonObject body = new JsonObject();
@@ -186,22 +197,30 @@ public class ChartActivity extends AppCompatActivity {
         act_ending.setOnClickListener(view -> dateTimeDialog());
 
         act_ending.setOnFocusChangeListener((view, focused) -> {
-            if (focused) dateTimeDialog();
-            else timestampMillis = dateToMillisTimestamp(dateTime);
+            if (focused) {
+                dateTimeDialog();
+            }
+            else {
+                timestampMillis = calendar.getTimeInMillis();
+            }
         });
     }
 
     private void dateTimeDialog() {
         // Date Select Listener
         DatePickerDialog.OnDateSetListener datePickerListener = (view, year, monthOfYear, dayOfMonth) -> {
-            int month = (monthOfYear + 1);
-            date = (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "/" + (month < 10 ? "0" + month : month) + "/" + year;
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, monthOfYear);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+            act_ending.clearFocus();
         };
 
         // Time Select Listener
         TimePickerDialog.OnTimeSetListener timePickerListener = (view, hourOfDay, minute) -> {
-            dateTime = date + " " + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + minute;
-            act_ending.setText(dateTime);
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+
             act_ending.clearFocus();
         };
 
@@ -220,18 +239,37 @@ public class ChartActivity extends AppCompatActivity {
                 calendar.get(Calendar.MINUTE),
                 true);
 
-        datePickerDialog.setOnDismissListener(dialogInterface -> timePickerDialog.show());
-        timePickerDialog.setOnDismissListener(dialogInterface -> act_ending.setText(dateTime));
+        datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                Logger.logMsg("Date Picker Dialog Cancelled");
+                timestampMillis = calendar.getTimeInMillis();
+                act_ending.setText(sdf.format(calendar.getTime()));
+            }
+        });
+
+        datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok), (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                Logger.logMsg("Date Picker Dialog OK");
+                timePickerDialog.show();
+            }
+        });
+
+        timePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                Logger.logMsg("Time Picker Dialog Cancelled");
+                datePickerDialog.show();
+            }
+        });
+
+        timePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok), (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                Logger.logMsg("Time Picker Dialog OK");
+                timestampMillis = calendar.getTimeInMillis();
+                act_ending.setText(sdf.format(calendar.getTime()));
+            }
+        });
 
         datePickerDialog.show();
-    }
-
-    // date format: dd/MM/yyyy HH:mm to timestamp (millis): 1625097600000
-    public static long dateToMillisTimestamp(String dateString) {
-        LocalDateTime localDateTime = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-
-        return date.getTime();
     }
 
     private String xValueConvert(long x, String type) {
@@ -269,7 +307,7 @@ public class ChartActivity extends AppCompatActivity {
             }
         }
 
-        LineDataSet linedataset = new LineDataSet(lineValues, Utils.formatString(selectedAttribute));
+        LineDataSet linedataset = new LineDataSet(lineValues, Util.formatString(selectedAttribute));
         linedataset.setDrawValues(false);
         linedataset.setLineWidth(3f);
         linedataset.setDrawFilled(true);

@@ -18,7 +18,7 @@ import com.ixxc.uiot.Model.Role;
 import com.ixxc.uiot.Model.Rule;
 import com.ixxc.uiot.Model.Token;
 import com.ixxc.uiot.Model.User;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
 
 import java.io.IOException;
 import java.time.ZoneOffset;
@@ -168,7 +168,7 @@ public class APIManager {
                 User.setUsersList(users);
             } else {
                 returnCode = response.code();
-                Log.d(Utils.LOG_TAG, "queryUsers: code "+ returnCode);
+                Log.d(Util.LOG_TAG, "queryUsers: code "+ returnCode);
                 User.setUsersList(null);
             }
         } catch (IOException e) { e.printStackTrace(); }
@@ -447,13 +447,13 @@ public class APIManager {
 
                     JsonObject body2 = register2.toJson(token);
 
-                    Log.d(Utils.LOG_TAG, "register2: " + body2);
+                    Log.d(Util.LOG_TAG, "register2: " + body2);
 
                     Call<RegisterDevice> call2 = apiInterface.registerDevice(body2);
                     call2.execute();
 
                 } else {
-                    Log.d(Utils.LOG_TAG, "Error: " + response1.message());
+                    Log.d(Util.LOG_TAG, "Error: " + response1.message());
                 }
             }
 

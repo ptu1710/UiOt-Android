@@ -40,6 +40,7 @@ import com.ixxc.uiot.Adapter.DeviceTreeViewAdapter;
 import com.ixxc.uiot.Interface.RecyclerViewItemListener;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.User;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class DevicesFragment extends Fragment {
         if (show_devices || refresh) {
             InitDevicesAdapter();
 
-            Utils.delayHandler.postDelayed(this::showDevices, 320);
+            Util.delayHandler.postDelayed(this::showDevices, 320);
 
             srl_devices.setRefreshing(false);
         } else {
@@ -93,7 +94,7 @@ public class DevicesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == Utils.UPDATE_DEVICE) refreshDevices();
+            if (result.getResultCode() == Util.UPDATE_DEVICE) refreshDevices();
 
             parentActivity.homeFrag.InitWidgets();
         });
@@ -114,7 +115,7 @@ public class DevicesFragment extends Fragment {
             iv_add.setVisibility(View.VISIBLE);
         }
 
-        Utils.delayHandler.postDelayed(() -> layout_shimmer.setVisibility(View.VISIBLE), 320);
+        Util.delayHandler.postDelayed(() -> layout_shimmer.setVisibility(View.VISIBLE), 320);
 
         // Wait to show all devices
         new Thread(() -> {
@@ -194,10 +195,10 @@ public class DevicesFragment extends Fragment {
             popupMenu.setOnMenuItemClickListener(item -> {
                 int id = item.getItemId();
                 if (id == R.id.itemAToZ) {
-                    Log.d(Utils.LOG_TAG, "InitEvents: A to Z");
+                    Log.d(Util.LOG_TAG, "InitEvents: A to Z");
 //                    devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.name.toLowerCase()));
                 } else if (id ==  R.id.itemTimeCreated) {
-                    Log.d(Utils.LOG_TAG, "InitEvents: Item Time Created");
+                    Log.d(Util.LOG_TAG, "InitEvents: Item Time Created");
 //                     devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.createdOn));
                 } else {
                     return false;
@@ -312,7 +313,7 @@ public class DevicesFragment extends Fragment {
             }
 
             parentActivity.navbar.selectTabAt(2, true);
-            Utils.delayHandler.postDelayed(() -> parentActivity.mapsFrag.setBottomSheet(device.id), 320);
+            Util.delayHandler.postDelayed(() -> parentActivity.mapsFrag.setBottomSheet(device.id), 320);
 
             dialog.dismiss();
             Toast.makeText(parentActivity, "layout_on_maps", Toast.LENGTH_SHORT).show();

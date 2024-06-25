@@ -43,6 +43,7 @@
     <string name="copy_id">Copy ID</string>
     <string name="edit">Edit</string>
     <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
     <string name="save">Save</string>
     <string name="new_name">New name</string>
     <string name="parent">Parent</string>

@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.Model.Rule;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.Objects;
 
@@ -50,7 +51,7 @@ public class CreateRuleFragment_0 extends Fragment {
             if (!focused) {
                 String name = Objects.requireNonNull(til_name.getText()).toString();
                 parentActivity.rule.setRuleName(name);
-                Log.d(Utils.LOG_TAG, "setRuleName: " + name);
+                Log.d(Util.LOG_TAG, "setRuleName: " + name);
             }
         });
 
@@ -70,7 +71,7 @@ public class CreateRuleFragment_0 extends Fragment {
                 recurrence.addProperty("mins", 0);
 
                 parentActivity.rule.setRecurrence(recurrence);
-                Log.d(Utils.LOG_TAG, "setRecurrence");
+                Log.d(Util.LOG_TAG, "setRecurrence");
             }
         });
 

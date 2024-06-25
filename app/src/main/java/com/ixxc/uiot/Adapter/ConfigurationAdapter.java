@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 import com.ixxc.uiot.Interface.ParamItemListener;
 import com.ixxc.uiot.Model.MetaItem;
 import com.ixxc.uiot.R;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class ConfigurationAdapter extends RecyclerView.Adapter<ConfigurationAdap
     @Override
     public void onBindViewHolder(ConfigurationAdapter.ViewHolder holder, int position) {
         String name = metaItems.get(position).getName();
-        String displayName = Utils.formatString(name);
+        String displayName = Util.formatString(name);
         boolean isCheck = meta.has(name);
 
         holder.cb_item.setButtonTintList(ColorStateList.valueOf(color));

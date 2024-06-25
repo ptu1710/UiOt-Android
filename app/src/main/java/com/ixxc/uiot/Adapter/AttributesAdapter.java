@@ -25,7 +25,7 @@ import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.Map;
 import com.ixxc.uiot.R;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.MapboxMap;
@@ -86,19 +86,19 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         }
 
         Attribute attr = attributes.get(position);
-        String name = Utils.formatString(attr.getName());
+        String name = Util.formatString(attr.getName());
         String value = attr.getValueString();
         String type = attr.getType();
-        String validatedType = Utils.formatString(attr.getType());
+        String validatedType = Util.formatString(attr.getType());
 
         holder.ib_edit.setImageTintList(ColorStateList.valueOf(color));
 
         holder.ib_delete.setEnabled(attr.isOptional());
         holder.ib_delete.setImageTintList(ColorStateList.valueOf(color));
-        holder.ib_delete.setImageTintList(ColorStateList.valueOf(attr.isOptional() ? color : Utils.getColor(ctx, R.color.dark_grey)));
+        holder.ib_delete.setImageTintList(ColorStateList.valueOf(attr.isOptional() ? color : Util.getColor(ctx, R.color.dark_grey)));
 
         holder.ib_star.setEnabled(attr.canShowValue(type));
-        holder.ib_star.setImageTintList(ColorStateList.valueOf(attr.canShowValue(type) ? color : Utils.getColor(ctx, R.color.dark_grey)));
+        holder.ib_star.setImageTintList(ColorStateList.valueOf(attr.canShowValue(type) ? color : Util.getColor(ctx, R.color.dark_grey)));
         holder.ib_star.setImageResource(attr.isInWidgets(ctx, deviceId) ? R.drawable.ic_star_fill : R.drawable.ic_star_border);
 
         holder.tv_name.setText(name);
@@ -116,7 +116,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
         holder.ib_edit.setOnClickListener(view -> attributeListener.onEditClicked(holder.getBindingAdapterPosition()));
 
         holder.ib_star.setOnClickListener(view -> {
-            String widgetString = Utils.getPreferences(ctx, Utils.WIDGET_KEY);
+            String widgetString = Util.getPreferences(ctx, Util.WIDGET_KEY);
             JsonArray widgets = TextUtils.isEmpty(widgetString) ? new JsonArray() : JsonParser.parseString(widgetString).getAsJsonArray();
             JsonElement widgetInfo = JsonParser.parseString(String.join("-", deviceId, attr.getName()));
 
@@ -131,7 +131,7 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
                 toastMsg = "New widget added!";
             }
 
-            Utils.savePreferences(ctx, Utils.WIDGET_KEY, widgets.toString());
+            Util.savePreferences(ctx, Util.WIDGET_KEY, widgets.toString());
 
             Toast.makeText(ctx, toastMsg, Toast.LENGTH_SHORT).show();
         });
