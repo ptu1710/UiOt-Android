@@ -1,19 +1,21 @@
 package com.ixxc.uiot;
 
-import static android.app.Activity.RESULT_OK;
-
-import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,38 +30,35 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.amrdeveloper.treeview.TreeNode;
 import com.amrdeveloper.treeview.TreeViewHolderFactory;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ixxc.uiot.API.APIManager;
-import com.ixxc.uiot.Adapter.DevicesAdapter;
+import com.ixxc.uiot.Adapter.DeviceRecyclerAdapter;
+import com.ixxc.uiot.Adapter.DeviceTreeViewAdapter;
+import com.ixxc.uiot.Interface.RecyclerViewItemListener;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.User;
+import com.ixxc.uiot.Utils.Util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DevicesFragment extends Fragment {
     HomeActivity parentActivity;
     ShimmerFrameLayout layout_shimmer;
     RecyclerView rv_devices;
-    ImageView iv_add, iv_delete, iv_community, iv_cancel;
+    ImageView iv_add;
     SwipeRefreshLayout srl_devices;
     View rootView;
     SearchView searchView;
     TextView tv_sort, tv_type;
-
     List<Device> devicesList;
-
-    ActivityResultLauncher<Intent> mLauncher;
-
-    DevicesAdapter devicesAdapter;
-
+    ActivityResultLauncher<Intent> launcher;
+    DeviceTreeViewAdapter deviceTreeViewAdapter;
+    DeviceRecyclerAdapter deviceRecyclerAdapter;
     User me;
-
-    public String selected_device_id = "";
+    APIManager api = new APIManager();
 
     Handler handler = new Handler(message -> {
         Bundle bundle = message.getData();
@@ -68,9 +67,10 @@ public class DevicesFragment extends Fragment {
         boolean refresh = bundle.getBoolean("REFRESH");
 
         if (show_devices || refresh) {
-            Utils.delayHandler.postDelayed(this::showDevices, 640);
+            InitDevicesAdapter();
 
-            iv_cancel.performClick();
+            Util.delayHandler.postDelayed(this::showDevices, 320);
+
             srl_devices.setRefreshing(false);
         } else {
             if (delete_device) {
@@ -93,8 +93,10 @@ public class DevicesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) refreshDevices();
+        launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Util.UPDATE_DEVICE) refreshDevices();
+
+            parentActivity.homeFrag.InitWidgets();
         });
     }
 
@@ -109,20 +111,22 @@ public class DevicesFragment extends Fragment {
         InitViews(view);
         InitEvents();
 
+        if (me.canWriteDevices()) {
+            iv_add.setVisibility(View.VISIBLE);
+        }
+
+        Util.delayHandler.postDelayed(() -> layout_shimmer.setVisibility(View.VISIBLE), 320);
+
         // Wait to show all devices
         new Thread(() -> {
-            Utils.delayHandler.postDelayed(() -> layout_shimmer.startShimmer(), 280);
 
-            while (Device.getDevicesList() == null) {
+            while (!Device.devicesLoaded) {
                 try {
-                    Thread.sleep(240);
-                    // test new animation branch
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
-
-            setDevicesAdapter();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -138,7 +142,7 @@ public class DevicesFragment extends Fragment {
 
     private void InitVars() {
         me = User.getMe();
-        devicesList = Device.getDevicesList();
+        devicesList = Device.getDeviceList();
     }
 
     private void InitViews(View v) {
@@ -146,9 +150,6 @@ public class DevicesFragment extends Fragment {
         layout_shimmer = v.findViewById(R.id.layout_shimmer);
         rv_devices = v.findViewById(R.id.rv_devices);
         iv_add = v.findViewById(R.id.iv_add);
-        iv_community = v.findViewById(R.id.iv_community);
-        iv_delete = v.findViewById(R.id.iv_delete);
-        iv_cancel = v.findViewById(R.id.iv_cancel);
         srl_devices = v.findViewById(R.id.srl_devices);
         searchView = v.findViewById(R.id.searchView);
         tv_sort = v.findViewById(R.id.tv_sort);
@@ -157,41 +158,9 @@ public class DevicesFragment extends Fragment {
 
     private void InitEvents() {
         iv_add.setOnClickListener(view -> {
-//            Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
-//            mLauncher.launch(intent);
-
-            // select node
-            TreeNode node = devicesAdapter.getTreeNodes().get(2);
-
-//            devicesAdapter.expandNode(node);
-            devicesAdapter.expandNodeBranch(node);
-//            devicesAdapter.expandNodeToLevel(node, 1);
-
-            // Child node
-//            TreeNode child = node.getChildren().get(0);
-//            Log.d(GlobalVars.LOG_TAG, "InitEvents: " + ((Device) child.getValue()).name);
-
+            Intent intent = new Intent(parentActivity, AddDeviceActivity.class);
+            launcher.launch(intent);
         });
-
-        iv_delete.setOnClickListener(view -> {
-            if (selected_device_id.equals("")) return;
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity);
-            builder.setTitle("Warning!");
-            builder.setMessage("Delete this device?");
-            builder.setPositiveButton("Delete", (dialogInterface, i) -> new Thread(() -> {
-                Message msg = handler.obtainMessage();
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("DELETE_DEVICE", APIManager.delDevice(selected_device_id));
-                msg.setData(bundle);
-                handler.sendMessage(msg);
-            }).start());
-
-            builder.setNegativeButton("Cancel", (dialogInterface, i) -> { });
-            builder.show();
-        });
-
-        iv_cancel.setOnClickListener(view -> changeSelectedDevice(-1, ""));
 
         srl_devices.setOnRefreshListener(this::refreshDevices);
 
@@ -204,12 +173,19 @@ public class DevicesFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String s) {
+                deviceRecyclerAdapter.getFilter().filter(s);
+
                 if (s.equals("")) {
-                    this.onQueryTextSubmit("");
+                    if (rv_devices.getAdapter() != deviceTreeViewAdapter) {
+                        rv_devices.swapAdapter(deviceTreeViewAdapter, true);
+                    }
+                } else {
+                    if (rv_devices.getAdapter() != deviceRecyclerAdapter) {
+                        rv_devices.swapAdapter(deviceRecyclerAdapter, true);
+                    }
                 }
 
-//                filterDevices(s);
-                return true;
+                return false;
             }
         });
 
@@ -219,16 +195,16 @@ public class DevicesFragment extends Fragment {
             popupMenu.setOnMenuItemClickListener(item -> {
                 int id = item.getItemId();
                 if (id == R.id.itemAToZ) {
-                    Log.d(GlobalVars.LOG_TAG, "InitEvents: A to Z");
-                    // devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.name.toLowerCase()));
+                    Log.d(Util.LOG_TAG, "InitEvents: A to Z");
+//                    devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.name.toLowerCase()));
                 } else if (id ==  R.id.itemTimeCreated) {
-                    Log.d(GlobalVars.LOG_TAG, "InitEvents: Item Time Created");
-                    // devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.createdOn));
+                    Log.d(Util.LOG_TAG, "InitEvents: Item Time Created");
+//                     devicesList.stream().filter(device -> device.getChildLevel() == 1).collect(Collectors.toList()).sort(Comparator.comparing(device -> device.createdOn));
                 } else {
                     return false;
                 }
 
-                // devicesAdapter.setListDevices(devicesList);
+//                 devicesAdapter.setListDevices(devicesList);
 
                 return true;
             });
@@ -247,9 +223,9 @@ public class DevicesFragment extends Fragment {
         new Thread(() -> {
             String queryString = "{ \"realm\": { \"name\": \"master\" }}";
             JsonObject query = (JsonObject) JsonParser.parseString(queryString);
-            APIManager.queryDevices(query);
+            api.queryDevices(query);
 
-            setDevicesAdapter();
+            InitDevicesAdapter();
 
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
@@ -259,55 +235,123 @@ public class DevicesFragment extends Fragment {
         }).start();
     }
 
-    private void setDevicesAdapter() {
+    private void InitDevicesAdapter() {
 
-        devicesList = Device.getDevicesList();
-//        devicesList = new ArrayList<>();
+        devicesList = Device.getDeviceList();
 
-        TreeViewHolderFactory factory = (v, layout) -> new DevicesAdapter.MyViewHolder(v, parentActivity);
-        devicesAdapter = new DevicesAdapter(factory, devicesList);
+        deviceRecyclerAdapter = new DeviceRecyclerAdapter(parentActivity, devicesList, new RecyclerViewItemListener() {
+            @Override
+            public void onItemClicked(View v, Object item) {
+                searchView.clearFocus();
+                Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
+                intent.putExtra("DEVICE_ID", ((Device) item).id);
+                launcher.launch(intent);
+            }
 
-        devicesAdapter.setTreeNodeClickListener((treeNode, view) -> {
-            if (treeNode.getChildren().size() > 0 && treeNode.isExpanded()) {
-                DevicesAdapter.selectedPosition = devicesAdapter.getTreeNodes().indexOf(treeNode);
+            @Override
+            public void onItemLongClicked(View v, Object item) {
+                searchView.clearFocus();
+                performLongClick(((Device) item));
             }
         });
 
-        devicesAdapter.setTreeNodeLongClickListener((treeNode, view) -> {
-            if (!me.canWriteDevices()) return false;
-            changeSelectedDevice(0, ((Device) treeNode.getValue()).id);
+        TreeViewHolderFactory factory = (v, layout) -> new DeviceTreeViewAdapter.MyViewHolder(v, parentActivity);
+        deviceTreeViewAdapter = new DeviceTreeViewAdapter(factory, devicesList);
+
+        deviceTreeViewAdapter.setTreeNodeClickListener((treeNode, view) -> {
+            searchView.clearFocus();
+            if (treeNode.getChildren().size() == 0) {
+                Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
+                intent.putExtra("DEVICE_ID", ((Device) treeNode.getValue()).id);
+                launcher.launch(intent);
+            }
+        });
+
+        deviceTreeViewAdapter.setTreeNodeLongClickListener((treeNode, view) -> {
+            searchView.clearFocus();
+            performLongClick(((Device) treeNode.getValue()));
             return true;
         });
     }
 
     private void showDevices() {
-
         rv_devices.setLayoutManager(new LinearLayoutManager(parentActivity));
-        rv_devices.setHasFixedSize(true);
-
-        rv_devices.setAdapter(devicesAdapter);
-
+        rv_devices.setAdapter(deviceTreeViewAdapter);
         rv_devices.setVisibility(View.VISIBLE);
-        layout_shimmer.stopShimmer();
         layout_shimmer.setVisibility(View.GONE);
     }
 
-    public void changeSelectedDevice(int index, String id) {
-        if (index != -1) {
-            iv_add.setVisibility(View.GONE);
-            iv_delete.setVisibility(View.VISIBLE);
-            iv_cancel.setVisibility(View.VISIBLE);
-        } else {
-            if (!me.canWriteDevices()) iv_add.setVisibility(View.GONE);
-            else iv_add.setVisibility(View.VISIBLE);
+    public void performLongClick(Device device) {
+        // TODO: if (!me.canWriteDevices()) return false;
 
-            iv_delete.setVisibility(View.GONE);
-            iv_cancel.setVisibility(View.GONE);
+        Dialog dialog = new Dialog(parentActivity);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.devices_bottom_dialog);
 
-//            devicesAdapter.notifyItemChanged(devicesAdapter.checkedPos);
-//            devicesAdapter.checkedPos = index;
-        }
+        ImageView iv_icon = dialog.findViewById(R.id.iv_icon);
+        TextView tv_name = dialog.findViewById(R.id.tv_name);
+        TextView tv_id = dialog.findViewById(R.id.tv_id);
+        LinearLayout layout_delete = dialog.findViewById(R.id.layout_delete);
+        LinearLayout layout_info = dialog.findViewById(R.id.layout_info);
+        LinearLayout layout_on_maps = dialog.findViewById(R.id.layout_on_maps);
 
-        selected_device_id = id;
+        iv_icon.setImageDrawable(device.getIconDrawable(parentActivity));
+        tv_name.setText(device.name);
+        tv_id.setText(device.id);
+
+        layout_info.setOnClickListener(view -> {
+            Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
+            intent.putExtra("DEVICE_ID", device.id);
+            launcher.launch(intent);
+            dialog.dismiss();
+        });
+
+        layout_on_maps.setOnClickListener(view -> {
+            if (device.getPoint() == null) {
+                Toast.makeText(parentActivity, "This device has no location on maps!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            parentActivity.navbar.selectTabAt(2, true);
+            Util.delayHandler.postDelayed(() -> parentActivity.mapsFrag.setBottomSheet(device.id), 320);
+
+            dialog.dismiss();
+            Toast.makeText(parentActivity, "layout_on_maps", Toast.LENGTH_SHORT).show();
+        });
+
+        layout_delete.setOnClickListener(view -> {
+            String alertMsg = "Delete \"" + device.name + "\" ? This action cannot be undone!";
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity);
+            builder.setTitle("Warning!");
+            builder.setMessage(alertMsg);
+            builder.setPositiveButton("Delete", (dialogInterface, i) -> {
+                boolean hasChild = devicesList.stream().anyMatch(d -> d.getParentId().equals(device.id));
+                if (hasChild) {
+                    Toast.makeText(parentActivity, "Cannot be delete this device because it contains child device(s)!", Toast.LENGTH_LONG).show();
+                    refreshDevices();
+                    return;
+                }
+
+                new Thread(() -> {
+                    Message msg = handler.obtainMessage();
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("DELETE_DEVICE", api.delDevice(device.id));
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
+                }).start();
+            });
+
+            builder.setNegativeButton("Cancel", (dialogInterface, i) -> { });
+            builder.show();
+
+            dialog.dismiss();
+        });
+
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.show();
     }
 }

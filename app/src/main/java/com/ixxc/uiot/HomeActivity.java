@@ -1,17 +1,24 @@
 package com.ixxc.uiot;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.window.OnBackInvokedDispatcher;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.ixxc.uiot.Utils.Util;
 
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
@@ -23,7 +30,6 @@ public class HomeActivity extends AppCompatActivity {
     public MapsFragment mapsFrag;
     public AdminFragment userFrag;
     private Fragment fragment = null;
-    int selectedIndex;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -36,12 +42,9 @@ public class HomeActivity extends AppCompatActivity {
                 int selectedIndex = navbar.getSelectedIndex();
                 if (selectedIndex == 0) {
                     finish();
-                } else if (selectedIndex == 1) {
-                    if (!devicesFrag.selected_device_id.isEmpty()) {
-                        devicesFrag.changeSelectedDevice(-1, "");
-                    }
+                } else {
+                    navbar.selectTabAt(0, true);
                 }
-                navbar.selectTabAt(0, true);
             }
         });
 
@@ -52,18 +55,35 @@ public class HomeActivity extends AppCompatActivity {
         InitViews();
         InitEvents();
 
-        fm.beginTransaction().add(R.id.main_frame, mapsFrag, "map").commit();
-        fm.beginTransaction().hide(mapsFrag).commit();
+//        FirebaseMessaging.getInstance().getToken()
+//                .addOnCompleteListener(task -> {
+//                    if (!task.isSuccessful()) {
+//                        Log.w("API LOG", "Fetching FCM registration token failed", task.getException());
+//                        return;
+//                    }
+//
+//                    // Get new FCM registration token
+//                    String token = task.getResult();
+//
+//                    new Thread(() -> new APIManager().registerDevice(token)).start();
+//
+//                    Log.d(Utils.LOG_TAG, "FCM token: " + token);
+//                });
 
-        fm.beginTransaction().add(R.id.main_frame, homeFrag, "home").commit();
+        askNotificationPermission();
 
-        fragment = homeFrag;
+        fm.beginTransaction()
+//                .add(R.id.main_frame, mapsFrag, "2")
+                .add(R.id.main_frame, fragment = homeFrag, "0")
+//                .hide(mapsFrag)
+                .commit();
+
         navbar.selectTabAt(0, false);
+
+//        startActivity(new Intent(this, AccountActivity.class));
     }
 
     private void InitVars() {
-        selectedIndex = 0;
-
         fm = getSupportFragmentManager();
 
         homeFrag = new HomeFragment(this);
@@ -71,7 +91,7 @@ public class HomeActivity extends AppCompatActivity {
         mapsFrag = new MapsFragment(this);
         userFrag = new AdminFragment(this);
 
-        Utils.delayHandler = new Handler();
+        Util.delayHandler = new Handler();
     }
 
     private void InitViews() {
@@ -82,41 +102,30 @@ public class HomeActivity extends AppCompatActivity {
         navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
             @Override
             public void onTabSelected(int lastIndex, @Nullable AnimatedBottomBar.Tab lastTab, int newIndex, @NonNull AnimatedBottomBar.Tab newTab) {
-                if (fragment == devicesFrag) devicesFrag.changeSelectedDevice(-1, "");
+                fm.beginTransaction().hide(fragment).commit();
+
+                String tag = String.valueOf(newIndex);
 
                 switch (newIndex) {
                     case 0:
-                        if (homeFrag == null) { homeFrag = new HomeFragment(HomeActivity.this); }
-                        fm.beginTransaction().hide(fragment).commit();
                         fragment = homeFrag;
                         break;
                     case 1:
-                        if (fm.findFragmentByTag("devices") == null) {
-                            fm.beginTransaction().add(R.id.main_frame, devicesFrag, "devices").commit();
-                        }
-                        fm.beginTransaction().hide(fragment).commit();
                         fragment = devicesFrag;
                         break;
                     case 2:
-                        if (fm.findFragmentByTag("map") == null) {
-                            fm.beginTransaction().add(R.id.main_frame, mapsFrag, "map").commit();
-                        }
-
-                        fm.beginTransaction().hide(fragment).commit();
                         fragment = mapsFrag;
                         break;
                     case 3:
-                        if (fm.findFragmentByTag("user") == null) {
-                            fm.beginTransaction().add(R.id.main_frame, userFrag, "user").commit();
-                        }
-                        fm.beginTransaction().hide(fragment).commit();
                         fragment = userFrag;
                         break;
                 }
 
-                fm.beginTransaction()
-                        .show(fragment)
-                        .commit();
+                if (fm.findFragmentByTag(tag) == null) {
+                    fm.beginTransaction().add(R.id.main_frame, fragment, tag).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                } else {
+                    fm.beginTransaction().show(fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+                }
             }
 
             @Override
@@ -126,21 +135,20 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        switch (navbar.getSelectedIndex()) {
-//            case 0:
-//                super.onBackPressed();
-//            case 1:
-//                if(!devicesFrag.selected_device_id.equals("")) {
-//                    devicesFrag.changeSelectedDevice(-1, "");
-//                    return;
-//                }
-//                break;
-//            default:
-//                break;
-//        }
-//
-//        navbar.selectTabAt(0, true);
-//    }
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                // TODO: Notification permission granted or denied
+            });
+
+    private void askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                    // Directly ask for the permission
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                }
+            }
+        }
+    }
 }

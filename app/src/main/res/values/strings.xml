@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">UiOt</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="refresh">refresh</string>
     <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoicGF0dXMiLCJhIjoiY2w5NnBtNzBxMDEyYjNucGR5ZXZtcTg1MSJ9.m3W_7Ta9A_NGKJw0fPW1Wg</string>
@@ -23,9 +22,10 @@
     <string name="celsius">°C</string>
     <string name="degrees">°</string>
     <string name="string_null">null</string>
+    <string name="no_value">--</string>
     <string name="binh_minh">Bình minh</string>
     <string name="_06_09">06:09</string>
-    <string name="sunrise">sunrise</string>
+    <string name="sunrise">Sunrise</string>
     <string name="hoang_hon">Hoàng hôn</string>
     <string name="_17_39">17:39</string>
     <string name="sunset">Sunset</string>
@@ -40,4 +40,163 @@
     <string name="humidity">Humidity</string>
     <string name="_0">0</string>
     <string name="low">Thấp</string>
+    <string name="copy_id">Copy ID</string>
+    <string name="edit">Edit</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="new_name">New name</string>
+    <string name="parent">Parent</string>
+    <string name="public_read">Public read</string>
+    <string name="add_attribute">Add attribute</string>
+    <string name="add_configuration_items">+ Add configuration items</string>
+    <string name="uit_logo">uit_logo</string>
+    <string name="username">Username</string>
+    <string name="test">test</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="back">Back</string>
+    <string name="value">Value</string>
+    <string name="view">View</string>
+    <string name="chart">Chart</string>
+    <string name="select_attribute">Select Attribute</string>
+    <string name="timeframe">Timeframe</string>
+    <string name="day">Day</string>
+    <string name="ending">Ending</string>
+    <string name="dd_mm_yyyy_hh_mm">dd/mm/yyyy hh:mm</string>
+    <string name="show">Show</string>
+    <string name="rule_name">Rule name</string>
+    <string name="repetition_ends">Repetition ends</string>
+    <string name="su">SU</string>
+    <string name="sa">SA</string>
+    <string name="fr">FR</string>
+    <string name="th">TH</string>
+    <string name="we">WE</string>
+    <string name="tu">TU</string>
+    <string name="mo">MO</string>
+    <string name="when_then_rules">When - then rules</string>
+    <string name="next">Next</string>
+    <string name="enabled">Enabled</string>
+    <string name="attribute">Attribute</string>
+    <string name="any_of_this_type">Any of this type</string>
+    <string name="select">Select</string>
+    <string name="operator">Operator</string>
+    <string name="choose_device">Choose a device</string>
+    <string name="choose_action">Choose an action</string>
+    <string name="when">When…</string>
+    <string name="then">Then…</string>
+    <string name="always_active">Always active</string>
+    <string name="plan_an_occurrence">Plan an occurrence</string>
+    <string name="plan_a_repeating_occurrence">Plan a repeating occurrence</string>
+    <string name="all_day">All day</string>
+    <string name="add_configuration_items_1">Add configuration items</string>
+    <string name="done">Done</string>
+    <string name="agent_link">Agent Link</string>
+    <string name="add_parameters">Add parameters</string>
+    <string name="email">Email</string>
+    <string name="active">Active</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="new_password">New Password</string>
+    <string name="regenerate_secret">Regenerate secret</string>
+    <string name="repeat_new_password">Repeat New Password</string>
+    <string name="roles">Roles</string>
+    <string name="realm_roles">Realm Roles</string>
+    <string name="manager_roles">Manager Roles</string>
+    <string name="custom_roles_set">Custom roles set</string>
+    <string name="linked_device_s">Linked Device(s):</string>
+    <string name="device_type">Device Type</string>
+    <string name="device_name">Device Name</string>
+    <string name="add">Add</string>
+    <string name="add_optional_attributes">Add optional attributes</string>
+    <string name="agent">Agent</string>
+    <string name="asset">Asset</string>
+    <string name="all">All</string>
+    <string name="delete">Delete</string>
+    <string name="view_device_information">View device information</string>
+    <string name="view_on_maps">View device on Maps</string>
+    <string name="create_new">Create new</string>
+
+    <string-array name="timeframe">
+        <item>Hour</item>
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+        <item>Year</item>
+    </string-array>
+
+    <string-array name="number">
+        <item>Equals</item>
+        <item>Not equals</item>
+        <item>Greater than</item>
+        <item>Greater than or equal to</item>
+        <item>Less than</item>
+        <item>Less than or equal to</item>
+        <item>Between</item>
+        <item>Is not between</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
+    </string-array>
+
+    <string-array name="text">
+        <item>Equals</item>
+        <item>Not equals</item>
+        <item>Contains</item>
+        <item>Does not contain</item>
+        <item>Starts with</item>
+        <item>Does not start with</item>
+        <item>Ends with</item>
+        <item>Does not end with</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
+    </string-array>
+
+    <string-array name="geo_point">
+        <item>Equals</item>
+        <item>Not equals</item>
+        <item>Inside circle</item>
+        <item>Outside circle</item>
+        <item>Inside rectangle</item>
+        <item>Outside rectangle</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
+    </string-array>
+
+    <string-array name="Boolean">
+        <item>Is true</item>
+        <item>Is false</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
+    </string-array>
+
+    <string-array name="others">
+        <item>Contains key</item>
+        <item>Does not contain key</item>
+        <item>Has no value</item>
+        <item>Has a value</item>
+    </string-array>
+
+    <string-array name="http_agent_params">
+        <!--        <item>Value Converter</item>-->
+        <!--        <item>Write Value Converter</item>-->
+        <!--        <item>Write Value</item>-->
+        <!--        <item>Message Match Predicate</item>-->
+        <!--        <item>Message Match Filters</item>-->
+        <!--        <item>Update On Write</item>-->
+        <!--        <item>Headers</item>-->
+        <!--        <item>Query Parameters</item>-->
+        <item>pollingMillis</item>
+        <item>path</item>
+        <item>valueFilters</item>
+        <!--        <item>Paging Mode</item>-->
+        <!--        <item>Method</item>-->
+        <!--        <item>Content Type</item>-->
+        <!--        <item>Polling Attribute</item>-->
+    </string-array>
+
+    <string-array name="mqtt_agent_params">
+        <item>subscriptionTopic</item>
+        <item>publishTopic</item>
+        <item>valueFilters</item>
+    </string-array>
 </resources>

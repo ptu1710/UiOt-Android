@@ -3,6 +3,6 @@
     <style name="Theme.MyUIT.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/white</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo_large</item>
-        <item name="postSplashScreenTheme">@style/Theme.MyUIT</item>
+        <item name="postSplashScreenTheme">@style/Theme.UiOt</item>
     </style>
 </resources>

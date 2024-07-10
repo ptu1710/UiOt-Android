@@ -1,14 +1,11 @@
 package com.ixxc.uiot.API;
 
-import android.annotation.SuppressLint;
-
-import com.ixxc.uiot.GlobalVars;
+import com.google.gson.GsonBuilder;
+import com.ixxc.uiot.Utils.Util;
 
 import java.security.cert.CertificateException;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -20,19 +17,27 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIClient {
-    public static String UserToken = "";
+    public static String userToken = "";
 
-    public static OkHttpClient getUnsafeOkHttpClient() {
+    OkHttpClient getOkHttpClient() {
         try {
-            // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[] {
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+            //Log
+            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            builder.addInterceptor(interceptor);
+
+            final TrustManager[] trustAllCerts = new TrustManager[]{
                     new X509TrustManager() {
                         @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String
+                                authType) throws CertificateException {
                         }
 
                         @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String
+                                authType) throws CertificateException {
                         }
 
                         @Override
@@ -42,50 +47,40 @@ public class APIClient {
                     }
             };
 
-            // Install the all-trusting trust manager
             final SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
 
-            // Create an ssl socket factory with our all-trusting manager
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
-
-            //Log
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            builder.addInterceptor(interceptor);
+            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
+            builder.hostnameVerifier((hostname, session) -> true);
 
             //Bear token
             builder.addInterceptor(chain -> {
                 Request newRequest = chain.request()
                         .newBuilder()
-                        .addHeader("Authorization", "Bearer " + UserToken)
+                        .addHeader("Authorization", "Bearer " + userToken)
                         .build();
 
                 return chain.proceed(newRequest);
             });
 
-            OkHttpClient okHttpClient = builder.build();
-            return okHttpClient;
+            // Set timeout
+            builder.connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS);
+            builder.readTimeout(30, java.util.concurrent.TimeUnit.SECONDS);
+            builder.writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS);
+
+            return builder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public Retrofit getClient() {
-        OkHttpClient client = getUnsafeOkHttpClient();
         return new Retrofit.Builder()
-                .baseUrl(GlobalVars.baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
+                .baseUrl(Util.baseUrl)
+                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().serializeNulls().create()))
+                .client(getOkHttpClient())
                 .build();
     }
 }

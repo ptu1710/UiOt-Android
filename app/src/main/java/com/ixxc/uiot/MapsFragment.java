@@ -1,6 +1,8 @@
 package com.ixxc.uiot;
 
 import android.app.Dialog;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,31 +12,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ixxc.uiot.Adapter.BottomSheetAdapter;
 import com.ixxc.uiot.Model.Attribute;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.Map;
-import com.mapbox.geojson.Point;
+import com.ixxc.uiot.Utils.Util;
 import com.mapbox.maps.CameraBoundsOptions;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.MapboxMap;
 import com.mapbox.maps.plugin.Plugin;
 import com.mapbox.maps.plugin.animation.CameraAnimationsPlugin;
+import com.mapbox.maps.plugin.animation.CameraAnimationsUtils;
+import com.mapbox.maps.plugin.animation.MapAnimationOptions;
 import com.mapbox.maps.plugin.annotation.AnnotationConfig;
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
 import com.mapbox.maps.plugin.annotation.AnnotationPluginImplKt;
@@ -51,18 +54,12 @@ import java.util.Objects;
 
 public class MapsFragment extends Fragment {
     HomeActivity parentActivity;
-    private MapView mapView;
-    private Map mapData;
-    private static MapboxMap mapboxMap;
-    private TextView tvAssetName;
-    private ImageView ivIcon;
-    private LinearLayout bs_device;
+    MapView mapView;
     RecyclerView rv_attributes;
-    private BottomSheetBehavior<LinearLayout> sheetBehavior;
-    private ProgressBar pbLoading;
-
+    ImageButton ibtn_zoom_in, ibtn_zoom_out;
     public String lastSelectedId = "";
     private boolean firstTime = true;
+
 
     public MapsFragment() { }
 
@@ -84,10 +81,7 @@ public class MapsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        InitViews(view);
-        InitEvents();
-
-        mapView.setVisibility(View.INVISIBLE);
+        rv_attributes = view.findViewById(R.id.rv_attributes);
 
         new Thread(() -> {
             while (!Map.isReady) {
@@ -98,30 +92,20 @@ public class MapsFragment extends Fragment {
                 }
             }
 
-            parentActivity.runOnUiThread(this::setMapView);
-
+            Util.delayHandler.postDelayed(this::setMapView, 180);
         }).start();
     }
 
-    private void InitViews(View view) {
-        mapView = view.findViewById(R.id.mapView);
-        bs_device = view.findViewById(R.id.bs_device);
-        rv_attributes = view.findViewById(R.id.rv_attributes);
-        tvAssetName = view.findViewById(R.id.tv_assetName);
-        ivIcon = view.findViewById(R.id.iv_assetIcon);
-        pbLoading = view.findViewById(R.id.pb_loading_4);
-        sheetBehavior = BottomSheetBehavior.from(bs_device);
-    }
-
-    private void InitEvents() { }
-
     private void setMapView() {
-        mapData = Map.getMapObj();
+        mapView = (MapView) View.inflate(parentActivity, R.layout.device_info_map, null);
+        mapView.setVisibility(View.INVISIBLE);
+
+        Map mapData = Map.getMapObj();
 
         // Get the scale bar plugin instance and disable it
         ScaleBarPlugin scaleBarPlugin = mapView.getPlugin(Plugin.MAPBOX_SCALEBAR_PLUGIN_ID);
         assert scaleBarPlugin != null;
-        scaleBarPlugin.setEnabled(false);
+        scaleBarPlugin.setEnabled(true);
 
         // Get the logo plugin instance and disable it
         LogoPlugin logoPlugin = mapView.getPlugin(Plugin.MAPBOX_LOGO_PLUGIN_ID);
@@ -133,7 +117,7 @@ public class MapsFragment extends Fragment {
         assert attributionPlugin != null;
         attributionPlugin.setEnabled(false);
 
-        mapboxMap = mapView.getMapboxMap();
+        MapboxMap mapboxMap = mapView.getMapboxMap();
 
         // Load style and map data
         mapboxMap.loadStyleJson(Objects.requireNonNull(new Gson().toJson(mapData)), style -> {
@@ -149,8 +133,7 @@ public class MapsFragment extends Fragment {
             // Add click listener to the annotation manager
             pointAnnoManager.addClickListener(pointAnnotation -> {
                 String id = Objects.requireNonNull(pointAnnotation.getData()).getAsJsonObject().get("id").getAsString();
-//                toggleBottomSheet(id);
-                setBottomSheet1(id);
+                setBottomSheet(id);
 
                 return true;
             });
@@ -158,9 +141,10 @@ public class MapsFragment extends Fragment {
             // Add device markers to the map
             ArrayList<PointAnnotationOptions> markerList = new ArrayList<>();
 
-            for (Device device : Device.getDevicesList()) {
-                Bitmap bitmap = device.getIconPinBitmap(parentActivity, device.getIconRes(device.type));
+            for (Device device : Device.getDeviceList()) {
                 if (device.getPoint() == null) continue;
+
+                Bitmap bitmap = device.getIconPinBitmap(parentActivity);
 
                 JsonObject o = new JsonObject();
                 o.addProperty("id", device.id);
@@ -195,84 +179,104 @@ public class MapsFragment extends Fragment {
         CameraAnimationsPlugin cameraAnimationsPlugin = mapView.getPlugin(Plugin.MAPBOX_CAMERA_PLUGIN_ID);
         assert cameraAnimationsPlugin != null;
 
-        pbLoading.setVisibility(View.GONE);
+        ibtn_zoom_in = mapView.findViewById(R.id.ibtn_zoom_in);
+        ibtn_zoom_out = mapView.findViewById(R.id.ibtn_zoom_out);
+
+        ibtn_zoom_in.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
+                new CameraOptions.Builder()
+                        .center(mapView.getMapboxMap().getCameraState().getCenter())
+                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() + 0.5)
+                        .build(),
+                new MapAnimationOptions.Builder().duration(320).build()
+        ));
+
+        ibtn_zoom_out.setOnClickListener(view -> CameraAnimationsUtils.getCamera(mapView).flyTo(
+                new CameraOptions.Builder()
+                        .center(mapView.getMapboxMap().getCameraState().getCenter())
+                        .zoom(mapView.getMapboxMap().getCameraState().getZoom() - 0.5)
+                        .build(),
+                new MapAnimationOptions.Builder().duration(320).build()
+        ));
+
+        // Set camera event listener
+        CameraAnimationsUtils.getCamera(mapView).addCameraZoomChangeListener(aDouble -> {
+            ibtn_zoom_in.setEnabled(!(aDouble >= mapData.getMaxZoom()));
+            ibtn_zoom_out.setEnabled(!(aDouble <= 15));
+
+            ibtn_zoom_in.setImageTintList(ColorStateList.valueOf(ibtn_zoom_in.isEnabled() ? Color.BLACK : Color.GRAY));
+            ibtn_zoom_out.setImageTintList(ColorStateList.valueOf(ibtn_zoom_out.isEnabled() ? Color.BLACK : Color.GRAY));
+        });
+
+        FrameLayout mapLayout = parentActivity.findViewById(R.id.map_container);
+        mapLayout.addView(mapView, 0);
+
         if (!isHidden()) onHiddenChanged(false);
     }
 
-    public void toggleBottomSheet(@NonNull String id) {
-        setBottomSheet(id);
-
-        if (sheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED && !id.equals("")) {
-            setBottomSheet(id);
-            sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } else {
-            if (!Objects.equals(lastSelectedId, id) && !id.equals("")) {
-                setBottomSheet(id);
-            } else {
-                lastSelectedId = "";
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
-        }
-    }
-
-    private void setBottomSheet(@NonNull String assetId) {
-        Device device = Device.getDeviceById(assetId);
-
-        if (device != null) {
-            List<Attribute> attributes = device.getRequiredAttributes();
-            BottomSheetAdapter adapter = new BottomSheetAdapter(attributes);
-            LinearLayoutManager layoutManager =  new LinearLayoutManager(getContext());
-
-            tvAssetName.setText(device.name);
-            int colorTint = ResourcesCompat.getColor(parentActivity.getResources(), R.color.bg1, null);
-            ivIcon.setImageDrawable(device.getIconDrawable(parentActivity, device.type, colorTint));
-
-            rv_attributes.setLayoutManager(layoutManager);
-            rv_attributes.setAdapter(adapter);
-
-        }
-
-        lastSelectedId = assetId;
-    }
-
-    private void setBottomSheet1(@NonNull String assetId) {
-        Device device = Device.getDeviceById(assetId);
+    public void setBottomSheet(@NonNull String deviceId) {
+        Device device = Device.getDeviceById(deviceId);
 
         if (device != null) {
             Dialog dialog = new Dialog(parentActivity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.bottom_sheet);
+            dialog.setContentView(R.layout.maps_bottom_dialog);
 
             List<Attribute> attributes = device.getRequiredAttributes();
             BottomSheetAdapter adapter = new BottomSheetAdapter(attributes);
-            LinearLayoutManager layoutManager =  new LinearLayoutManager(getContext());
+            LinearLayoutManager layoutManager =  new LinearLayoutManager(parentActivity);
 
-            TextView tvAssetName = dialog.findViewById(R.id.tv_assetName);
-            ImageView ivIcon = dialog.findViewById(R.id.iv_assetIcon);
+            TextView tv_name = dialog.findViewById(R.id.tv_assetName);
+            ImageView iv_icon = dialog.findViewById(R.id.iv_assetIcon);
+            ImageView iv_go = dialog.findViewById(R.id.iv_go_1);
+            Button btn_chart = dialog.findViewById(R.id.btn_chart);
             RecyclerView rv_attributes = dialog.findViewById(R.id.rv_attributes);
 
-            tvAssetName.setText(device.name);
+            iv_go.setImageTintList(ColorStateList.valueOf(device.getColorId(parentActivity)));
+            iv_go.setOnClickListener(view -> {
+                // TODO: Change start activity animation
+                Intent intent = new Intent(parentActivity, DeviceInfoActivity.class);
+                intent.putExtra("DEVICE_ID", deviceId);
+                parentActivity.startActivity(intent);
+                dialog.dismiss();
+            });
 
-            ivIcon.setImageResource(device.getIconRes(device.type));
+            btn_chart.setBackgroundTintList(ColorStateList.valueOf(device.getColorId(parentActivity)));
+            btn_chart.setOnClickListener(view -> {
+                // TODO: Change start activity animation
+                Intent intent = new Intent(parentActivity, ChartActivity.class);
+                intent.putExtra("DEVICE_ID", deviceId);
+                startActivity(intent);
+                dialog.dismiss();
+            });
 
+            tv_name.setText(device.name);
+            iv_icon.setImageDrawable(device.getIconDrawable(parentActivity));
+
+            rv_attributes.setHasFixedSize(true);
             rv_attributes.setLayoutManager(layoutManager);
             rv_attributes.setAdapter(adapter);
 
-            dialog.show();
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (attributes.size() > 8) {
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, Util.dpToPx(parentActivity, 480));
+            } else {
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
             dialog.getWindow().setGravity(Gravity.BOTTOM);
+            dialog.show();
         }
 
-        lastSelectedId = assetId;
+        lastSelectedId = deviceId;
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (firstTime && Map.isReady && !hidden) {
             firstTime = false;
-            Utils.delayHandler.postDelayed(() -> mapView.setVisibility(View.VISIBLE), 200);
+            Util.delayHandler.postDelayed(() -> mapView.setVisibility(View.VISIBLE), 200);
+            Util.delayHandler.postDelayed(() -> parentActivity.findViewById(R.id.progressLayout).setVisibility(View.GONE), 4000);
         }
         super.onHiddenChanged(hidden);
     }

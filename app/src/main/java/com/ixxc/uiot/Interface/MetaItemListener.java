@@ -2,8 +2,9 @@ package com.ixxc.uiot.Interface;
 
 import com.ixxc.uiot.Model.MetaItem;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface MetaItemListener {
-    void onMetaItemListener(ArrayList<MetaItem> metaItems);
+    // TODO: ...
+    void metaItemListener(List<MetaItem> metaItems);
 }

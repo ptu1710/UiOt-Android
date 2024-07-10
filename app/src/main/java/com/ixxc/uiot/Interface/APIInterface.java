@@ -2,23 +2,25 @@ package com.ixxc.uiot.Interface;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.ixxc.uiot.Model.CreateAssetRes;
+import com.ixxc.uiot.Model.CreateDeviceRes;
 import com.ixxc.uiot.Model.Device;
 import com.ixxc.uiot.Model.LinkedDevice;
 import com.ixxc.uiot.Model.Map;
-import com.ixxc.uiot.Model.MetaItem;
-import com.ixxc.uiot.Model.Model;
+import com.ixxc.uiot.Model.DeviceModel;
 import com.ixxc.uiot.Model.Realm;
+import com.ixxc.uiot.Model.RegisterDevice;
 import com.ixxc.uiot.Model.Role;
+import com.ixxc.uiot.Model.Rule;
 import com.ixxc.uiot.Model.Token;
 import com.ixxc.uiot.Model.User;
 
 import java.util.List;
 
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.DELETE;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -29,10 +31,10 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface APIInterface {
-    // Get token
+    // Get user token
     @FormUrlEncoded
     @POST("auth/realms/master/protocol/openid-connect/token")
-    Call<Token> getToken(@Field("grant_type") String type, @Field("code") String code, @Field("client_id") String client, @Field("redirect_uri") String redirect);
+    Call<Token> getUserToken(@Field("grant_type") String type, @Field("client_id") String client, @Field("username") String username, @Field("password") String password);
 
     // Get user info
     @GET("api/master/user/user")
@@ -49,11 +51,11 @@ public interface APIInterface {
 
     // Get all models
     @GET("api/master/model/assetInfos")
-    Call<List<Model>> getDeviceModels();
+    Call<List<DeviceModel>> getDeviceModels();
 
     // Create device
     @POST("api/master/asset")
-    Call<CreateAssetRes> createDevice(@Body JsonObject body);
+    Call<CreateDeviceRes> createDevice(@Body JsonObject body);
 
     // Delete device
     @DELETE("api/master/asset")
@@ -65,7 +67,7 @@ public interface APIInterface {
 
     // Update  a device
     @PUT("api/master/asset/{assetId}")
-    Call<String> updateDeviceInfo(@Path("assetId") String deviceId, @Body JsonObject requestBody);
+    Call<String> updateDevice(@Path("assetId") String deviceId, @Body JsonObject requestBody);
 
     // Query all users
     @Headers("Content-Type: application/json")
@@ -87,10 +89,6 @@ public interface APIInterface {
 
     @PUT("api/master/user/master/roles")
     Call<String> updateRole(@Body JsonArray requestBody);
-
-    // Get realm roles
-    @GET("api/master/user/userRealmRoles")
-    Call<List<Role>> getRealmRoles();
 
     // Get a user by id
     @GET("api/master/user/master/userRealmRoles/{userId}")
@@ -157,4 +155,32 @@ public interface APIInterface {
     // Get Maps data
     @GET("api/master/map")
     Call<Map> getMap();
+
+    // Register a new device (push notification)
+    @POST("api/master/console/register")
+    Call<RegisterDevice> registerDevice(@Body JsonObject body);
+
+    // Get Data point
+    @POST("api/master/asset/datapoint/{assetId}/{attributeName}")
+    @Headers("Content-Type: application/json")
+    Call<JsonArray> getDataPoint(@Path("assetId") String assetId, @Path("attributeName") String attributeName, @Body JsonObject body);
+
+    // Create a new rule
+    @POST("api/master/rules/realm")
+    Call<Integer> createRule(@Body JsonObject body);
+
+    // Get all rules
+    @Headers("Content-Type: application/json")
+    @GET("api/master/rules/realm/for/master?fullyPopulate=true&language=JSON")
+    Call<List<Rule>> queryRules();
+
+    @DELETE("api/master/rules/realm/{ruleId}")
+    Call<Void> deleteRule(@Path("ruleId") Integer id);
+
+    @POST("api/master/extract")
+    Call<JsonObject> uploadImage(@Body RequestBody image);
+
+    @POST("api/master/asset/predicted/{assetId}/rainTomorrow")
+    @Headers({"Content-Type: application/json", "Accept: application/json"})
+    Call<String> getPredictedRain(@Path("assetId") String assetId, @Body JsonObject body);
 }

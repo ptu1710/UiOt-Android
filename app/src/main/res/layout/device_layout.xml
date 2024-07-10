@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cv_device"
     android:layout_width="match_parent"
@@ -38,8 +38,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_expand_3"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_iot"
-            app:tint="@color/bg1" />
+            app:srcCompat="@drawable/ic_vn" />
 
         <TextView
             android:id="@+id/tv_name"
@@ -63,7 +62,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_send_circle"
+            android:background="?android:selectableItemBackgroundBorderless"
             app:tint="@color/bg1" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

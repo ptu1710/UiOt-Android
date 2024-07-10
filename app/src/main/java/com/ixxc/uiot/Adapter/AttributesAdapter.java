@@ -1,59 +1,76 @@
 package com.ixxc.uiot.Adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.ixxc.uiot.Interface.AttributeListener;
-import com.google.gson.JsonPrimitive;
 import com.ixxc.uiot.Model.Attribute;
-import com.ixxc.uiot.Model.MetaItem;
+import com.ixxc.uiot.Model.Device;
+import com.ixxc.uiot.Model.Map;
 import com.ixxc.uiot.R;
-import com.ixxc.uiot.Utils;
+import com.ixxc.uiot.Utils.Util;
+import com.mapbox.maps.CameraOptions;
+import com.mapbox.maps.MapView;
+import com.mapbox.maps.MapboxMap;
+import com.mapbox.maps.plugin.Plugin;
+import com.mapbox.maps.plugin.annotation.AnnotationConfig;
+import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
+import com.mapbox.maps.plugin.annotation.AnnotationPluginImplKt;
+import com.mapbox.maps.plugin.annotation.AnnotationType;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
+import com.mapbox.maps.plugin.gestures.GesturesPlugin;
+import com.mapbox.maps.plugin.gestures.GesturesUtils;
+import com.mapbox.maps.plugin.scalebar.ScaleBarPlugin;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 
 public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.AttrsViewHolder> {
-    Context ctx;
+    private final Context ctx;
     private final List<Attribute> attributes;
-    public static Dictionary<String, Attribute> changedAttributes;
-    AttributeListener attributeListener;
-    public boolean isEditMode = false;
+    private final String deviceId;
+    private final AttributeListener attributeListener;
+    private final int color;
+    private boolean hasMap = false;
 
-    public AttributesAdapter(List<Attribute> attrsObj, AttributeListener attributeListener) {
+    public AttributesAdapter(Context ctx, String deviceId, List<Attribute> attrsObj, AttributeListener attributeListener, int color) {
+        this.ctx = ctx;
         this.attributes = attrsObj;
-        changedAttributes = new Hashtable<>();
         this.attributeListener = attributeListener;
+        this.deviceId = deviceId;
+        this.color = color;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return (position == attributes.size()) ? R.layout.end_device_details : R.layout.attribute_layout;
+        return position == attributes.size() ? 1 : 2;
     }
 
     @NonNull
     @Override
     public AttrsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        ctx = parent.getContext();
 
-        if(viewType == R.layout.attribute_layout){
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.attribute_layout, parent, false);
+        if(viewType != 1) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.attribute_layout_1, parent, false);
         } else {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.end_device_details, parent, false);
         }
@@ -62,54 +79,123 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AttrsViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        if (position == attributes.size()) return;
+    public void onBindViewHolder(@NonNull AttrsViewHolder holder, int position) {
+        if (position == attributes.size()) {
+            if (!hasMap) setMapView(holder);
+            return;
+        }
 
         Attribute attr = attributes.get(position);
-        String name = Utils.formatString(attr.name);
-        String type = attr.type;
+        String name = Util.formatString(attr.getName());
+        String value = attr.getValueString();
+        String type = attr.getType();
+        String validatedType = Util.formatString(attr.getType());
 
-        if(isEditMode) holder.btn_add_config.setVisibility(View.VISIBLE);
-        else holder.btn_add_config.setVisibility(View.GONE);
+        holder.ib_edit.setImageTintList(ColorStateList.valueOf(color));
 
-        // Add Meta Info
-        JsonObject meta = attr.meta;
-        if(meta != null && isEditMode) {
-            // Add config view here
-            for (String key : attr.meta.keySet()) {
-                if (holder.layout.findViewWithTag(key) == null) {
-                    holder.layout.addView(createConfigView(position, key, MetaItem.getMetaType(key), attr.getMetaValue(key)), 1);
-                }
-            }
-        }
+        holder.ib_delete.setEnabled(attr.isOptional());
+        holder.ib_delete.setImageTintList(ColorStateList.valueOf(color));
+        holder.ib_delete.setImageTintList(ColorStateList.valueOf(attr.isOptional() ? color : Util.getColor(ctx, R.color.dark_grey)));
+
+        holder.ib_star.setEnabled(attr.canShowValue(type));
+        holder.ib_star.setImageTintList(ColorStateList.valueOf(attr.canShowValue(type) ? color : Util.getColor(ctx, R.color.dark_grey)));
+        holder.ib_star.setImageResource(attr.isInWidgets(ctx, deviceId) ? R.drawable.ic_star_fill : R.drawable.ic_star_border);
 
         holder.tv_name.setText(name);
 
-        String value = attr.getValueString();
-        if (value.equals("") && !isEditMode) {
-            holder.tv_value.setText(R.string.string_null);
-            holder.til_value.setVisibility(View.GONE);
+        if (value.equals("")) holder.tv_value.setText(R.string.no_value);
+        else holder.tv_value.setText(attr.canShowValue(type) ? value : validatedType);
 
-        } else {
-            holder.tv_value.setText(type);
-            holder.et_value.setText(value);
-            holder.et_value.setInputType(Attribute.GetType(type));
-            holder.et_value.setFocusableInTouchMode(isEditMode);
-            holder.til_value.setVisibility(View.VISIBLE);
-        }
+        holder.linear_menu.setVisibility(attr.isExpanded() ? View.VISIBLE : View.GONE);
 
-        holder.et_value.setOnFocusChangeListener((view, focused) -> {
-            EditText et = (EditText) view;
-            if (!focused) {
-                attr.value = new JsonPrimitive(et.getText().toString());
-                attr.timestamp = System.currentTimeMillis();
-
-                changedAttributes.remove(attr);
-                changedAttributes.put(attr.name, attr);
-            }
+        holder.linear_attribute.setOnClickListener(view -> {
+            setExpandedView(holder, attr.isExpanded());
+            attr.setExpanded(!attr.isExpanded());
         });
 
-        holder.btn_add_config.setOnClickListener(v -> attributeListener.onItemClicked(v,position));
+        holder.ib_edit.setOnClickListener(view -> attributeListener.onEditClicked(holder.getBindingAdapterPosition()));
+
+        holder.ib_star.setOnClickListener(view -> {
+            String widgetString = Util.getPreferences(ctx, Util.WIDGET_KEY);
+            JsonArray widgets = TextUtils.isEmpty(widgetString) ? new JsonArray() : JsonParser.parseString(widgetString).getAsJsonArray();
+            JsonElement widgetInfo = JsonParser.parseString(String.join("-", deviceId, attr.getName()));
+
+            String toastMsg;
+            if (widgets.contains(widgetInfo)) {
+                widgets.remove(widgetInfo);
+                holder.ib_star.setImageResource(R.drawable.ic_star_border);
+                toastMsg = "Removed widget!";
+            } else {
+                widgets.add(widgetInfo);
+                holder.ib_star.setImageResource(R.drawable.ic_star_fill);
+                toastMsg = "New widget added!";
+            }
+
+            Util.savePreferences(ctx, Util.WIDGET_KEY, widgets.toString());
+
+            Toast.makeText(ctx, toastMsg, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void setExpandedView(AttrsViewHolder holder, boolean isExpanded) {
+        if (isExpanded) {
+            holder.iv_expand.setRotation(0);
+            holder.linear_menu.setVisibility(View.GONE);
+        } else {
+            holder.iv_expand.setRotation(90);
+            holder.linear_menu.setVisibility(View.VISIBLE);
+            attributeListener.onAttributeClicked(holder.getBindingAdapterPosition());
+        }
+    }
+
+    private void setMapView(AttrsViewHolder holder) {
+
+        Device device = Device.getDeviceById(deviceId);
+
+        if (device != null && device.getPoint() != null) {
+            Map mapData = Map.getMapObj();
+
+            MapboxMap mapboxMap = holder.mapView.getMapboxMap();
+
+            // Load style and map data
+            mapboxMap.loadStyleJson(Objects.requireNonNull(new Gson().toJson(mapData)), style -> {
+
+                // Get the scale bar plugin instance and disable it
+                ScaleBarPlugin scaleBarPlugin = holder.mapView.getPlugin(Plugin.MAPBOX_SCALEBAR_PLUGIN_ID);
+                assert scaleBarPlugin != null;
+                scaleBarPlugin.setEnabled(true);
+
+                // Disable map scroll gestures
+                GesturesPlugin gesturesPlugin = GesturesUtils.getGestures((holder.mapView));
+                gesturesPlugin.setScrollEnabled(false);
+
+                // Get the annotation plugin instance
+                AnnotationPlugin annoPlugin = AnnotationPluginImplKt.getAnnotations(holder.mapView);
+                AnnotationConfig annoConfig = new AnnotationConfig("map_annotation");
+                PointAnnotationManager pointAnnoManager = (PointAnnotationManager) annoPlugin.createAnnotationManager(AnnotationType.PointAnnotation, annoConfig);
+
+                // Add device marker to the map
+                Bitmap bitmap = device.getIconPinBitmap(ctx);
+
+                PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
+                        .withPoint(device.getPoint())
+                        .withIconImage(bitmap);
+
+                pointAnnoManager.create(pointAnnotationOptions);
+            });
+
+            // Set camera position
+            mapboxMap.setCamera(
+                    new CameraOptions.Builder()
+                            .center(device.getPoint())
+                            .zoom(mapData.getZoom())
+                            .build()
+            );
+        } else {
+            holder.mapView.setVisibility(View.GONE);
+        }
+
+        hasMap = true;
     }
 
     @Override
@@ -119,62 +205,25 @@ public class AttributesAdapter extends RecyclerView.Adapter<AttributesAdapter.At
 
     static class AttrsViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_name, tv_value;
-        private final EditText et_value;
-        private final TextInputLayout til_value;
-        private final Button btn_add_config;
-        private final LinearLayout layout;
+        private final ImageView iv_expand;
+        private final LinearLayout linear_attribute;
+        private final LinearLayout linear_menu;
+        private final MapView mapView;
+        private final ImageButton ib_edit;
+        private final ImageButton ib_star;
+        private final ImageButton ib_delete;
 
         public AttrsViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_name = itemView.findViewById(R.id.tv_name);
             tv_value = itemView.findViewById(R.id.tv_value);
-            et_value = itemView.findViewById(R.id.et_value);
-            til_value = itemView.findViewById(R.id.til_value);
-            btn_add_config = itemView.findViewById(R.id.btn_add_config);
-            layout = itemView.findViewById(R.id.config_layout);
-        }
-    }
-
-    private View createConfigView(int pos, String name, String type, String value) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        params.setMargins(0, 0, 0, 32);
-
-        switch (type) {
-            case "boolean":
-                CheckBox cb = new CheckBox(ctx);
-                cb.setText(Utils.formatString(name));
-                cb.setChecked(value.equals("true"));
-                cb.setTag(name);
-                cb.setLayoutParams(params);
-                cb.setOnCheckedChangeListener((compoundButton, checked) -> attributes.get(pos).meta.addProperty(name, checked));
-                cb.setClickable(isEditMode);
-                return cb;
-            case "text":
-            case "positiveInteger":
-            case "agentLink":
-            case "attributeLink[]":
-                TextInputLayout til = new TextInputLayout(ctx);
-                til.setHint(Utils.formatString(name));
-                til.setLayoutParams(params);
-                til.setTag(name);
-
-                TextInputEditText et = new TextInputEditText(til.getContext());
-                et.setText(value);
-                et.setInputType(Attribute.GetType(type));
-                et.setOnFocusChangeListener((view, focused) -> attributes.get(pos).meta.addProperty(name, String.valueOf(et.getText())));
-                et.setFocusableInTouchMode(isEditMode);
-                til.addView(et);
-
-                return til;
-            case "valueConstraint[]":
-            case "valueFormat":
-            case "text[]":
-                return null;
-            default: // agentLink
-                return null;
+            linear_attribute = itemView.findViewById(R.id.linear_attribute);
+            linear_menu = itemView.findViewById(R.id.linear_menu);
+            mapView = itemView.findViewById(R.id.mapView);
+            iv_expand = itemView.findViewById(R.id.iv_expand);
+            ib_edit = itemView.findViewById(R.id.ib_edit);
+            ib_star = itemView.findViewById(R.id.ib_star);
+            ib_delete = itemView.findViewById(R.id.ib_delete);
         }
     }
 }

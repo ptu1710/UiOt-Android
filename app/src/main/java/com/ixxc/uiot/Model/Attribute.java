@@ -1,99 +1,48 @@
 package com.ixxc.uiot.Model;
 
-import android.text.InputType;
+import android.content.Context;
+import android.text.TextUtils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.annotations.SerializedName;
+import com.ixxc.uiot.Utils.Util;
+
+import java.util.ArrayList;
 
 public class Attribute {
-    @SerializedName("name")
-    public String name;
+    private final String name;
+    private final String type;
+    private JsonObject meta;
+    private JsonElement value = JsonParser.parseString("");
+    private final ArrayList<String> units;
+    private final long timestamp;
+    private final boolean optional;
+    private boolean isExpanded = false;
 
-    @SerializedName("type")
-    public String type;
-
-    @SerializedName("format")
-    public JsonObject format;
-
-    @SerializedName("meta")
-    public JsonObject meta;
-
-    @SerializedName("optional")
-    public boolean optional;
-
-    @SerializedName("value")
-    public JsonElement value = new JsonParser().parse("");;
+    public String getUnits() {
+        if (units == null || units.isEmpty()) {
+            return "";
+        }
+        return String.join(" ", units);
+    }
+    public String getName() { return name; }
+    public String getType() { return type; }
+    public void setMeta(JsonObject meta) { this.meta = meta; }
+    public JsonObject getMeta() { return meta; }
+    public void setValue(JsonElement value) { this.value = value; }
+    public JsonElement getValue() { return value; }
+    public boolean isOptional() { return optional; }
+    public boolean isExpanded() { return isExpanded; }
+    public void setExpanded(boolean expanded) { this.isExpanded = expanded; }
 
     public Attribute(String name, String type) {
         this.name = name;
         this.type = type;
-    }
-
-    @SerializedName("timestamp")
-    public long timestamp;
-
-    public String getMetaValue(String name) {
-        JsonElement element = this.meta.get(name);
-
-        if (element.isJsonNull()) return "";
-        else if (element.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonObject()));
-        else if (element.isJsonArray()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonArray()));
-        else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) return String.valueOf(element.getAsInt());
-        else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isBoolean()) return String.valueOf(element.getAsBoolean());
-        else return element.getAsString();
-    }
-
-    public String getValueString() {
-        if (value.isJsonNull()) return "";
-        else if (value.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(value.getAsJsonObject()));
-        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return String.valueOf(value.getAsInt());
-        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return String.valueOf(value.getAsInt());
-        else return value.getAsString();
-    }
-
-    public static int GetType(String type){
-        switch (type.trim()){
-            case "JSONObject":
-            case "JSONArray":
-            case "GEO_JSONPoint":
-            case "JSON":
-            case "booleanMap":
-            case "integerMap":
-            case "numberMap":
-            case "multivaluedTextMap":
-            case "agentLink":
-            case "attributeLink[]":
-                return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
-            case "timestamp":
-            case "timestampISO8601":
-            case "dateAndTime":
-            case "timeDurationISO8601":
-            case "periodDurationISO8601":
-            case "timeAndPeriodDurationISO8601":
-            case "integer":
-            case "long":
-            case "bigInteger":
-            case "number":
-            case "bigNumber":
-            case "TCP_IPPortNumber":
-            case "positiveInteger":
-            case "positiveNumber":
-            case "negativeInteger":
-            case "negativeNumber":
-            case "integerByte":
-            case "byte":
-                return InputType.TYPE_CLASS_NUMBER;
-            case "attributeLink":
-            case "HTTP_URL":
-            case "WS_URL":
-                return InputType.TYPE_TEXT_VARIATION_URI;
-            case "email":
-                return InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-            default:
-                return InputType.TYPE_CLASS_TEXT;
-        }
+        this.optional = false;
+        this.timestamp = System.currentTimeMillis();
+        this.units = new ArrayList<>();
     }
 
     public static String formatJsonValue(String text){
@@ -129,13 +78,115 @@ public class Attribute {
         return json.toString();
     }
 
+    public String getMetaValue(String name) {
+        if (meta == null) return "";
+
+        JsonElement element = this.meta.get(name);
+
+        if (element == null || element.isJsonNull()) return "";
+        else if (element.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonObject()));
+        else if (element.isJsonArray()) return Attribute.formatJsonValue(String.valueOf(element.getAsJsonArray()));
+        else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) return String.valueOf(element.getAsInt());
+        else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isBoolean()) return String.valueOf(element.getAsBoolean());
+        else return element.getAsString();
+    }
+
+    public String getValueString() {
+        if (value == null || value.isJsonNull()) return "";
+        else if (value.isJsonObject()) return Attribute.formatJsonValue(String.valueOf(value.getAsJsonObject()));
+        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return String.valueOf(value.getAsInt());
+        else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) return String.valueOf(value.getAsInt());
+        else return value.getAsString();
+    }
+
+    public String getUnit(String unitString) {
+        switch (unitString) {
+            case "kilo watt":
+                return "kW";
+            case "kilo metre":
+                return "km";
+            case "milli metre":
+                return "mm";
+            case "EUR per kilo watt hour":
+                return "€/kWh";
+            case "micro gram per metre cubed":
+                return "µg/m³";
+            case "kilo metre per hour":
+                return "km/h";
+            case "decibel":
+                return "(dB)";
+            case "knot":
+                return "kn";
+            case "kilo watt hour":
+                return "kWh";
+            case "metre cubed per hour":
+                return "m³/h";
+            case "EUR":
+                return "€";
+            case "celsius":
+                return "°C";
+            case "kilo gram per kilo watt hour":
+                return "kg/kWh";
+            case "percentage":
+                return "%";
+            case "metre per second":
+                return "m/s";
+            case "kelvin":
+                return "K";
+            case "metre squared":
+                return "m²";
+            case "metre":
+                return "m";
+            case "kilo gram":
+                return "kg";
+            case "degree":
+                return "°";
+            default:
+                return unitString;
+        }
+    }
+
+    public boolean canShowValue(String type) {
+        switch (type) {
+            case "timestamp":
+            case "timestampISO8601":
+            case "dateAndTime":
+            case "timeDurationISO8601":
+            case "periodDurationISO8601":
+            case "timeAndPeriodDurationISO8601":
+            case "integer":
+            case "long":
+            case "bigInteger":
+            case "number":
+            case "bigNumber":
+            case "TCP_IPPortNumber":
+            case "positiveInteger":
+            case "positiveNumber":
+            case "negativeInteger":
+            case "negativeNumber":
+            case "integerByte":
+            case "byte":
+            case "boolean":
+                return true;
+        }
+
+        return false;
+    }
+
+    public boolean isInWidgets(Context ctx, String deviceId) {
+        String widgetString = Util.getPreferences(ctx, Util.WIDGET_KEY);
+        JsonArray widgets = TextUtils.isEmpty(widgetString) ? new JsonArray() : JsonParser.parseString(widgetString).getAsJsonArray();
+        return widgets.contains(JsonParser.parseString(String.join("-", deviceId, name)));
+    }
+
     public JsonObject toJson() {
         JsonObject o = new JsonObject();
         o.addProperty("type", type);
         o.addProperty("name", name);
         o.addProperty("timestamp", timestamp);
-        o.add("value", value);
-        o.add("meta", meta);
+
+        if (meta != null)  o.add("meta", meta);
+        if (value != null && !value.isJsonNull()) o.add("value", value);
 
         return o;
     }

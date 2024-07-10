@@ -43,7 +43,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textView1"
+                        android:id="@+id/tv_item"
                         android:layout_width="64dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
